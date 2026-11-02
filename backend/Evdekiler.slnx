@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Evdekiler.BuildingBlocks/Evdekiler.BuildingBlocks.csproj" />
+  </Folder>
+  <Folder Name="/src/Gateway/">
+    <Project Path="src/Gateway/Evdekiler.Gateway/Evdekiler.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Identity/">
+    <Project Path="src/Services/Identity/Evdekiler.Identity.Api/Evdekiler.Identity.Api.csproj" />
+  </Folder>
+</Solution>
