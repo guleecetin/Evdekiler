@@ -9,8 +9,13 @@ namespace Evdekiler.Identity.Api.Endpoints;
 
 public record RegisterRequest(string Email, string Password, string DisplayName);
 public record LoginRequest(string Email, string Password);
+public record RefreshRequest(string RefreshToken);
 public record UserResponse(Guid Id, string Email, string DisplayName);
-public record TokenResponse(string AccessToken, DateTime ExpiresAt);
+public record TokenResponse(
+    string AccessToken,
+    DateTime AccessTokenExpiresAt,
+    string RefreshToken,
+    DateTime RefreshTokenExpiresAt);
 
 public static class AuthEndpoints
 {
@@ -19,6 +24,8 @@ public static class AuthEndpoints
         var group = app.MapGroup("/api/auth");
         group.MapPost("/register", Register);
         group.MapPost("/login", Login);
+        group.MapPost("/refresh", Refresh);
+        group.MapPost("/logout", Logout);
     }
 
     private static async Task<IResult> Register(
@@ -86,18 +93,92 @@ public static class AuthEndpoints
         if (result == PasswordVerificationResult.Failed)
             return InvalidCredentials();
 
-        // Hash algoritması güncellendiyse şifreyi yeni ayarlarla tekrar hash'le
         if (result == PasswordVerificationResult.SuccessRehashNeeded)
-        {
             user.PasswordHash = hasher.HashPassword(user, request.Password);
-            await db.SaveChangesAsync(ct);
+
+        return Results.Ok(await IssueTokensAsync(user, db, tokens, ct));
+    }
+
+    private static async Task<IResult> Refresh(
+        RefreshRequest request,
+        AppDbContext db,
+        TokenService tokens,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+            return InvalidRefreshToken();
+
+        var hash = TokenService.HashToken(request.RefreshToken);
+        var stored = await db.RefreshTokens
+            .Include(t => t.User)
+            .SingleOrDefaultAsync(t => t.TokenHash == hash, ct);
+
+        if (stored is null)
+            return InvalidRefreshToken();
+
+        var now = DateTime.UtcNow;
+
+        // Daha önce kullanılmış (iptal edilmiş) bir token tekrar geldi:
+        // token çalınmış olabilir, kullanıcının bütün oturumlarını kapat.
+        if (stored.RevokedAt is not null)
+        {
+            await db.RefreshTokens
+                .Where(t => t.UserId == stored.UserId && t.RevokedAt == null)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.RevokedAt, now), ct);
+            return InvalidRefreshToken();
         }
 
-        var (token, expiresAt) = tokens.CreateAccessToken(user);
-        return Results.Ok(new TokenResponse(token, expiresAt));
+        if (stored.ExpiresAt <= now)
+            return InvalidRefreshToken();
+
+        // Eski token'ı iptal et. "RevokedAt == null" şartı sayesinde aynı token
+        // ile aynı anda iki istek gelirse sadece biri başarılı olur.
+        var revoked = await db.RefreshTokens
+            .Where(t => t.Id == stored.Id && t.RevokedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.RevokedAt, now), ct);
+
+        if (revoked == 0)
+            return InvalidRefreshToken();
+
+        return Results.Ok(await IssueTokensAsync(stored.User, db, tokens, ct));
+    }
+
+    private static async Task<IResult> Logout(
+        RefreshRequest request,
+        AppDbContext db,
+        CancellationToken ct)
+    {
+        if (!string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            var hash = TokenService.HashToken(request.RefreshToken);
+            var now = DateTime.UtcNow;
+
+            await db.RefreshTokens
+                .Where(t => t.TokenHash == hash && t.RevokedAt == null)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.RevokedAt, now), ct);
+        }
+
+        return Results.NoContent();
+    }
+
+    private static async Task<TokenResponse> IssueTokensAsync(
+        User user, AppDbContext db, TokenService tokens, CancellationToken ct)
+    {
+        var (accessToken, accessExpiresAt) = tokens.CreateAccessToken(user);
+        var (refreshToken, refreshEntity) = tokens.CreateRefreshToken(user.Id);
+
+        db.RefreshTokens.Add(refreshEntity);
+        await db.SaveChangesAsync(ct);
+
+        return new TokenResponse(accessToken, accessExpiresAt,
+            refreshToken, refreshEntity.ExpiresAt);
     }
 
     private static IResult InvalidCredentials() =>
         Results.Problem("E-posta veya şifre hatalı.",
+            statusCode: StatusCodes.Status401Unauthorized);
+
+    private static IResult InvalidRefreshToken() =>
+        Results.Problem("Oturumun sona erdi, lütfen tekrar giriş yap.",
             statusCode: StatusCodes.Status401Unauthorized);
 }

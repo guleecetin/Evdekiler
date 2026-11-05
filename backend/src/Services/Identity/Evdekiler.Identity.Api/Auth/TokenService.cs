@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Evdekiler.Identity.Api.Entities;
 using Microsoft.Extensions.Options;
@@ -13,6 +14,7 @@ public class JwtOptions
     public string Audience { get; set; } = string.Empty;
     public string SigningKey { get; set; } = string.Empty;
     public int AccessTokenMinutes { get; set; } = 15;
+    public int RefreshTokenDays { get; set; } = 30;
 }
 
 public class TokenService(IOptions<JwtOptions> options)
@@ -41,4 +43,25 @@ public class TokenService(IOptions<JwtOptions> options)
         var token = new JsonWebTokenHandler().CreateToken(descriptor);
         return (token, expiresAt);
     }
+
+    public (string RawToken, RefreshToken Entity) CreateRefreshToken(Guid userId)
+    {
+        // 64 baytlık kriptografik olarak güvenli rastgele değer
+        var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var now = DateTime.UtcNow;
+
+        var entity = new RefreshToken
+        {
+            Id = Guid.CreateVersion7(),
+            UserId = userId,
+            TokenHash = HashToken(rawToken),
+            CreatedAt = now,
+            ExpiresAt = now.AddDays(_jwt.RefreshTokenDays)
+        };
+
+        return (rawToken, entity);
+    }
+
+    public static string HashToken(string rawToken) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(rawToken)));
 }
