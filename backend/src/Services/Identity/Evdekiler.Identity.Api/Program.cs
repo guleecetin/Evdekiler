@@ -3,6 +3,7 @@ using Evdekiler.Identity.Api.Endpoints;
 using Evdekiler.Identity.Api.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Evdekiler.Identity.Api.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityDb")));
 
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<TokenService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
