@@ -15,6 +15,7 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
             entity.HasKey(i => i.Id);
             entity.Property(i => i.Name).HasMaxLength(100).IsRequired();
             entity.HasIndex(i => i.Name).IsUnique();
+            entity.Property(i => i.Emoji).HasMaxLength(16);
             entity.Property(i => i.Category).HasConversion<string>().HasMaxLength(20);
             entity.Property(i => i.DefaultUnit).HasConversion<string>().HasMaxLength(20);
             entity.HasData(IngredientSeed.All);

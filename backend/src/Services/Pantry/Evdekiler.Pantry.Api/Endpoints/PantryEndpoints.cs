@@ -7,11 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Evdekiler.Pantry.Api.Endpoints;
 
 public record IngredientResponse(
-    int Id, string Name, IngredientCategory Category, MeasureUnit DefaultUnit);
+    int Id, string Name, string Emoji, IngredientCategory Category, MeasureUnit DefaultUnit);
 
 public record PantryItemResponse(
-    Guid Id, int IngredientId, string IngredientName, IngredientCategory Category,
-    decimal Quantity, MeasureUnit Unit, DateOnly? ExpiresAt, uint Version);
+    Guid Id, int IngredientId, string IngredientName, string IngredientEmoji,
+    IngredientCategory Category, decimal Quantity, MeasureUnit Unit,
+    DateOnly? ExpiresAt, uint Version);
 
 public record CreatePantryItemRequest(
     int IngredientId, decimal Quantity, MeasureUnit? Unit, DateOnly? ExpiresAt);
@@ -44,7 +45,7 @@ public static class PantryEndpoints
         var result = await query
             .OrderBy(i => i.Name)
             .Take(20)
-            .Select(i => new IngredientResponse(i.Id, i.Name, i.Category, i.DefaultUnit))
+            .Select(i => new IngredientResponse(i.Id, i.Name, i.Emoji, i.Category, i.DefaultUnit))
             .ToListAsync(ct);
 
         return Results.Ok(result);
@@ -63,8 +64,8 @@ public static class PantryEndpoints
             .ThenBy(p => p.ExpiresAt)
             .ThenBy(p => p.Ingredient.Name)
             .Select(p => new PantryItemResponse(
-                p.Id, p.IngredientId, p.Ingredient.Name, p.Ingredient.Category,
-                p.Quantity, p.Unit, p.ExpiresAt, p.Version))
+                p.Id, p.IngredientId, p.Ingredient.Name, p.Ingredient.Emoji,
+                p.Ingredient.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version))
             .ToListAsync(ct);
 
         return Results.Ok(items);
@@ -156,7 +157,7 @@ public static class PantryEndpoints
     }
 
     private static PantryItemResponse ToResponse(PantryItem p, Ingredient i) =>
-        new(p.Id, i.Id, i.Name, i.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version);
+        new(p.Id, i.Id, i.Name, i.Emoji, i.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version);
 
     private static IResult QuantityError() =>
         Results.ValidationProblem(new Dictionary<string, string[]>

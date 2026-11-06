@@ -40,6 +40,11 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("Emoji")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -58,6 +63,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 1,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🍅",
                             Name = "Domates"
                         },
                         new
@@ -65,6 +71,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 2,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🥒",
                             Name = "Salatalık"
                         },
                         new
@@ -72,6 +79,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 3,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🫑",
                             Name = "Biber"
                         },
                         new
@@ -79,6 +87,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 4,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🧅",
                             Name = "Soğan"
                         },
                         new
@@ -86,6 +95,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 5,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🧄",
                             Name = "Sarımsak"
                         },
                         new
@@ -93,6 +103,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 6,
                             Category = "Vegetable",
                             DefaultUnit = "Kilogram",
+                            Emoji = "🥔",
                             Name = "Patates"
                         },
                         new
@@ -100,6 +111,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 7,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🥕",
                             Name = "Havuç"
                         },
                         new
@@ -107,6 +119,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 8,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🥒",
                             Name = "Kabak"
                         },
                         new
@@ -114,6 +127,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 9,
                             Category = "Vegetable",
                             DefaultUnit = "Piece",
+                            Emoji = "🍆",
                             Name = "Patlıcan"
                         },
                         new
@@ -121,6 +135,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 10,
                             Category = "Vegetable",
                             DefaultUnit = "Gram",
+                            Emoji = "🥬",
                             Name = "Ispanak"
                         },
                         new
@@ -128,6 +143,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 11,
                             Category = "Fruit",
                             DefaultUnit = "Piece",
+                            Emoji = "🍋",
                             Name = "Limon"
                         },
                         new
@@ -135,6 +151,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 12,
                             Category = "Fruit",
                             DefaultUnit = "Piece",
+                            Emoji = "🍎",
                             Name = "Elma"
                         },
                         new
@@ -142,6 +159,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 13,
                             Category = "Dairy",
                             DefaultUnit = "Liter",
+                            Emoji = "🥛",
                             Name = "Süt"
                         },
                         new
@@ -149,6 +167,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 14,
                             Category = "Dairy",
                             DefaultUnit = "Gram",
+                            Emoji = "🥣",
                             Name = "Yoğurt"
                         },
                         new
@@ -156,6 +175,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 15,
                             Category = "Dairy",
                             DefaultUnit = "Gram",
+                            Emoji = "🧀",
                             Name = "Beyaz peynir"
                         },
                         new
@@ -163,6 +183,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 16,
                             Category = "Dairy",
                             DefaultUnit = "Gram",
+                            Emoji = "🧀",
                             Name = "Kaşar peyniri"
                         },
                         new
@@ -170,6 +191,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 17,
                             Category = "Dairy",
                             DefaultUnit = "Gram",
+                            Emoji = "🧈",
                             Name = "Tereyağı"
                         },
                         new
@@ -177,6 +199,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 18,
                             Category = "Dairy",
                             DefaultUnit = "Piece",
+                            Emoji = "🥚",
                             Name = "Yumurta"
                         },
                         new
@@ -184,6 +207,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 19,
                             Category = "Meat",
                             DefaultUnit = "Gram",
+                            Emoji = "🍗",
                             Name = "Tavuk göğsü"
                         },
                         new
@@ -191,6 +215,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 20,
                             Category = "Meat",
                             DefaultUnit = "Gram",
+                            Emoji = "🥩",
                             Name = "Kıyma"
                         },
                         new
@@ -198,6 +223,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 21,
                             Category = "Grain",
                             DefaultUnit = "Gram",
+                            Emoji = "🍚",
                             Name = "Pirinç"
                         },
                         new
@@ -205,6 +231,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 22,
                             Category = "Grain",
                             DefaultUnit = "Gram",
+                            Emoji = "🍝",
                             Name = "Makarna"
                         },
                         new
@@ -212,6 +239,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 23,
                             Category = "Grain",
                             DefaultUnit = "Gram",
+                            Emoji = "🌾",
                             Name = "Bulgur"
                         },
                         new
@@ -219,6 +247,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 24,
                             Category = "Grain",
                             DefaultUnit = "Gram",
+                            Emoji = "🌾",
                             Name = "Un"
                         },
                         new
@@ -226,6 +255,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 25,
                             Category = "Legume",
                             DefaultUnit = "Gram",
+                            Emoji = "🫘",
                             Name = "Mercimek"
                         },
                         new
@@ -233,6 +263,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 26,
                             Category = "Legume",
                             DefaultUnit = "Gram",
+                            Emoji = "🫘",
                             Name = "Nohut"
                         },
                         new
@@ -240,6 +271,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 27,
                             Category = "Other",
                             DefaultUnit = "Gram",
+                            Emoji = "🥫",
                             Name = "Salça"
                         },
                         new
@@ -247,6 +279,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 28,
                             Category = "Other",
                             DefaultUnit = "Milliliter",
+                            Emoji = "🫒",
                             Name = "Zeytinyağı"
                         },
                         new
@@ -254,6 +287,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 29,
                             Category = "Spice",
                             DefaultUnit = "Gram",
+                            Emoji = "🧂",
                             Name = "Tuz"
                         },
                         new
@@ -261,6 +295,7 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             Id = 30,
                             Category = "Spice",
                             DefaultUnit = "Gram",
+                            Emoji = "🌶️",
                             Name = "Pul biber"
                         });
                 });
