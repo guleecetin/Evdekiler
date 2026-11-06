@@ -5,6 +5,24 @@ import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/storage/token_storage.dart';
 
+class UserProfile {
+  UserProfile({
+    required this.id,
+    required this.email,
+    required this.displayName,
+  });
+
+  final String id;
+  final String email;
+  final String displayName;
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+    id: json['id'] as String,
+    email: json['email'] as String,
+    displayName: json['displayName'] as String,
+  );
+}
+
 class AuthRepository {
   AuthRepository(this._dio, this._tokens);
 
@@ -44,7 +62,6 @@ class AuthRepository {
     } on DioException catch (e) {
       throw ApiException.fromDio(e);
     }
-    // Kayıt başarılı, kullanıcıyı tekrar şifre sormadan içeri al
     await login(email: email, password: password);
   }
 
@@ -61,6 +78,15 @@ class AuthRepository {
       // Sunucuya ulaşılamasa bile kullanıcıyı çıkarıyoruz
     } finally {
       await _tokens.clear();
+    }
+  }
+
+  Future<UserProfile> me() async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>('/api/users/me');
+      return UserProfile.fromJson(response.data!);
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
     }
   }
 }

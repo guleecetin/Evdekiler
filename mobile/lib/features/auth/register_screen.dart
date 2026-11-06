@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_exception.dart';
-import 'auth_repository.dart';
+import 'auth_controller.dart';
 import 'widgets/app_logo.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -37,16 +38,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     setState(() => _isLoading = true);
     try {
       await ref
-          .read(authRepositoryProvider)
+          .read(authControllerProvider.notifier)
           .register(
             displayName: _nameController.text.trim(),
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Hesabın oluşturuldu 🎉')));
+      // Başarılı olursa router otomatik olarak ana sayfaya geçer
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -192,7 +190,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         style: theme.textTheme.bodyMedium,
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => context.pop(),
                         child: const Text('Giriş yap'),
                       ),
                     ],

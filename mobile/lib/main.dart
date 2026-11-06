@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app/router.dart';
 import 'app/theme.dart';
-import 'features/auth/login_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: EvdekilerApp()));
 }
 
-class EvdekilerApp extends StatelessWidget {
+class EvdekilerApp extends ConsumerWidget {
   const EvdekilerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'Evdekiler',
       debugShowCheckedModeBanner: false,
       theme: buildLightTheme(),
-      home: const LoginScreen(),
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_exception.dart';
-import 'auth_repository.dart';
-import 'register_screen.dart';
+import 'auth_controller.dart';
 import 'widgets/app_logo.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -34,14 +34,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       await ref
-          .read(authRepositoryProvider)
+          .read(authControllerProvider.notifier)
           .login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Giriş başarılı 🎉')));
+      // Başarılı olursa router otomatik olarak ana sayfaya geçer
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,11 +151,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: theme.textTheme.bodyMedium,
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
-                        ),
+                        onPressed: () => context.push('/register'),
                         child: const Text('Kayıt ol'),
                       ),
                     ],
