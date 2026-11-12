@@ -87,33 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           shape: const CircleBorder(),
           child: const Icon(Icons.add_rounded, size: 30),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: 0,
-          onDestinationSelected: (i) {
-            if (i != 0) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Çok yakında geliyor 👀')),
-              );
-            }
-          },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.kitchen_outlined),
-              selectedIcon: Icon(Icons.kitchen_rounded),
-              label: 'Buzdolabım',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.restaurant_menu_outlined),
-              selectedIcon: Icon(Icons.restaurant_menu_rounded),
-              label: 'Tarifler',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.shopping_basket_outlined),
-              selectedIcon: Icon(Icons.shopping_basket_rounded),
-              label: 'Alışveriş',
-            ),
-          ],
-        ),
+
         body: RefreshIndicator(
           onRefresh: () => ref.refresh(pantryItemsProvider.future),
           child: CustomScrollView(

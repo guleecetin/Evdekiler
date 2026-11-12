@@ -8,8 +8,8 @@ enum MeasureUnit {
   liter('Liter', 'L');
 
   const MeasureUnit(this.apiValue, this.label);
-  final String apiValue; // backend'e giden değer
-  final String label; // ekranda görünen
+  final String apiValue;
+  final String label;
 
   static MeasureUnit fromApi(String value) =>
       values.firstWhere((u) => u.apiValue == value);
@@ -25,6 +25,13 @@ const categoryTint = {
   'Spice': Color(0xFFFBE3E0),
   'Other': Color(0xFFE8ECEF),
 };
+
+String formatQuantity(double quantity, MeasureUnit unit) {
+  final q = quantity == quantity.roundToDouble()
+      ? quantity.toInt().toString()
+      : quantity.toString().replaceAll('.', ',');
+  return '$q ${unit.label}';
+}
 
 class Ingredient {
   Ingredient({
@@ -53,6 +60,7 @@ class Ingredient {
 class PantryItem {
   PantryItem({
     required this.id,
+    required this.ingredientId,
     required this.ingredientName,
     required this.emoji,
     required this.category,
@@ -62,6 +70,7 @@ class PantryItem {
   });
 
   final String id;
+  final int ingredientId;
   final String ingredientName;
   final String emoji;
   final String category;
@@ -69,7 +78,6 @@ class PantryItem {
   final MeasureUnit unit;
   final DateTime? expiresAt;
 
-  /// Bugünden kaç gün sonra bitiyor (tarih yoksa null)
   int? get daysLeft {
     if (expiresAt == null) return null;
     final now = DateTime.now();
@@ -79,9 +87,11 @@ class PantryItem {
   }
 
   bool get isUrgent => daysLeft != null && daysLeft! <= 3;
+  bool get isExpired => daysLeft != null && daysLeft! < 0;
 
   factory PantryItem.fromJson(Map<String, dynamic> json) => PantryItem(
     id: json['id'] as String,
+    ingredientId: json['ingredientId'] as int,
     ingredientName: json['ingredientName'] as String,
     emoji: json['ingredientEmoji'] as String,
     category: json['category'] as String,

@@ -7,6 +7,9 @@ import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/auth/splash_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/recipes/recipe_detail_screen.dart';
+import '../features/recipes/recipes_screen.dart';
+import 'app_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authStatus = ValueNotifier(ref.read(authControllerProvider));
@@ -40,7 +43,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+
+      // Alt menülü bölüm: her sekme kendi gezinme geçmişini korur
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) => AppShell(navigationShell: shell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/recipes',
+                builder: (context, state) => const RecipesScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // Tarif detayı tam ekran (alt menü olmadan) açılır
+      GoRoute(
+        path: '/recipe/:id',
+        builder: (context, state) =>
+            RecipeDetailScreen(id: int.parse(state.pathParameters['id']!)),
+      ),
     ],
   );
 });
