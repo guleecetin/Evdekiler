@@ -13,4 +13,7 @@
   <Folder Name="/src/Services/Pantry/">
     <Project Path="src/Services/Pantry/Evdekiler.Pantry.Api/Evdekiler.Pantry.Api.csproj" />
   </Folder>
+  <Folder Name="/src/Services/Recipe/">
+    <Project Path="src/Services/Recipe/Evdekiler.Recipe.Api/Evdekiler.Recipe.Api.csproj" />
+  </Folder>
 </Solution>
