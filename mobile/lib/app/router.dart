@@ -9,6 +9,7 @@ import '../features/auth/splash_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/recipes/recipe_detail_screen.dart';
 import '../features/recipes/recipes_screen.dart';
+import '../features/shopping/shopping_screen.dart';
 import 'app_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -61,6 +62,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/recipes',
                 builder: (context, state) => const RecipesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/shopping',
+                builder: (context, state) => const ShoppingScreen(),
               ),
             ],
           ),

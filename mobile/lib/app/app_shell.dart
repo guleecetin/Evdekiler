@@ -12,18 +12,10 @@ class AppShell extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (i) {
-          if (i == 2) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Alışveriş listesi çok yakında 👀')),
-            );
-            return;
-          }
-          navigationShell.goBranch(
-            i,
-            initialLocation: i == navigationShell.currentIndex,
-          );
-        },
+        onDestinationSelected: (i) => navigationShell.goBranch(
+          i,
+          initialLocation: i == navigationShell.currentIndex,
+        ),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.kitchen_outlined),

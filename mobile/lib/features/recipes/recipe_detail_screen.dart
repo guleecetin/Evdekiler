@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../../core/api/api_exception.dart';
 import '../pantry/pantry_models.dart';
 import '../pantry/pantry_repository.dart';
+import '../shopping/shopping_repository.dart';
 import 'recipe_models.dart';
 import 'recipe_repository.dart';
 
@@ -15,8 +18,6 @@ class RecipeDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipe = ref.watch(recipeDetailProvider(id));
-
-    // Evdeki (süresi geçmemiş) malzemelerin Id'leri
     final available = ref
         .watch(pantryItemsProvider)
         .maybeWhen(
@@ -27,13 +28,67 @@ class RecipeDetailScreen extends ConsumerWidget {
           orElse: () => <int>{},
         );
 
+    final missing = recipe.maybeWhen(
+      data: (r) => r.ingredients
+          .where((i) => !i.isOptional && !available.contains(i.ingredientId))
+          .toList(),
+      orElse: () => <RecipeIngredient>[],
+    );
+
     return Scaffold(
       body: recipe.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Tarif yüklenemedi: $e')),
         data: (r) => _RecipeBody(recipe: r, available: available),
       ),
+      bottomNavigationBar: missing.isEmpty
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.tomato,
+                  ),
+                  icon: const Icon(Icons.add_shopping_cart_rounded),
+                  label: Text('Eksikleri listeye ekle (${missing.length})'),
+                  onPressed: () => _addMissing(context, ref, missing),
+                ),
+              ),
+            ),
     );
+  }
+
+  Future<void> _addMissing(
+    BuildContext context,
+    WidgetRef ref,
+    List<RecipeIngredient> missing,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final router = GoRouter.of(context);
+    try {
+      await ref.read(shoppingRepositoryProvider).addItems([
+        for (final i in missing)
+          (
+            ingredientId: i.ingredientId,
+            name: i.name,
+            quantity: i.quantity,
+            unit: i.unit,
+          ),
+      ]);
+      ref.invalidate(shoppingItemsProvider);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('${missing.length} ürün alışveriş listene eklendi 🛒'),
+          action: SnackBarAction(
+            label: 'Listeye git',
+            onPressed: () => router.go('/shopping'),
+          ),
+        ),
+      );
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    }
   }
 }
 
