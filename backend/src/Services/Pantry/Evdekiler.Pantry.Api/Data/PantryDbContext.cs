@@ -31,6 +31,9 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
                 .WithMany()
                 .HasForeignKey(p => p.IngredientId)
                 .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(p => p.SourceShoppingItemId)
+    .IsUnique()
+    .HasFilter("\"SourceShoppingItemId\" IS NOT NULL");
 
             entity.HasIndex(p => new { p.UserId, p.ExpiresAt });
 

@@ -319,6 +319,9 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)");
 
+                    b.Property<Guid?>("SourceShoppingItemId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Unit")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -339,6 +342,10 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IngredientId");
+
+                    b.HasIndex("SourceShoppingItemId")
+                        .IsUnique()
+                        .HasFilter("\"SourceShoppingItemId\" IS NOT NULL");
 
                     b.HasIndex("UserId", "ExpiresAt");
 

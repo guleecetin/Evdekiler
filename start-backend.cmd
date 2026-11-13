@@ -9,5 +9,6 @@ start "Gateway"  cmd /k dotnet run --no-build --project src/Gateway/Evdekiler.Ga
 start "Identity" cmd /k dotnet run --no-build --project src/Services/Identity/Evdekiler.Identity.Api --launch-profile http
 start "Pantry"   cmd /k dotnet run --no-build --project src/Services/Pantry/Evdekiler.Pantry.Api
 start "Recipe"   cmd /k dotnet run --no-build --project src/Services/Recipe/Evdekiler.Recipe.Api
+start "Shopping" cmd /k dotnet run --no-build --project src/Services/Shopping/Evdekiler.Shopping.Api
 
-echo Dort servis baslatildi.
+echo Bes servis baslatildi.

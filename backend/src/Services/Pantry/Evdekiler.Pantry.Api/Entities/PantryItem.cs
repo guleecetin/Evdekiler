@@ -14,6 +14,8 @@ public class PantryItem
 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    // Alışveriş listesinden geldiyse, hangi üründen geldiği (tekrar eklemeyi önlemek için)
+    public Guid? SourceShoppingItemId { get; set; }
 
     public uint Version { get; set; }
 }
