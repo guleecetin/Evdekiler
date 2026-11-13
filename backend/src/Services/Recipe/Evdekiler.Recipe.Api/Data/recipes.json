@@ -1,0 +1,464 @@
+[
+  {
+    "slug": "menemen",
+    "title": "Menemen",
+    "emoji": "🍳",
+    "prepMinutes": 15,
+    "servings": 2,
+    "description": "Domates, biber ve yumurtanın klasik buluşması.",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Biberleri doğrayıp tereyağında 3-4 dakika kavur.",
+      "Doğranmış domatesleri ekle, suyunu çekene kadar pişir.",
+      "Yumurtaları kır, hafifçe karıştır ve kıvamını alınca ocaktan al."
+    ]
+  },
+  {
+    "slug": "mercimek-corbasi",
+    "title": "Mercimek Çorbası",
+    "emoji": "🥣",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Limonla servis edilen, içi ısıtan klasik çorba.",
+    "ingredients": [
+      {
+        "id": 25,
+        "name": "Mercimek",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Soğan ve havucu doğrayıp tereyağında kavur, salçayı ekle.",
+      "Yıkanmış mercimeği ve 1,5 litre sıcak suyu ekle, 25 dakika pişir.",
+      "Blenderdan geçir, limonla servis et."
+    ]
+  },
+  {
+    "slug": "patates-yemegi",
+    "title": "Patates Yemeği",
+    "emoji": "🥔",
+    "prepMinutes": 40,
+    "servings": 4,
+    "description": "Salçalı, sulu, ekmekle yenen ev yemeği.",
+    "ingredients": [
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Soğan ve biberi zeytinyağında kavur, salçayı ekle.",
+      "Küp doğranmış patatesleri ve üzerini geçecek kadar su ekle.",
+      "Patatesler yumuşayana kadar kısık ateşte pişir."
+    ]
+  },
+  {
+    "slug": "kiymali-makarna",
+    "title": "Kıymalı Makarna",
+    "emoji": "🍝",
+    "prepMinutes": 25,
+    "servings": 3,
+    "description": "Domates soslu, doyurucu bir akşam yemeği.",
+    "ingredients": [
+      {
+        "id": 22,
+        "name": "Makarna",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Makarnayı tuzlu suda haşla, süz.",
+      "Soğanı ve kıymayı kavur, salça ve doğranmış domatesi ekle.",
+      "Sosu makarnayla karıştırıp servis et."
+    ]
+  },
+  {
+    "slug": "tavuk-sote",
+    "title": "Tavuk Sote",
+    "emoji": "🍗",
+    "prepMinutes": 30,
+    "servings": 3,
+    "description": "Biberli, domatesli, pratik tavuk.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 400,
+        "unit": "Gram"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Tavukları kuşbaşı doğra, zeytinyağında suyunu salıp çekene kadar pişir.",
+      "Soğan ve biberleri ekle, 5 dakika kavur.",
+      "Domatesleri ekle, 10 dakika pişirip servis et."
+    ]
+  },
+  {
+    "slug": "bulgur-pilavi",
+    "title": "Domatesli Bulgur Pilavı",
+    "emoji": "🍚",
+    "prepMinutes": 25,
+    "servings": 4,
+    "description": "Her yemeğin yanına giden pilav.",
+    "ingredients": [
+      {
+        "id": 23,
+        "name": "Bulgur",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Soğanı tereyağında kavur, salça ve domatesi ekle.",
+      "Bulguru ekleyip karıştır, iki katı sıcak su ekle.",
+      "Kısık ateşte suyunu çekene kadar pişir, 10 dakika demlendir."
+    ]
+  },
+  {
+    "slug": "coban-salatasi",
+    "title": "Çoban Salatası",
+    "emoji": "🥗",
+    "prepMinutes": 10,
+    "servings": 2,
+    "description": "Taze ve hafif, her öğüne uyar.",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 2,
+        "name": "Salatalık",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 20,
+        "unit": "Milliliter",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Domates, salatalık, biber ve soğanı küçük küp doğra.",
+      "Limon suyu ve zeytinyağı ile karıştırıp servis et."
+    ]
+  },
+  {
+    "slug": "ispanakli-yumurta",
+    "title": "Ispanaklı Yumurta",
+    "emoji": "🥬",
+    "prepMinutes": 15,
+    "servings": 2,
+    "description": "Hızlı, sağlıklı bir kahvaltı ya da akşam yemeği.",
+    "ingredients": [
+      {
+        "id": 10,
+        "name": "Ispanak",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 20,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 100,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Soğanı zeytinyağında kavur, doğranmış ıspanağı ekle.",
+      "Ispanak sönünce ortasını açıp yumurtaları kır.",
+      "Yumurtalar pişince yoğurtla servis et."
+    ]
+  },
+  {
+    "slug": "pirinc-pilavi",
+    "title": "Tereyağlı Pirinç Pilavı",
+    "emoji": "🍚",
+    "prepMinutes": 25,
+    "servings": 4,
+    "description": "Tane tane, tereyağı kokulu pilav.",
+    "ingredients": [
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Pirinci ılık suda 20 dakika beklet, süz.",
+      "Tereyağında pirinçleri şeffaflaşana kadar kavur.",
+      "Pirincin 1,5 katı sıcak su ekle, kısık ateşte pişir, demlendir."
+    ]
+  },
+  {
+    "slug": "firinda-patlican-kiyma",
+    "title": "Fırında Patlıcan Kıyma",
+    "emoji": "🍆",
+    "prepMinutes": 50,
+    "servings": 4,
+    "description": "Kıymalı, domatesli fırın yemeği.",
+    "ingredients": [
+      {
+        "id": 9,
+        "name": "Patlıcan",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      }
+    ],
+    "steps": [
+      "Patlıcanları dilimleyip fırında 15 dakika pişir.",
+      "Soğan, biber ve kıymayı kavur, domatesi ekle.",
+      "Patlıcanları tepsiye diz, kıymalı harcı üzerine yay, 20 dakika fırınla."
+    ]
+  }
+]

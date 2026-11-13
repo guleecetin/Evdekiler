@@ -3,6 +3,8 @@
 public class Recipe
 {
     public int Id { get; set; }
+    public string Slug { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Emoji { get; set; } = string.Empty;
@@ -16,11 +18,11 @@ public class Recipe
 public class RecipeIngredient
 {
     public int RecipeId { get; set; }
-    public int IngredientId { get; set; }        // Pantry kataloğundaki Id
-    public string IngredientName { get; set; } = string.Empty; // denormalize kopya
+    public int IngredientId { get; set; }
+    public string IngredientName { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
     public string Unit { get; set; } = string.Empty;
-    public bool IsOptional { get; set; }         // tuz, pul biber gibi
+    public bool IsOptional { get; set; }
 }
 
 public class RecipeStep

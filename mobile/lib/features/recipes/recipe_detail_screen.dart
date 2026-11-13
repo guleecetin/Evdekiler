@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
 import '../../core/api/api_exception.dart';
+import '../../core/widgets/app_image.dart';
 import '../pantry/pantry_models.dart';
 import '../pantry/pantry_repository.dart';
 import '../shopping/shopping_repository.dart';
@@ -11,13 +13,35 @@ import 'recipe_models.dart';
 import 'recipe_repository.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
-  const RecipeDetailScreen({super.key, required this.id});
+  const RecipeDetailScreen({
+    super.key,
+    required this.id,
+    required this.heroTag,
+  });
 
   final int id;
+  final String heroTag;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipe = ref.watch(recipeDetailProvider(id));
+
+    // Fotoğraf adresi: önce zaten yüklü olan öneri listesinden (animasyon için hemen lazım)
+    final imageUrl =
+        ref
+            .watch(recipeSuggestionsProvider)
+            .maybeWhen(
+              data: (list) {
+                for (final s in list) {
+                  if (s.id == id) return s.imageUrl;
+                }
+                return null;
+              },
+              orElse: () => null,
+            ) ??
+        recipe.value?.imageUrl ??
+        '';
+
     final available = ref
         .watch(pantryItemsProvider)
         .maybeWhen(
@@ -27,7 +51,6 @@ class RecipeDetailScreen extends ConsumerWidget {
               .toSet(),
           orElse: () => <int>{},
         );
-
     final missing = recipe.maybeWhen(
       data: (r) => r.ingredients
           .where((i) => !i.isOptional && !available.contains(i.ingredientId))
@@ -35,27 +58,67 @@ class RecipeDetailScreen extends ConsumerWidget {
       orElse: () => <RecipeIngredient>[],
     );
 
-    return Scaffold(
-      body: recipe.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Tarif yüklenemedi: $e')),
-        data: (r) => _RecipeBody(recipe: r, available: available),
-      ),
-      bottomNavigationBar: missing.isEmpty
-          ? null
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.tomato,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 340,
+              pinned: true,
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              leading: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Material(
+                  color: Colors.white,
+                  shape: const CircleBorder(),
+                  elevation: 2,
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: AppColors.ink,
+                      size: 20,
+                    ),
+                    onPressed: () => context.pop(),
                   ),
-                  icon: const Icon(Icons.add_shopping_cart_rounded),
-                  label: Text('Eksikleri listeye ekle (${missing.length})'),
-                  onPressed: () => _addMissing(context, ref, missing),
+                ),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Hero(tag: heroTag, child: AppImage(imageUrl)),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Transform.translate(
+                offset: const Offset(0, -24),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                  child: recipe.when(
+                    loading: () => const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, _) => Text('Tarif yüklenemedi: $e'),
+                    data: (r) => _Content(recipe: r, available: available),
+                  ),
                 ),
               ),
             ),
+          ],
+        ),
+        bottomNavigationBar: missing.isEmpty
+            ? null
+            : _BottomBar(
+                missingCount: missing.length,
+                onPressed: () => _addMissing(context, ref, missing),
+              ),
+      ),
     );
   }
 
@@ -82,6 +145,7 @@ class RecipeDetailScreen extends ConsumerWidget {
           content: Text('${missing.length} ürün alışveriş listene eklendi 🛒'),
           action: SnackBarAction(
             label: 'Listeye git',
+            textColor: Colors.white,
             onPressed: () => router.go('/shopping'),
           ),
         ),
@@ -92,151 +156,60 @@ class RecipeDetailScreen extends ConsumerWidget {
   }
 }
 
-class _RecipeBody extends StatelessWidget {
-  const _RecipeBody({required this.recipe, required this.available});
+class _Content extends StatelessWidget {
+  const _Content({required this.recipe, required this.available});
 
   final RecipeDetail recipe;
   final Set<int> available;
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
     final required = recipe.ingredients.where((i) => !i.isOptional).toList();
-    final haveCount = required
+    final have = required
         .where((i) => available.contains(i.ingredientId))
         .length;
 
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 240,
-          pinned: true,
-          backgroundColor: AppColors.basil,
-          foregroundColor: Colors.white,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Text(
-              recipe.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            background: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.basil, AppColors.basilDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Text(recipe.emoji, style: const TextStyle(fontSize: 96)),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          recipe.title,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.6,
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-          sliver: SliverList.list(
-            children: [
-              Text(
-                recipe.description,
-                style: text.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _InfoChip(
-                    icon: Icons.schedule_rounded,
-                    label: '${recipe.prepMinutes} dk',
-                  ),
-                  _InfoChip(
-                    icon: Icons.people_outline_rounded,
-                    label: '${recipe.servings} kişilik',
-                  ),
-                  _InfoChip(
-                    icon: Icons.kitchen_rounded,
-                    label: '$haveCount/${required.length} malzeme evde',
-                    highlight: haveCount == required.length,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-              Text(
-                'Malzemeler',
-                style: text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: [
-                    for (final i in recipe.ingredients)
-                      _IngredientRow(
-                        ingredient: i,
-                        inPantry: available.contains(i.ingredientId),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
-              Text(
-                'Hazırlanışı',
-                style: text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 12),
-              for (var n = 0; n < recipe.steps.length; n++)
-                _StepRow(number: n + 1, text: recipe.steps[n]),
-            ],
-          ),
+        const SizedBox(height: 6),
+        Text(
+          '${recipe.prepMinutes} dk · ${recipe.servings} kişilik · $have/${required.length} malzeme evde',
+          style: const TextStyle(color: AppColors.muted, fontSize: 15),
         ),
+        const SizedBox(height: 18),
+        Text(
+          recipe.description,
+          style: const TextStyle(fontSize: 16, height: 1.5),
+        ),
+        const Divider(height: 48),
+        const Text(
+          'Malzemeler',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 16),
+        for (final i in recipe.ingredients)
+          _IngredientRow(
+            ingredient: i,
+            inPantry: available.contains(i.ingredientId),
+          ),
+        const Divider(height: 48),
+        const Text(
+          'Hazırlanışı',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 16),
+        for (var n = 0; n < recipe.steps.length; n++)
+          _StepRow(number: n + 1, text: recipe.steps[n]),
       ],
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-    this.highlight = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool highlight;
-
-  @override
-  Widget build(BuildContext context) {
-    final fg = highlight ? Colors.white : AppColors.ink;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: highlight ? AppColors.basil : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: fg),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: fg,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -249,45 +222,49 @@ class _IngredientRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = inPantry
-        ? AppColors.basil
-        : (ingredient.isOptional ? Colors.grey : AppColors.tomato);
+    final status = inPantry
+        ? ('Evde', AppColors.basil)
+        : (ingredient.isOptional
+              ? ('İsteğe bağlı', AppColors.muted)
+              : ('Eksik', AppColors.tomato));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         children: [
-          Icon(
-            inPantry
-                ? Icons.check_circle_rounded
-                : Icons.add_shopping_cart_rounded,
-            color: color,
-            size: 22,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 48,
+              height: 48,
+              child: AppImage(ingredient.imageUrl),
+            ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
-            child: Text.rich(
-              TextSpan(
-                text: ingredient.name,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-                children: [
-                  if (ingredient.isOptional)
-                    const TextSpan(
-                      text: '  isteğe bağlı',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  ingredient.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                Text(
+                  formatQuantity(ingredient.quantity, ingredient.unit),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 13),
+                ),
+              ],
             ),
           ),
           Text(
-            formatQuantity(ingredient.quantity, ingredient.unit),
+            status.$1,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: status.$2,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
             ),
           ),
         ],
@@ -305,7 +282,7 @@ class _StepRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 18),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -313,26 +290,80 @@ class _StepRow extends StatelessWidget {
             width: 30,
             height: 30,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.basil,
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
+              border: Border.all(color: AppColors.ink, width: 1.5),
             ),
             child: Text(
               '$number',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w800),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+              child: Text(
+                text,
+                style: const TextStyle(fontSize: 16, height: 1.5),
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({required this.missingCount, required this.onPressed});
+
+  final int missingCount;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.line)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$missingCount malzeme eksik',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Text(
+                      'Alışveriş listene ekleyebilirsin',
+                      style: TextStyle(color: AppColors.muted, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              FilledButton(
+                onPressed: onPressed,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.tomato,
+                  minimumSize: const Size(0, 50),
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                ),
+                child: const Text('Listeye ekle'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

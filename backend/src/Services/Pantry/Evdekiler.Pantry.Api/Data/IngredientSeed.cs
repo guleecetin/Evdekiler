@@ -9,6 +9,7 @@ public static class IngredientSeed
 
     public static readonly Ingredient[] All =
     [
+        // --- İlk 30 ---
         I(1,  "Domates",       "🍅", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(2,  "Salatalık",     "🥒", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(3,  "Biber",         "🫑", IngredientCategory.Vegetable, MeasureUnit.Piece),
@@ -38,6 +39,38 @@ public static class IngredientSeed
         I(27, "Salça",         "🥫", IngredientCategory.Other,     MeasureUnit.Gram),
         I(28, "Zeytinyağı",    "🫒", IngredientCategory.Other,     MeasureUnit.Milliliter),
         I(29, "Tuz",           "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
-        I(30, "Pul biber",     "🌶️", IngredientCategory.Spice,     MeasureUnit.Gram)
+        I(30, "Pul biber",     "🌶️", IngredientCategory.Spice,     MeasureUnit.Gram),
+
+        // --- Yeni 30 ---
+        I(31, "Maydanoz",      "🌿", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(32, "Dereotu",       "🌿", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(33, "Nane",          "🌿", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(34, "Mantar",        "🍄", IngredientCategory.Vegetable, MeasureUnit.Gram),
+        I(35, "Brokoli",       "🥦", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(36, "Karnabahar",    "🥦", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(37, "Taze fasulye",  "🫛", IngredientCategory.Vegetable, MeasureUnit.Gram),
+        I(38, "Kuru fasulye",  "🫘", IngredientCategory.Legume,    MeasureUnit.Gram),
+        I(39, "Pırasa",        "🥬", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(40, "Bezelye",       "🫛", IngredientCategory.Vegetable, MeasureUnit.Gram),
+        I(41, "Mısır",         "🌽", IngredientCategory.Vegetable, MeasureUnit.Gram),
+        I(42, "Lahana",        "🥬", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(43, "Kırmızı biber", "🫑", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(44, "Sucuk",         "🌭", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(45, "Kuşbaşı et",    "🥩", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(46, "Somon",         "🐟", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(47, "Ton balığı",    "🐟", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(48, "Krema",         "🥛", IngredientCategory.Dairy,     MeasureUnit.Milliliter),
+        I(49, "Ekmek",         "🍞", IngredientCategory.Grain,     MeasureUnit.Piece),
+        I(50, "Lavaş",         "🫓", IngredientCategory.Grain,     MeasureUnit.Piece),
+        I(51, "Tel şehriye",   "🍜", IngredientCategory.Grain,     MeasureUnit.Gram),
+        I(52, "Karabiber",     "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(53, "Kimyon",        "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(54, "Kekik",         "🌿", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(55, "Şeker",         "🍬", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(56, "Bal",           "🍯", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(57, "Ceviz",         "🌰", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(58, "Muz",           "🍌", IngredientCategory.Fruit,     MeasureUnit.Piece),
+        I(59, "Portakal",      "🍊", IngredientCategory.Fruit,     MeasureUnit.Piece),
+        I(60, "Sıvı yağ",      "🫗", IngredientCategory.Other,     MeasureUnit.Milliliter)
     ];
 }

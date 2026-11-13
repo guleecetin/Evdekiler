@@ -5,6 +5,7 @@ class RecipeSuggestion {
     required this.id,
     required this.title,
     required this.emoji,
+    required this.imageUrl,
     required this.prepMinutes,
     required this.servings,
     required this.haveCount,
@@ -16,6 +17,7 @@ class RecipeSuggestion {
   final int id;
   final String title;
   final String emoji;
+  final String imageUrl;
   final int prepMinutes;
   final int servings;
   final int haveCount;
@@ -30,6 +32,7 @@ class RecipeSuggestion {
         id: json['id'] as int,
         title: json['title'] as String,
         emoji: json['emoji'] as String,
+        imageUrl: json['imageUrl'] as String,
         prepMinutes: json['prepMinutes'] as int,
         servings: json['servings'] as int,
         haveCount: json['haveCount'] as int,
@@ -54,6 +57,8 @@ class RecipeIngredient {
   final MeasureUnit unit;
   final bool isOptional;
 
+  String get imageUrl => '/images/ingredients/$ingredientId.jpg';
+
   factory RecipeIngredient.fromJson(Map<String, dynamic> json) =>
       RecipeIngredient(
         ingredientId: json['ingredientId'] as int,
@@ -70,6 +75,7 @@ class RecipeDetail {
     required this.title,
     required this.description,
     required this.emoji,
+    required this.imageUrl,
     required this.prepMinutes,
     required this.servings,
     required this.ingredients,
@@ -80,6 +86,7 @@ class RecipeDetail {
   final String title;
   final String description;
   final String emoji;
+  final String imageUrl;
   final int prepMinutes;
   final int servings;
   final List<RecipeIngredient> ingredients;
@@ -90,6 +97,7 @@ class RecipeDetail {
     title: json['title'] as String,
     description: json['description'] as String,
     emoji: json['emoji'] as String,
+    imageUrl: json['imageUrl'] as String,
     prepMinutes: json['prepMinutes'] as int,
     servings: json['servings'] as int,
     ingredients: (json['ingredients'] as List)

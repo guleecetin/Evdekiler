@@ -38,6 +38,7 @@ class Ingredient {
     required this.id,
     required this.name,
     required this.emoji,
+    required this.imageUrl,
     required this.category,
     required this.defaultUnit,
   });
@@ -45,6 +46,7 @@ class Ingredient {
   final int id;
   final String name;
   final String emoji;
+  final String imageUrl;
   final String category;
   final MeasureUnit defaultUnit;
 
@@ -52,6 +54,7 @@ class Ingredient {
     id: json['id'] as int,
     name: json['name'] as String,
     emoji: json['emoji'] as String,
+    imageUrl: json['imageUrl'] as String,
     category: json['category'] as String,
     defaultUnit: MeasureUnit.fromApi(json['defaultUnit'] as String),
   );
@@ -63,6 +66,7 @@ class PantryItem {
     required this.ingredientId,
     required this.ingredientName,
     required this.emoji,
+    required this.imageUrl,
     required this.category,
     required this.quantity,
     required this.unit,
@@ -73,6 +77,7 @@ class PantryItem {
   final int ingredientId;
   final String ingredientName;
   final String emoji;
+  final String imageUrl;
   final String category;
   final double quantity;
   final MeasureUnit unit;
@@ -94,6 +99,7 @@ class PantryItem {
     ingredientId: json['ingredientId'] as int,
     ingredientName: json['ingredientName'] as String,
     emoji: json['ingredientEmoji'] as String,
+    imageUrl: json['imageUrl'] as String,
     category: json['category'] as String,
     quantity: (json['quantity'] as num).toDouble(),
     unit: MeasureUnit.fromApi(json['unit'] as String),

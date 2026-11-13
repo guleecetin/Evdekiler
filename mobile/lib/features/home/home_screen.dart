@@ -1,13 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
 import '../../core/api/api_exception.dart';
+import '../../core/widgets/app_image.dart';
 import '../auth/auth_controller.dart';
 import '../pantry/add_item_sheet.dart';
 import '../pantry/pantry_models.dart';
 import '../pantry/pantry_repository.dart';
+import '../recipes/recipe_models.dart';
+import '../recipes/recipe_repository.dart';
 
 const _categoryLabel = {
   'Vegetable': 'Sebze',
@@ -20,31 +26,13 @@ const _categoryLabel = {
   'Other': 'Diğer',
 };
 
-const _categoryIcon = {
-  'Vegetable': '🥦',
-  'Fruit': '🍎',
-  'Dairy': '🥛',
-  'Meat': '🍗',
-  'Grain': '🌾',
-  'Legume': '🫘',
-  'Spice': '🧂',
-  'Other': '🫙',
+(String, Color) expiryInfo(int days) => switch (days) {
+  < 0 => ('Süresi geçti', const Color(0xFFC13515)),
+  0 => ('Bugün', AppColors.tomato),
+  1 => ('Yarın', AppColors.tomato),
+  <= 3 => ('$days gün', AppColors.tomato),
+  _ => ('$days gün', AppColors.basil),
 };
-
-(String, Color) _expiryInfo(int days, ColorScheme c) => switch (days) {
-  < 0 => ('Süresi geçti', c.error),
-  0 => ('Bugün bitiyor', AppColors.tomato),
-  1 => ('Yarın bitiyor', AppColors.tomato),
-  <= 3 => ('$days gün kaldı', AppColors.tomato),
-  _ => ('$days gün kaldı', AppColors.basil),
-};
-
-String _formatQuantity(PantryItem item) {
-  final q = item.quantity == item.quantity.roundToDouble()
-      ? item.quantity.toInt().toString()
-      : item.quantity.toString().replaceAll('.', ',');
-  return '$q ${item.unit.label}';
-}
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -54,86 +42,78 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  String? _category; // null = Tümü
+  String? _category;
 
   void _openAddSheet() => showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    backgroundColor: AppColors.cream,
+    backgroundColor: Colors.white,
     builder: (_) => const AddItemSheet(),
   );
 
   @override
   Widget build(BuildContext context) {
+    final name = ref
+        .watch(currentUserProvider)
+        .maybeWhen(
+          data: (p) => p.displayName.split(' ').first,
+          orElse: () => '',
+        );
     final items = ref.watch(pantryItemsProvider);
-    final user = ref.watch(currentUserProvider);
-    final name = user.maybeWhen(
-      data: (p) => p.displayName.split(' ').first,
-      orElse: () => '',
-    );
-    final list = items.maybeWhen(
-      data: (l) => l,
-      orElse: () => const <PantryItem>[],
-    );
+    final suggestions = ref
+        .watch(recipeSuggestionsProvider)
+        .maybeWhen(data: (l) => l, orElse: () => const <RecipeSuggestion>[]);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: _openAddSheet,
-          backgroundColor: AppColors.tomato,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add_rounded, size: 30),
-        ),
-
-        body: RefreshIndicator(
-          onRefresh: () => ref.refresh(pantryItemsProvider.future),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: _Header(
-                  name: name,
-                  total: list.length,
-                  urgent: list.where((i) => i.isUrgent).length,
-                  onLogout: () =>
-                      ref.read(authControllerProvider.notifier).logout(),
+        body: SafeArea(
+          bottom: false,
+          child: RefreshIndicator(
+            onRefresh: () => ref.refresh(pantryItemsProvider.future),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _Header(
+                    name: name,
+                    onLogout: () =>
+                        ref.read(authControllerProvider.notifier).logout(),
+                  ),
                 ),
-              ),
-              ...items.when<List<Widget>>(
-                loading: () => const [
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ],
-                error: (e, _) => [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: _ErrorBox(message: '$e'),
+                SliverToBoxAdapter(child: _AddPill(onTap: _openAddSheet)),
+                ...items.when<List<Widget>>(
+                  loading: () => const [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
                     ),
-                  ),
-                ],
-                data: _buildContent,
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
+                  ],
+                  error: (e, _) => [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text('$e'),
+                      ),
+                    ),
+                  ],
+                  data: (list) => _content(list, suggestions),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildContent(List<PantryItem> list) {
+  List<Widget> _content(
+    List<PantryItem> list,
+    List<RecipeSuggestion> suggestions,
+  ) {
     if (list.isEmpty) {
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: _EmptyFridge(onAdd: _openAddSheet),
-        ),
-      ];
+      return [SliverToBoxAdapter(child: _EmptyFridge(onAdd: _openAddSheet))];
     }
 
     final urgent = list.where((i) => i.isUrgent).toList();
@@ -143,16 +123,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         : list.where((i) => i.category == _category).toList();
 
     return [
+      if (suggestions.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: _SectionHeader(
+            title: 'Bu akşam ne pişirsen?',
+            action: 'Tümü',
+            onAction: () => context.go('/recipes'),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 230,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: min(6, suggestions.length),
+              separatorBuilder: (_, _) => const SizedBox(width: 14),
+              itemBuilder: (_, i) => _RecipeMiniCard(recipe: suggestions[i]),
+            ),
+          ),
+        ),
+      ],
       if (urgent.isNotEmpty) ...[
         const SliverToBoxAdapter(
-          child: _SectionTitle(
+          child: _SectionHeader(
             title: 'Önce bunları kullan',
             subtitle: 'Bozulmadan değerlendir',
           ),
         ),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 180,
+            height: 88,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -164,20 +165,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ],
       SliverToBoxAdapter(
-        child: _SectionTitle(
-          title: 'Buzdolabım',
+        child: _SectionHeader(
+          title: 'Buzdolabında',
           subtitle: '${list.length} ürün',
         ),
       ),
       SliverToBoxAdapter(
-        child: _CategoryFilter(
+        child: _CategoryTabs(
           categories: categories,
           selected: _category,
           onSelected: (c) => setState(() => _category = c),
         ),
       ),
       SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
         sliver: SliverGrid(
           delegate: SliverChildBuilderDelegate(
             (_, i) => _ItemCard(item: filtered[i]),
@@ -185,9 +186,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            mainAxisExtent: 180,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 20,
+            childAspectRatio: 0.78,
           ),
         ),
       ),
@@ -195,131 +196,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-// ─── Başlık alanı ───────────────────────────────────────────
+// ─── Üst kısım ──────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
-  const _Header({
-    required this.name,
-    required this.total,
-    required this.urgent,
-    required this.onLogout,
-  });
+  const _Header({required this.name, required this.onLogout});
 
   final String name;
-  final int total;
-  final int urgent;
   final VoidCallback onLogout;
-
-  String _today() {
-    const days = [
-      'Pazartesi',
-      'Salı',
-      'Çarşamba',
-      'Perşembe',
-      'Cuma',
-      'Cumartesi',
-      'Pazar',
-    ];
-    const months = [
-      'Ocak',
-      'Şubat',
-      'Mart',
-      'Nisan',
-      'Mayıs',
-      'Haziran',
-      'Temmuz',
-      'Ağustos',
-      'Eylül',
-      'Ekim',
-      'Kasım',
-      'Aralık',
-    ];
-    final now = DateTime.now();
-    return '${now.day} ${months[now.month - 1]}, ${days[now.weekday - 1]}';
-  }
 
   @override
   Widget build(BuildContext context) {
-    final top = MediaQuery.of(context).padding.top;
-    final text = Theme.of(context).textTheme;
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(20, top + 12, 20, 28),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.basil, AppColors.basilDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
+      child: Row(
         children: [
-          Positioned(
-            right: -16,
-            top: 24,
-            child: Transform.rotate(
-              angle: 0.35,
-              child: const Opacity(
-                opacity: 0.16,
-                child: Text('🥬', style: TextStyle(fontSize: 120)),
-              ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name.isEmpty ? 'Merhaba 👋' : 'Merhaba $name 👋',
+                  style: const TextStyle(color: AppColors.muted, fontSize: 15),
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'Buzdolabın',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.8,
+                  ),
+                ),
+              ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    _today(),
-                    style: text.bodyMedium?.copyWith(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: onLogout,
-                    tooltip: 'Çıkış yap',
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.white12,
-                    ),
-                    icon: const Icon(
-                      Icons.logout_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                name.isEmpty ? 'Merhaba 👋' : 'Merhaba $name 👋',
-                style: text.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+          PopupMenuButton<String>(
+            onSelected: (_) => onLogout(),
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout_rounded, size: 20),
+                    SizedBox(width: 12),
+                    Text('Çıkış yap'),
+                  ],
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Bu akşam ne pişiriyoruz?',
-                style: text.bodyLarge?.copyWith(color: Colors.white70),
-              ),
-              const SizedBox(height: 22),
-              Row(
-                children: [
-                  _HeaderPill(emoji: '🧺', value: '$total', label: 'ürün evde'),
-                  const SizedBox(width: 12),
-                  _HeaderPill(
-                    emoji: '⏰',
-                    value: '$urgent',
-                    label: 'yakında bitiyor',
-                  ),
-                ],
-              ),
             ],
+            child: CircleAvatar(
+              radius: 22,
+              backgroundColor: AppColors.ink,
+              child: Text(
+                name.isEmpty ? '?' : name[0].toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -327,51 +262,185 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _HeaderPill extends StatelessWidget {
-  const _HeaderPill({
-    required this.emoji,
-    required this.value,
-    required this.label,
-  });
+class _AddPill extends StatelessWidget {
+  const _AddPill({required this.onTap});
 
-  final String emoji;
-  final String value;
-  final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.only(left: 20, right: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+            border: Border.all(color: AppColors.line),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.search_rounded, color: AppColors.ink),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Malzeme ekle',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'Domates, süt, yumurta…',
+                      style: TextStyle(color: AppColors.muted, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: AppColors.basil,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add_rounded, color: Colors.white),
+              ),
+            ],
+          ),
         ),
-        child: Row(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.title,
+    this.subtitle,
+    this.action,
+    this.onAction,
+  });
+
+  final String title;
+  final String? subtitle;
+  final String? action;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 30, 12, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+                if (subtitle != null)
                   Text(
-                    value,
+                    subtitle!,
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
+                      color: AppColors.muted,
+                      fontSize: 14,
                     ),
                   ),
-                  Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                ],
+              ],
+            ),
+          ),
+          if (action != null)
+            TextButton(
+              onPressed: onAction,
+              child: Text(
+                action!,
+                style: const TextStyle(
+                  color: AppColors.ink,
+                  fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.underline,
+                ),
               ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Tarif şeridi ───────────────────────────────────────────
+
+class _RecipeMiniCard extends StatelessWidget {
+  const _RecipeMiniCard({required this.recipe});
+
+  final RecipeSuggestion recipe;
+
+  @override
+  Widget build(BuildContext context) {
+    final tag = 'home-${recipe.id}';
+    return GestureDetector(
+      onTap: () => context.push('/recipe/${recipe.id}?hero=$tag'),
+      child: SizedBox(
+        width: 200,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Hero(
+              tag: tag,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  height: 160,
+                  width: 200,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      AppImage(recipe.imageUrl, fallbackEmoji: recipe.emoji),
+                      if (recipe.isReady)
+                        const Positioned(
+                          top: 10,
+                          left: 10,
+                          child: _Badge('Hemen yapılabilir'),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              recipe.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              recipe.isReady
+                  ? '${recipe.prepMinutes} dk · Malzemeler evde'
+                  : '${recipe.prepMinutes} dk · ${recipe.missing.length} eksik',
+              style: const TextStyle(color: AppColors.muted, fontSize: 13),
             ),
           ],
         ),
@@ -380,37 +449,31 @@ class _HeaderPill extends StatelessWidget {
   }
 }
 
-// ─── Bölümler ───────────────────────────────────────────────
+class _Badge extends StatelessWidget {
+  const _Badge(this.text);
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 26, 20, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          Text(
-            subtitle,
-            style: text.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 6),
         ],
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       ),
     );
   }
 }
+
+// ─── Acil ürünler ───────────────────────────────────────────
 
 class _UrgentCard extends StatelessWidget {
   const _UrgentCard({required this.item});
@@ -419,54 +482,53 @@ class _UrgentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final (label, color) = _expiryInfo(
-      item.daysLeft!,
-      Theme.of(context).colorScheme,
-    );
-
+    final (label, color) = expiryInfo(item.daysLeft!);
     return Container(
-      width: 150,
-      padding: const EdgeInsets.all(16),
+      width: 240,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: categoryTint[item.category] ?? const Color(0xFFE8ECEF),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.line),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 66,
+              height: 66,
+              child: AppImage(item.imageUrl, fallbackEmoji: item.emoji),
             ),
-            child: Text(item.emoji, style: const TextStyle(fontSize: 30)),
           ),
-          const Spacer(),
-          Text(
-            item.ingredientName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          Text(_formatQuantity(item), style: text.bodySmall),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-              ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.ingredientName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+                Text(
+                  formatQuantity(item.quantity, item.unit),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -475,8 +537,10 @@ class _UrgentCard extends StatelessWidget {
   }
 }
 
-class _CategoryFilter extends StatelessWidget {
-  const _CategoryFilter({
+// ─── Kategori sekmeleri ─────────────────────────────────────
+
+class _CategoryTabs extends StatelessWidget {
+  const _CategoryTabs({
     required this.categories,
     required this.selected,
     required this.onSelected,
@@ -488,64 +552,51 @@ class _CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
+    final tabs = <(String?, String)>[
+      (null, 'Tümü'),
+      for (final c in categories) (c, _categoryLabel[c] ?? c),
+    ];
+
+    return Container(
+      height: 42,
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.line)),
+      ),
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
-          _Chip(
-            label: '✨ Tümü',
-            active: selected == null,
-            onTap: () => onSelected(null),
-          ),
-          for (final c in categories)
-            _Chip(
-              label: '${_categoryIcon[c] ?? ''} ${_categoryLabel[c] ?? c}',
-              active: selected == c,
-              onTap: () => onSelected(c),
+          for (final (value, label) in tabs)
+            GestureDetector(
+              onTap: () => onSelected(value),
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: selected == value
+                            ? AppColors.ink
+                            : AppColors.muted,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: 2,
+                      width: selected == value ? 28 : 0,
+                      color: AppColors.ink,
+                    ),
+                  ],
+                ),
+              ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.active, required this.onTap});
-
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? AppColors.basil : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: active
-                  ? AppColors.basil
-                  : Theme.of(context).colorScheme.outlineVariant,
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: active ? Colors.white : AppColors.ink,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -572,138 +623,104 @@ class _ItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final text = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 6, 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: categoryTint[item.category] ?? const Color(0xFFE8ECEF),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(item.emoji, style: const TextStyle(fontSize: 26)),
-              ),
-              const Spacer(),
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_horiz_rounded, size: 20),
-                padding: EdgeInsets.zero,
-                onSelected: (_) => _delete(context, ref),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline_rounded),
-                        SizedBox(width: 12),
-                        Text('Sil'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.ingredientName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: text.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  _formatQuantity(item),
-                  style: text.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _FreshnessBar(daysLeft: item.daysLeft),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FreshnessBar extends StatelessWidget {
-  const _FreshnessBar({required this.daysLeft});
-
-  final int? daysLeft;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
-    if (daysLeft == null) {
-      return Text(
-        'Tarihsiz',
-        style: TextStyle(
-          color: colors.onSurfaceVariant,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      );
-    }
-
-    final (label, color) = _expiryInfo(daysLeft!, colors);
-    final value = daysLeft!.clamp(0, 14) / 14;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
+        AspectRatio(
+          aspectRatio: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AppImage(item.imageUrl, fallbackEmoji: item.emoji),
+              ),
+              if (item.daysLeft != null)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: _ExpiryPill(days: item.daysLeft!),
+                ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Material(
+                  color: Colors.white,
+                  shape: const CircleBorder(),
+                  child: SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.more_horiz_rounded, size: 18),
+                      onSelected: (_) => _delete(context, ref),
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_outline_rounded),
+                              SizedBox(width: 12),
+                              Text('Sil'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: value == 0 ? 0.04 : value,
-            minHeight: 6,
-            backgroundColor: color.withValues(alpha: 0.15),
-            valueColor: AlwaysStoppedAnimation(color),
-          ),
+        const SizedBox(height: 10),
+        Text(
+          item.ingredientName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+        ),
+        Text(
+          formatQuantity(item.quantity, item.unit),
+          style: const TextStyle(color: AppColors.muted, fontSize: 13),
         ),
       ],
     );
   }
 }
 
-// ─── Boş ve hata durumları ──────────────────────────────────
+class _ExpiryPill extends StatelessWidget {
+  const _ExpiryPill({required this.days});
+
+  final int days;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color) = expiryInfo(days);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _EmptyFridge extends StatelessWidget {
   const _EmptyFridge({required this.onAdd});
@@ -712,62 +729,26 @@ class _EmptyFridge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.fromLTRB(32, 60, 32, 0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 140,
-            height: 140,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: const Text('🧊', style: TextStyle(fontSize: 64)),
-          ),
-          const SizedBox(height: 24),
-          Text(
+          const Text('🧊', style: TextStyle(fontSize: 64)),
+          const SizedBox(height: 16),
+          const Text(
             'Buzdolabın bomboş',
-            style: text.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Evdeki malzemelerini ekle,\nsana ne pişireceğini söyleyelim.',
             textAlign: TextAlign.center,
-            style: text.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: TextStyle(color: AppColors.muted),
           ),
           const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('İlk ürünü ekle'),
-          ),
+          FilledButton(onPressed: onAdd, child: const Text('İlk ürünü ekle')),
         ],
       ),
-    );
-  }
-}
-
-class _ErrorBox extends StatelessWidget {
-  const _ErrorBox({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.errorContainer,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(message, style: TextStyle(color: colors.onErrorContainer)),
     );
   }
 }

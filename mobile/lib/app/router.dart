@@ -76,11 +76,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // Tarif detayı tam ekran (alt menü olmadan) açılır
       GoRoute(
         path: '/recipe/:id',
-        builder: (context, state) =>
-            RecipeDetailScreen(id: int.parse(state.pathParameters['id']!)),
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return RecipeDetailScreen(
+            id: id,
+            heroTag: state.uri.queryParameters['hero'] ?? 'recipe-$id',
+          );
+        },
       ),
     ],
   );

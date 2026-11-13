@@ -7,14 +7,15 @@ using Polly.Timeout;
 namespace Evdekiler.Recipe.Api.Endpoints;
 
 public record RecipeSuggestion(
-    int Id, string Title, string Emoji, int PrepMinutes, int Servings,
+    int Id, string Title, string Emoji, string ImageUrl, int PrepMinutes, int Servings,
     int HaveCount, int RequiredCount, int MatchPercent, List<string> Missing);
 
 public record RecipeIngredientResponse(
     int IngredientId, string Name, decimal Quantity, string Unit, bool IsOptional);
 
 public record RecipeDetailResponse(
-    int Id, string Title, string Description, string Emoji, int PrepMinutes, int Servings,
+    int Id, string Title, string Description, string Emoji, string ImageUrl,
+    int PrepMinutes, int Servings,
     List<RecipeIngredientResponse> Ingredients, List<string> Steps);
 
 public static class RecipeEndpoints
@@ -27,11 +28,9 @@ public static class RecipeEndpoints
         group.MapGet("/{id:int}", GetById);
     }
 
-    // GET /api/recipes/suggestions
     private static async Task<IResult> GetSuggestions(
         HttpContext http, PantryClient pantry, RecipeDbContext db, CancellationToken ct)
     {
-        // 1. Kullanıcının elindeki malzemeleri Pantry'den al (token'ı ileterek)
         HashSet<int> have;
         try
         {
@@ -47,7 +46,6 @@ public static class RecipeEndpoints
                 statusCode: StatusCodes.Status503ServiceUnavailable);
         }
 
-        // 2. Tarifleri malzemeleriyle birlikte oku
         var recipes = await db.Recipes
             .AsNoTracking()
             .Select(r => new
@@ -55,6 +53,7 @@ public static class RecipeEndpoints
                 r.Id,
                 r.Title,
                 r.Emoji,
+                r.ImageUrl,
                 r.PrepMinutes,
                 r.Servings,
                 Required = r.Ingredients
@@ -64,7 +63,6 @@ public static class RecipeEndpoints
             })
             .ToListAsync(ct);
 
-        // 3. Her tarif için eşleşmeyi hesapla ve sırala
         var suggestions = recipes
             .Select(r =>
             {
@@ -75,8 +73,8 @@ public static class RecipeEndpoints
                     .ToList();
                 var percent = r.Required.Count == 0 ? 100 : haveCount * 100 / r.Required.Count;
 
-                return new RecipeSuggestion(r.Id, r.Title, r.Emoji, r.PrepMinutes, r.Servings,
-                    haveCount, r.Required.Count, percent, missing);
+                return new RecipeSuggestion(r.Id, r.Title, r.Emoji, r.ImageUrl,
+                    r.PrepMinutes, r.Servings, haveCount, r.Required.Count, percent, missing);
             })
             .Where(s => s.HaveCount > 0)
             .OrderBy(s => s.Missing.Count)
@@ -87,14 +85,15 @@ public static class RecipeEndpoints
         return Results.Ok(suggestions);
     }
 
-    // GET /api/recipes/{id}
     private static async Task<IResult> GetById(int id, RecipeDbContext db, CancellationToken ct)
     {
         var recipe = await db.Recipes
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(r => r.Id == id)
             .Select(r => new RecipeDetailResponse(
-                r.Id, r.Title, r.Description, r.Emoji, r.PrepMinutes, r.Servings,
+                r.Id, r.Title, r.Description, r.Emoji, r.ImageUrl,
+                r.PrepMinutes, r.Servings,
                 r.Ingredients
                     .OrderBy(i => i.IsOptional)
                     .Select(i => new RecipeIngredientResponse(

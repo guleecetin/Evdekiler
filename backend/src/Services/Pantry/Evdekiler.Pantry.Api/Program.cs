@@ -1,16 +1,15 @@
 using System.Text.Json.Serialization;
 using Evdekiler.BuildingBlocks.Auth;
+using Evdekiler.Pantry.Api.Consumers;
 using Evdekiler.Pantry.Api.Data;
 using Evdekiler.Pantry.Api.Endpoints;
-using Microsoft.EntityFrameworkCore;
-using Evdekiler.Pantry.Api.Consumers;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PantryDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PantryDb")));
-
 
 builder.Services.AddMassTransit(x =>
 {
@@ -30,13 +29,15 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddEvdekilerJwtAuth(builder.Configuration);
 
-// Enum'lar JSON'da 0, 1, 2 yerine "Gram", "Piece" gibi yazılsın
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// wwwroot klasöründeki dosyaları (ikonlar) herkese açık sun
+app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {

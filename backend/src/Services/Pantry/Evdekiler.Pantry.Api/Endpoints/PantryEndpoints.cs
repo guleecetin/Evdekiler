@@ -7,10 +7,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Evdekiler.Pantry.Api.Endpoints;
 
 public record IngredientResponse(
-    int Id, string Name, string Emoji, IngredientCategory Category, MeasureUnit DefaultUnit);
+    int Id, string Name, string Emoji, string ImageUrl,
+    IngredientCategory Category, MeasureUnit DefaultUnit);
 
 public record PantryItemResponse(
-    Guid Id, int IngredientId, string IngredientName, string IngredientEmoji,
+    Guid Id, int IngredientId, string IngredientName, string IngredientEmoji, string ImageUrl,
     IngredientCategory Category, decimal Quantity, MeasureUnit Unit,
     DateOnly? ExpiresAt, uint Version);
 
@@ -33,7 +34,6 @@ public static class PantryEndpoints
         group.MapDelete("/items/{id:guid}", DeleteItem);
     }
 
-    // GET /api/pantry/ingredients?search=dom
     private static async Task<IResult> SearchIngredients(
         string? search, PantryDbContext db, CancellationToken ct)
     {
@@ -45,13 +45,14 @@ public static class PantryEndpoints
         var result = await query
             .OrderBy(i => i.Name)
             .Take(20)
-            .Select(i => new IngredientResponse(i.Id, i.Name, i.Emoji, i.Category, i.DefaultUnit))
+            .Select(i => new IngredientResponse(
+                i.Id, i.Name, i.Emoji, "/images/ingredients/" + i.Id + ".jpg",
+                i.Category, i.DefaultUnit))
             .ToListAsync(ct);
 
         return Results.Ok(result);
     }
 
-    // GET /api/pantry/items
     private static async Task<IResult> GetItems(
         ClaimsPrincipal user, PantryDbContext db, CancellationToken ct)
     {
@@ -65,13 +66,13 @@ public static class PantryEndpoints
             .ThenBy(p => p.Ingredient.Name)
             .Select(p => new PantryItemResponse(
                 p.Id, p.IngredientId, p.Ingredient.Name, p.Ingredient.Emoji,
+                "/images/ingredients/" + p.IngredientId + ".jpg",
                 p.Ingredient.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version))
             .ToListAsync(ct);
 
         return Results.Ok(items);
     }
 
-    // POST /api/pantry/items
     private static async Task<IResult> CreateItem(
         CreatePantryItemRequest request, ClaimsPrincipal user,
         PantryDbContext db, CancellationToken ct)
@@ -105,7 +106,6 @@ public static class PantryEndpoints
         return Results.Created($"/api/pantry/items/{item.Id}", ToResponse(item, ingredient));
     }
 
-    // PUT /api/pantry/items/{id}
     private static async Task<IResult> UpdateItem(
         Guid id, UpdatePantryItemRequest request, ClaimsPrincipal user,
         PantryDbContext db, CancellationToken ct)
@@ -121,7 +121,6 @@ public static class PantryEndpoints
         if (item is null)
             return Results.NotFound();
 
-        // Optimistic concurrency: istemcinin gördüğü sürümü EF Core'a bildir
         db.Entry(item).Property(p => p.Version).OriginalValue = request.Version;
 
         item.Quantity = request.Quantity;
@@ -143,7 +142,6 @@ public static class PantryEndpoints
         return Results.Ok(ToResponse(item, item.Ingredient));
     }
 
-    // DELETE /api/pantry/items/{id}
     private static async Task<IResult> DeleteItem(
         Guid id, ClaimsPrincipal user, PantryDbContext db, CancellationToken ct)
     {
@@ -157,7 +155,8 @@ public static class PantryEndpoints
     }
 
     private static PantryItemResponse ToResponse(PantryItem p, Ingredient i) =>
-        new(p.Id, i.Id, i.Name, i.Emoji, i.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version);
+        new(p.Id, i.Id, i.Name, i.Emoji, $"/images/ingredients/{i.Id}.jpg",
+            i.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version);
 
     private static IResult QuantityError() =>
         Results.ValidationProblem(new Dictionary<string, string[]>

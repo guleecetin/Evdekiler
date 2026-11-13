@@ -12,6 +12,9 @@ public class RecipeDbContext(DbContextOptions<RecipeDbContext> options) : DbCont
         modelBuilder.Entity<Entities.Recipe>(entity =>
         {
             entity.HasKey(r => r.Id);
+            entity.Property(r => r.Slug).HasMaxLength(100).IsRequired();
+            entity.HasIndex(r => r.Slug).IsUnique();
+            entity.Property(r => r.ImageUrl).HasMaxLength(200);
             entity.Property(r => r.Title).HasMaxLength(150).IsRequired();
             entity.Property(r => r.Description).HasMaxLength(500);
             entity.Property(r => r.Emoji).HasMaxLength(16);

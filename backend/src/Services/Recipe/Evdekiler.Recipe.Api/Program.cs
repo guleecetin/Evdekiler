@@ -23,6 +23,9 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// wwwroot/images/recipes altındaki fotoğrafları herkese açık sun
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

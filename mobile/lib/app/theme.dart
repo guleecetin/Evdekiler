@@ -6,13 +6,13 @@ class AppColors {
   static const basilDark = Color(0xFF2A5E33);
   static const tomato = Color(0xFFE76F51);
   static const cream = Color(0xFFFAF7F2);
-  static const ink = Color(0xFF1F2A22);
+  static const ink = Color(0xFF222222);
+  static const muted = Color(0xFF717171);
+  static const line = Color(0xFFEBEBEB);
 }
 
 ThemeData buildLightTheme() {
-  // google_fonts'tan sadece yazı tipinin adını alıyoruz (paketler arası tip çakışmasını önler)
   final font = GoogleFonts.plusJakartaSans().fontFamily;
-  // Kullandığımız kalınlıkları da yükle, yoksa kalın yazılar ince görünür
   for (final weight in [
     FontWeight.w500,
     FontWeight.w600,
@@ -26,9 +26,9 @@ ThemeData buildLightTheme() {
     seedColor: AppColors.basil,
     primary: AppColors.basil,
     tertiary: AppColors.tomato,
-    surface: AppColors.cream,
+    surface: Colors.white,
   );
-  final rounded = BorderRadius.circular(16);
+  final rounded = BorderRadius.circular(14);
 
   final base = ThemeData(
     useMaterial3: true,
@@ -37,7 +37,7 @@ ThemeData buildLightTheme() {
   );
 
   return base.copyWith(
-    scaffoldBackgroundColor: AppColors.cream,
+    scaffoldBackgroundColor: Colors.white,
     textTheme: base.textTheme.apply(
       bodyColor: AppColors.ink,
       displayColor: AppColors.ink,
@@ -46,17 +46,14 @@ ThemeData buildLightTheme() {
       filled: true,
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: rounded,
-        borderSide: BorderSide.none,
-      ),
+      border: OutlineInputBorder(borderRadius: rounded),
       enabledBorder: OutlineInputBorder(
         borderRadius: rounded,
-        borderSide: BorderSide(color: scheme.outlineVariant),
+        borderSide: const BorderSide(color: Color(0xFFDDDDDD)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: rounded,
-        borderSide: BorderSide(color: scheme.primary, width: 2),
+        borderSide: const BorderSide(color: AppColors.ink, width: 2),
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
@@ -73,13 +70,29 @@ ThemeData buildLightTheme() {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.white,
       elevation: 0,
-      indicatorColor: scheme.primaryContainer,
-      labelTextStyle: WidgetStatePropertyAll(
-        TextStyle(fontFamily: font, fontSize: 12, fontWeight: FontWeight.w600),
+      indicatorColor: Colors.transparent,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? AppColors.basil
+              : AppColors.muted,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontFamily: font,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.basil
+              : AppColors.muted,
+        ),
       ),
     ),
+    dividerTheme: const DividerThemeData(color: AppColors.line, thickness: 1),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.ink,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
