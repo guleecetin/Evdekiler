@@ -1,7 +1,9 @@
+using Azure.Storage.Blobs;
 using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Recipe.Api.Clients;
 using Evdekiler.Recipe.Api.Data;
 using Evdekiler.Recipe.Api.Endpoints;
+using Evdekiler.Recipe.Api.Storage;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,11 @@ builder.Services
     .AddHttpClient<PantryClient>(client =>
         client.BaseAddress = new Uri(builder.Configuration["Services:PantryUrl"]!))
     .AddStandardResilienceHandler();
+
+// Fotoğraf depolama (Azure Blob Storage / yerelde Azurite)
+builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
+builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["Storage:ConnectionString"]));
+builder.Services.AddSingleton<ImageStorage>();
 
 builder.Services.AddEvdekilerJwtAuth(builder.Configuration);
 builder.Services.AddOpenApi();
@@ -34,5 +41,6 @@ app.UseAuthorization();
 
 app.MapRecipeEndpoints();
 app.MapAdminRecipeEndpoints();
+app.MapAdminRecipeImageEndpoints();
 
 app.Run();

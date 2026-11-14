@@ -29,6 +29,16 @@ services:
     ports:
       - "6379:6379"
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: evdekiler-azurite
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --location /data --skipApiVersionCheck
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite-data:/data
+
 volumes:
   postgres-data:
   rabbitmq-data:
+  azurite-data:
