@@ -15,6 +15,17 @@ public class JwtSettings
     public string SigningKey { get; set; } = string.Empty;
 }
 
+public static class AppRoles
+{
+    public const string Admin = "Admin";
+    public const string User = "User";
+}
+
+public static class AuthPolicies
+{
+    public const string Admin = "Admin";
+}
+
 public static class AuthenticationExtensions
 {
     public static IServiceCollection AddEvdekilerJwtAuth(
@@ -37,11 +48,16 @@ public static class AuthenticationExtensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromSeconds(30)
+                    ClockSkew = TimeSpan.FromSeconds(30),
+                    // Token'daki "role" claim'ini rol olarak tanı
+                    RoleClaimType = "role",
+                    NameClaimType = "name"
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorizationBuilder()
+            .AddPolicy(AuthPolicies.Admin, policy => policy.RequireRole(AppRoles.Admin));
+
         return services;
     }
 

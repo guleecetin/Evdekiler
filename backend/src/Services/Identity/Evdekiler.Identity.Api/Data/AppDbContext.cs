@@ -19,6 +19,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
             entity.Property(u => u.DisplayName).HasMaxLength(100).IsRequired();
             entity.Property(u => u.PasswordHash).IsRequired();
+
+            // Var olan kullanıcılar migration'da otomatik "User" olur
+            entity.Property(u => u.Role).HasMaxLength(20).IsRequired().HasDefaultValue("User");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>

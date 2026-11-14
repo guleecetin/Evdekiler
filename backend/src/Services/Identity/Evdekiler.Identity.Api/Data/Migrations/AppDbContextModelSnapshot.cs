@@ -78,6 +78,13 @@ namespace Evdekiler.Identity.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("User");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")

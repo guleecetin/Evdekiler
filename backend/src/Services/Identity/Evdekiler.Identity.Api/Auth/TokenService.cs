@@ -35,7 +35,8 @@ public class TokenService(IOptions<JwtOptions> options)
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("name", user.DisplayName)
+                new Claim("name", user.DisplayName),
+                new Claim("role", user.Role)
             ]),
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         };
@@ -46,7 +47,6 @@ public class TokenService(IOptions<JwtOptions> options)
 
     public (string RawToken, RefreshToken Entity) CreateRefreshToken(Guid userId)
     {
-        // 64 baytlık kriptografik olarak güvenli rastgele değer
         var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         var now = DateTime.UtcNow;
 
