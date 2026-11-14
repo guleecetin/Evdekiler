@@ -12,7 +12,6 @@ builder.Services.AddDbContext<RecipeDbContext>(options =>
         .UseSeeding((context, _) => RecipeSeed.Seed(context))
         .UseAsyncSeeding((context, _, ct) => RecipeSeed.SeedAsync(context, ct)));
 
-// Pantry'ye giden HTTP istemcisi: timeout + retry + circuit breaker
 builder.Services
     .AddHttpClient<PantryClient>(client =>
         client.BaseAddress = new Uri(builder.Configuration["Services:PantryUrl"]!))
@@ -23,7 +22,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// wwwroot/images/recipes altındaki fotoğrafları herkese açık sun
 app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
@@ -35,5 +33,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRecipeEndpoints();
+app.MapAdminRecipeEndpoints();
 
 app.Run();
