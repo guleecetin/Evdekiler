@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getMe, logout, type Me } from "@/lib/api";
-import { deleteRecipe, listRecipes, mediaUrl, type RecipeListItem } from "@/lib/recipes";
+import RecipeImage from "@/components/RecipeImage";
+import { logout } from "@/lib/api";
+import { deleteRecipe, listRecipes, type RecipeListItem } from "@/lib/recipes";
+import { useAdmin } from "@/lib/useAdmin";
 
 const PAGE_SIZE = 12;
 
 export default function HomePage() {
   const router = useRouter();
-  const [me, setMe] = useState<Me | null>(null);
+  const me = useAdmin();
   const [items, setItems] = useState<RecipeListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -17,17 +20,6 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Giriş yapılmış mı ve admin mi?
-  useEffect(() => {
-    getMe()
-      .then((user) => {
-        if (user.role !== "Admin") throw new Error("Yetkisiz");
-        setMe(user);
-      })
-      .catch(() => router.replace("/login"));
-  }, [router]);
-
-  // Arama kutusu: her tuşta değil, yazmayı bıraktıktan 300 ms sonra ara
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearch(searchInput.trim());
@@ -47,12 +39,13 @@ export default function HomePage() {
     }
   }, [page, search]);
 
-  // Sayfa ya da arama değişince listeyi yeniden çek
   useEffect(() => {
     if (me) load();
   }, [me, load]);
 
-  async function handleDelete(recipe: RecipeListItem) {
+  async function handleDelete(e: React.MouseEvent, recipe: RecipeListItem) {
+    e.preventDefault();
+    e.stopPropagation();
     if (!confirm(`"${recipe.title}" silinsin mi? Bu işlem geri alınamaz.`)) return;
     try {
       await deleteRecipe(recipe.id);
@@ -62,9 +55,7 @@ export default function HomePage() {
     }
   }
 
-  if (!me) {
-    return <main className="p-10 text-muted">Yükleniyor…</main>;
-  }
+  if (!me) return <main className="p-10 text-muted">Yükleniyor…</main>;
 
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -75,15 +66,23 @@ export default function HomePage() {
           <p className="text-muted">Merhaba {me.displayName.split(" ")[0]} 👋</p>
           <h1 className="text-3xl font-extrabold tracking-tight">Tarifler</h1>
         </div>
-        <button
-          onClick={async () => {
-            await logout();
-            router.replace("/login");
-          }}
-          className="rounded-xl border border-ink px-5 py-2.5 font-bold transition hover:bg-neutral-100"
-        >
-          Çıkış yap
-        </button>
+        <div className="flex gap-3">
+          <Link
+            href="/recipes/new"
+            className="rounded-xl bg-basil px-5 py-2.5 font-bold text-white transition hover:bg-basil-dark"
+          >
+            + Yeni tarif
+          </Link>
+          <button
+            onClick={async () => {
+              await logout();
+              router.replace("/login");
+            }}
+            className="rounded-xl border border-ink px-5 py-2.5 font-bold transition hover:bg-neutral-100"
+          >
+            Çıkış yap
+          </button>
+        </div>
       </header>
 
       <div className="mt-8 flex items-center gap-4">
@@ -97,23 +96,20 @@ export default function HomePage() {
       </div>
 
       {error && (
-        <p className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-          {error}
-        </p>
+        <p className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</p>
       )}
 
       <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((recipe) => (
-          <article key={recipe.id} className="group">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-cream">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={mediaUrl(recipe.imageUrl)}
+          <Link key={recipe.id} href={`/recipes/${recipe.id}`} className="group">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <RecipeImage
+                path={recipe.imageUrl}
                 alt={recipe.title}
-                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                className="transition duration-300 group-hover:scale-105"
               />
               <button
-                onClick={() => handleDelete(recipe)}
+                onClick={(e) => handleDelete(e, recipe)}
                 className="absolute right-3 top-3 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-red-600 opacity-0 shadow transition group-hover:opacity-100"
               >
                 Sil
@@ -123,13 +119,11 @@ export default function HomePage() {
             <p className="text-sm text-muted">
               {recipe.prepMinutes} dk · {recipe.ingredientCount} malzeme
             </p>
-          </article>
+          </Link>
         ))}
       </div>
 
-      {items.length === 0 && !error && (
-        <p className="mt-16 text-center text-muted">Tarif bulunamadı.</p>
-      )}
+      {items.length === 0 && !error && <p className="mt-16 text-center text-muted">Tarif bulunamadı.</p>}
 
       {pageCount > 1 && (
         <div className="mt-12 flex items-center justify-center gap-4">
