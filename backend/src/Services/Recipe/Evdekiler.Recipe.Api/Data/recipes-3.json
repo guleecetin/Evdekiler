@@ -1,0 +1,698 @@
+[
+  {
+    "slug": "hunkar-begendi",
+    "title": "Hünkâr Beğendi",
+    "emoji": "🍲",
+    "prepMinutes": 90,
+    "servings": 4,
+    "description": "Osmanlı saray mutfağından günümüze uzanan, közlenmiş patlıcanlı beğendi yatağında sunulan yumuşacık bir et yemeği. Özel günlerin ve misafir sofralarının en zarif tabaklarından biridir.",
+    "ingredients": [
+      {
+        "id": 45,
+        "name": "Kuşbaşı et",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 9,
+        "name": "Patlıcan",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 16,
+        "name": "Kaşar peyniri",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Kuşbaşı etleri tencerede kendi suyunu salıp çekene kadar orta ateşte kavurun, ardından ince doğranmış soğanı ve tereyağının yarısını ekleyin.",
+      "Salçayı ve rendelenmiş domatesleri ilave edin; etlerin üzerini geçecek kadar sıcak su ekleyip kapağı kapalı, kısık ateşte etler iyice yumuşayana kadar yaklaşık 1 saat pişirin.",
+      "Bu sırada patlıcanları ocakta ya da fırında közleyin, kabuklarını soyup bıçakla ince ince doğrayın.",
+      "Ayrı bir tencerede kalan tereyağını eritip unu kokusu çıkana kadar kavurun; sütü azar azar ekleyerek topaklanmadan karıştırın.",
+      "Koyulaşan sosa patlıcanları ve rendelenmiş kaşarı ekleyip pürüzsüz bir beğendi elde edin. Servis tabağına beğendiyi yayın, ortasına sıcak eti alarak sunun."
+    ]
+  },
+  {
+    "slug": "izmir-kofte",
+    "title": "İzmir Köfte",
+    "emoji": "🍅",
+    "prepMinutes": 60,
+    "servings": 4,
+    "description": "Fırında patates, biber ve domatesle birlikte pişen, sosu ekmeğe banmalık nefis bir ev klasiği. Hazırlaması kolay, sofraya geldiğinde herkesi memnun eden bir yemektir.",
+    "ingredients": [
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 49,
+        "name": "Ekmek",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 53,
+        "name": "Kimyon",
+        "quantity": 5,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 60,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Bayat ekmeğin içini ıslatıp suyunu sıkın; rendelenmiş soğan, yumurta, kimyon ve tuzla birlikte kıymaya ekleyip en az 5 dakika yoğurun.",
+      "Harçtan parmak büyüklüğünde köfteler hazırlayın ve az yağlı bir tavada her iki yüzünü hafifçe kızartın.",
+      "Patatesleri elma dilim şeklinde doğrayıp yağda hafifçe kızartın ya da fırında yarı pişirin.",
+      "Fırın kabına köfte, patates, biber ve domates dilimlerini sırayla dizin.",
+      "Salçayı iki su bardağı sıcak suyla açıp üzerine gezdirin ve önceden ısıtılmış 200°C fırında yaklaşık 30 dakika, patatesler yumuşayana kadar pişirin."
+    ]
+  },
+  {
+    "slug": "musakka",
+    "title": "Patlıcan Musakka",
+    "emoji": "🍆",
+    "prepMinutes": 70,
+    "servings": 4,
+    "description": "Kızartılmış patlıcan dilimlerinin kıymalı harçla buluştuğu, fırında ağır ağır pişen doyurucu bir yemek. Yanında bir kâse yoğurt ve tereyağlı pilavla harika bir öğün olur.",
+    "ingredients": [
+      {
+        "id": 9,
+        "name": "Patlıcan",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 2,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patlıcanları alacalı soyup halka şeklinde doğrayın; tuzlu suda 20 dakika bekleterek acısını alın ve iyice kurulayın.",
+      "Patlıcanları kızgın yağda iki yüzü de altın rengi olana kadar kızartın, kâğıt havlu üzerinde fazla yağını alın.",
+      "Soğanı kavurup kıymayı ekleyin; suyunu çekince doğranmış biber, domates ve salçayı ilave ederek 10 dakika pişirin.",
+      "Fırın kabına patlıcanları dizin, kıymalı harcı üzerine yayın ve bir su bardağı sıcak su ekleyin.",
+      "180°C fırında yaklaşık 25 dakika pişirin; biraz dinlendirdikten sonra servis edin."
+    ]
+  },
+  {
+    "slug": "etli-nohut",
+    "title": "Etli Nohut",
+    "emoji": "🫘",
+    "prepMinutes": 100,
+    "servings": 4,
+    "description": "Bir gece önceden ıslatılan nohutların kuşbaşı etle birlikte ağır ağır piştiği, bol sulu ve besleyici bir yemek. Tereyağlı pirinç pilavı ve turşuyla geleneksel bir ikili oluşturur.",
+    "ingredients": [
+      {
+        "id": 26,
+        "name": "Nohut",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 45,
+        "name": "Kuşbaşı et",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Nohutları bir gece önceden bol suda ıslatın; ertesi gün süzüp 15 dakika ön haşlama yapın.",
+      "Kuşbaşı etleri tencerede suyunu salıp çekene kadar kavurun, ardından soğanı ve tereyağını ekleyin.",
+      "Salçayı ekleyip birkaç dakika kavurun; nohutları ve üzerini iki parmak geçecek kadar sıcak suyu ilave edin.",
+      "Kapağı kapalı, kısık ateşte nohutlar ve et iyice yumuşayana kadar yaklaşık 1 saat pişirin.",
+      "Dilerseniz servis etmeden önce tereyağında kızdırdığınız pul biberi üzerine gezdirin."
+    ]
+  },
+  {
+    "slug": "tas-kebabi",
+    "title": "Tas Kebabı",
+    "emoji": "🥩",
+    "prepMinutes": 90,
+    "servings": 4,
+    "description": "Yumuşacık pişmiş kuşbaşı etin domatesli ve biberli sosuyla buluştuğu, Türk mutfağının en sevilen et yemeklerinden biri. Pilav ya da patates püresiyle sunulduğunda tam bir ziyafete dönüşür.",
+    "ingredients": [
+      {
+        "id": 45,
+        "name": "Kuşbaşı et",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 54,
+        "name": "Kekik",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Kuşbaşı etleri geniş bir tencerede, kendi suyunu salıp tamamen çekene kadar yüksek ateşte kavurun.",
+      "Tereyağını ve yemeklik doğranmış soğanları ekleyip soğanlar pembeleşene kadar kavurmaya devam edin.",
+      "Salçayı ekleyip kokusu çıkana kadar karıştırın; ardından küp doğranmış domates ve biberleri ilave edin.",
+      "Etlerin üzerini geçecek kadar sıcak su ekleyin, kapağı kapalı ve kısık ateşte etler lokum gibi olana kadar yaklaşık 1 saat pişirin.",
+      "Kekik ve karabiberle tatlandırıp sıcak olarak servis edin."
+    ]
+  },
+  {
+    "slug": "orman-kebabi",
+    "title": "Orman Kebabı",
+    "emoji": "🥕",
+    "prepMinutes": 80,
+    "servings": 4,
+    "description": "Kuşbaşı etin patates, havuç ve bezelyeyle tek tencerede piştiği, renkli ve doyurucu bir yemek. Sebzelerin tadı ete, etin lezzeti sebzelere geçerek uyumlu bir bütün oluşturur.",
+    "ingredients": [
+      {
+        "id": 45,
+        "name": "Kuşbaşı et",
+        "quantity": 400,
+        "unit": "Gram"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 40,
+        "name": "Bezelye",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 54,
+        "name": "Kekik",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Etleri tencerede suyunu salıp çekene kadar kavurun, tereyağı ve soğanı ekleyip birkaç dakika daha çevirin.",
+      "Salça ve rendelenmiş domatesi ekleyin; üzerini geçecek kadar sıcak su ilave edip etler yarı yumuşayana kadar 40 dakika pişirin.",
+      "Küp doğradığınız patates ve havuçları, ardından bezelyeleri tencereye ekleyin.",
+      "Gerekirse biraz daha sıcak su ekleyip sebzeler yumuşayana kadar yaklaşık 25 dakika daha pişirin.",
+      "Kekikle tatlandırıp 10 dakika dinlendirdikten sonra servis edin."
+    ]
+  },
+  {
+    "slug": "etli-bezelye",
+    "title": "Etli Bezelye",
+    "emoji": "🫛",
+    "prepMinutes": 60,
+    "servings": 4,
+    "description": "Bezelyenin kuşbaşı et ve havuçla pişirildiği, hafif ve lezzetli bir tencere yemeği. Özellikle bahar aylarında taze bezelyeyle hazırlandığında sofraların vazgeçilmezi olur.",
+    "ingredients": [
+      {
+        "id": 40,
+        "name": "Bezelye",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 45,
+        "name": "Kuşbaşı et",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.25,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 32,
+        "name": "Dereotu",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Kuşbaşı etleri suyunu salıp çekene kadar kavurun; tereyağı ve doğranmış soğanı ekleyip pembeleşene kadar pişirin.",
+      "Salçayı ekleyin, üzerini geçecek kadar sıcak su ilave edip etleri 30 dakika haşlayın.",
+      "Küp doğranmış havuç ve patatesleri, ardından bezelyeleri ekleyin.",
+      "Sebzeler yumuşayana kadar yaklaşık 20 dakika daha pişirin; dilerseniz ince kıyılmış dereotuyla servis edin."
+    ]
+  },
+  {
+    "slug": "kiymali-ispanak",
+    "title": "Kıymalı Ispanak",
+    "emoji": "🥬",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Bol yeşillikli ıspanağın kıyma ve bir avuç pirinçle buluştuğu, hem hafif hem de besleyici bir ev yemeği. Üzerine sarımsaklı yoğurt eklendiğinde lezzeti bir kat daha artar.",
+    "ingredients": [
+      {
+        "id": 10,
+        "name": "Ispanak",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 150,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Ispanakları bol suyla birkaç kez yıkayıp kumundan arındırın ve iri iri doğrayın.",
+      "Soğanı yağda kavurun, kıymayı ekleyip suyunu çekene kadar pişirin, ardından salçayı ilave edin.",
+      "Ispanakları ve yıkanmış pirinci ekleyin; ıspanaklar söndükten sonra yarım su bardağı sıcak su ilave edin.",
+      "Kapağı kapalı, kısık ateşte pirinçler yumuşayana kadar yaklaşık 15 dakika pişirin; sarımsaklı yoğurtla servis edin."
+    ]
+  },
+  {
+    "slug": "kiymali-pirasa",
+    "title": "Kıymalı Pırasa",
+    "emoji": "🥬",
+    "prepMinutes": 45,
+    "servings": 4,
+    "description": "Pırasanın kendine özgü tatlı aromasının kıymayla dengelendiği, kış sofralarının sıcak ve hafif yemeklerinden biri. Servis ederken üzerine limon sıkmanızı öneririz.",
+    "ingredients": [
+      {
+        "id": 39,
+        "name": "Pırasa",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Pırasaları ikiye yarıp aralarındaki toprağı iyice yıkayın ve 2 santimlik parçalar halinde doğrayın.",
+      "Soğanı yağda kavurun, kıymayı ekleyip suyunu çekene kadar pişirin ve salçayı ilave edin.",
+      "Pırasaları ve halka doğranmış havucu ekleyip birkaç dakika çevirin, ardından yıkanmış pirinci ilave edin.",
+      "Bir su bardağı sıcak su ekleyip kapağı kapalı ve kısık ateşte pırasalar yumuşayana kadar yaklaşık 25 dakika pişirin."
+    ]
+  },
+  {
+    "slug": "firinda-sebzeli-tavuk",
+    "title": "Fırında Sebzeli Tavuk",
+    "emoji": "🍗",
+    "prepMinutes": 55,
+    "servings": 4,
+    "description": "Tavuk etlerinin patates, havuç ve biberlerle aynı tepside piştiği, hazırlaması zahmetsiz ama sunumu iddialı bir fırın yemeği. Kalabalık sofralar için de kolayca çoğaltılabilir.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 43,
+        "name": "Kırmızı biber",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 40,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 54,
+        "name": "Kekik",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tavukları iri kuşbaşı doğrayın; zeytinyağı, salça, kekik ve karabiberle karıştırıp en az 15 dakika marine edin.",
+      "Patates ve havuçları iri küpler halinde, biberleri ise iri parçalar halinde doğrayın.",
+      "Sebzeleri ve tavukları fırın tepsisine yayın, yarım su bardağı sıcak su gezdirin.",
+      "Üzerini folyoyla kapatıp 200°C fırında 30 dakika, ardından folyoyu açıp üzeri kızarana kadar 15 dakika daha pişirin."
+    ]
+  }
+]

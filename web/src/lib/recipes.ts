@@ -2,6 +2,23 @@ import { api } from "./api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
+// Backend'deki RecipeCategory enum'unun karşılığı
+export const CATEGORIES = [
+  { value: "MainCourse", label: "Ana yemek", emoji: "🍲" },
+  { value: "Soup", label: "Çorba", emoji: "🥣" },
+  { value: "Salad", label: "Salata", emoji: "🥗" },
+  { value: "Breakfast", label: "Kahvaltılık", emoji: "🍳" },
+  { value: "Pastry", label: "Hamur işi", emoji: "🥐" },
+  { value: "Dessert", label: "Tatlı", emoji: "🍰" },
+  { value: "Snack", label: "Atıştırmalık", emoji: "🥨" },
+] as const;
+
+export type RecipeCategory = (typeof CATEGORIES)[number]["value"];
+
+export function categoryLabel(value: string): string {
+  return CATEGORIES.find((c) => c.value === value)?.label ?? value;
+}
+
 export const UNITS = [
   { value: "Piece", label: "adet" },
   { value: "Gram", label: "g" },
@@ -15,6 +32,7 @@ export type RecipeListItem = {
   slug: string;
   title: string;
   imageUrl: string;
+  category: RecipeCategory;
   prepMinutes: number;
   ingredientCount: number;
 };
@@ -41,6 +59,7 @@ export type RecipeInput = {
   title: string;
   description: string;
   emoji: string;
+  category: RecipeCategory;
   prepMinutes: number;
   servings: number;
   ingredients: RecipeIngredientInput[];
@@ -53,9 +72,10 @@ export function mediaUrl(path: string): string {
   return `${API_URL}${path}`;
 }
 
-export function listRecipes(page: number, pageSize: number, search: string) {
+export function listRecipes(page: number, pageSize: number, search: string, category: string | null) {
   const query = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (search) query.set("search", search);
+  if (category) query.set("category", category);
   return api<Paged<RecipeListItem>>(`/api/admin/recipes?${query}`);
 }
 
@@ -67,6 +87,7 @@ export async function getRecipe(id: number): Promise<RecipeForEdit> {
     title: r.title,
     description: r.description,
     emoji: r.emoji,
+    category: r.category,
     prepMinutes: r.prepMinutes,
     servings: r.servings,
     ingredients: r.ingredients.map((i) => ({
@@ -96,7 +117,6 @@ export function searchIngredients(query: string) {
   return api<IngredientOption[]>(`/api/pantry/ingredients?search=${encodeURIComponent(query)}`);
 }
 
-// Fotoğrafı multipart/form-data olarak gönderir (alan adı backend'deki gibi: "file")
 export function uploadRecipeImage(id: number, file: File) {
   const form = new FormData();
   form.append("file", file);

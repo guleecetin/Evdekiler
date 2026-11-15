@@ -8,13 +8,13 @@ internal record SeedIngredient(int Id, string Name, decimal Quantity, string Uni
 
 internal record SeedRecipe(
     string Slug, string Title, string Emoji, string Description,
-    int PrepMinutes, int Servings, List<SeedIngredient> Ingredients, List<string> Steps);
+    int PrepMinutes, int Servings, List<SeedIngredient> Ingredients, List<string> Steps,
+    string? Category = null);
 
 public static class RecipeSeed
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-    // Data klasöründeki bütün recipes*.json dosyalarını okur
     private static List<SeedRecipe> Load()
     {
         var dir = Path.Combine(AppContext.BaseDirectory, "Data");
@@ -24,7 +24,6 @@ public static class RecipeSeed
             .ToList();
     }
 
-    // dotnet ef database update çalışınca çağrılır
     public static void Seed(DbContext context)
     {
         var db = (RecipeDbContext)context;
@@ -36,7 +35,6 @@ public static class RecipeSeed
         db.SaveChanges();
     }
 
-    // Kodda Migrate/MigrateAsync çağrılırsa bu kullanılır
     public static async Task SeedAsync(DbContext context, CancellationToken ct)
     {
         var db = (RecipeDbContext)context;
@@ -54,6 +52,9 @@ public static class RecipeSeed
         Title = s.Title,
         Emoji = s.Emoji,
         Description = s.Description,
+        Category = Enum.TryParse<RecipeCategory>(s.Category, ignoreCase: true, out var c)
+            ? c
+            : RecipeCategory.MainCourse,
         PrepMinutes = s.PrepMinutes,
         Servings = s.Servings,
         ImageUrl = $"/images/recipes/{s.Slug}.jpg",

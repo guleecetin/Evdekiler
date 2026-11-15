@@ -11,11 +11,12 @@ public record UpsertIngredient(
     int IngredientId, string Name, decimal Quantity, string Unit, bool IsOptional);
 
 public record UpsertRecipeRequest(
-    string Title, string Description, string Emoji, int PrepMinutes, int Servings,
-    List<UpsertIngredient> Ingredients, List<string> Steps);
+    string Title, string Description, string Emoji, RecipeCategory Category,
+    int PrepMinutes, int Servings, List<UpsertIngredient> Ingredients, List<string> Steps);
 
 public record AdminRecipeListItem(
-    int Id, string Slug, string Title, string ImageUrl, int PrepMinutes, int IngredientCount);
+    int Id, string Slug, string Title, string ImageUrl, RecipeCategory Category,
+    int PrepMinutes, int IngredientCount);
 
 public record PagedResult<T>(List<T> Items, int Page, int PageSize, int TotalCount);
 
@@ -26,7 +27,6 @@ public static class AdminRecipeEndpoints
 
     public static void MapAdminRecipeEndpoints(this IEndpointRouteBuilder app)
     {
-        // Bu gruptaki HER uç sadece Admin rolüne açık
         var group = app.MapGroup("/api/admin/recipes").RequireAuthorization(AuthPolicies.Admin);
 
         group.MapGet("/", GetPaged);
@@ -35,9 +35,10 @@ public static class AdminRecipeEndpoints
         group.MapDelete("/{id:int}", Delete);
     }
 
-    // GET /api/admin/recipes?page=1&pageSize=20&search=men
+    // GET /api/admin/recipes?page=1&pageSize=20&search=men&category=Soup
     private static async Task<IResult> GetPaged(
-        int? page, int? pageSize, string? search, RecipeDbContext db, CancellationToken ct)
+        int? page, int? pageSize, string? search, string? category,
+        RecipeDbContext db, CancellationToken ct)
     {
         var currentPage = Math.Max(1, page ?? 1);
         var size = Math.Clamp(pageSize ?? 20, 1, 100);
@@ -45,6 +46,8 @@ public static class AdminRecipeEndpoints
         var query = db.Recipes.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(r => EF.Functions.ILike(r.Title, $"%{search.Trim()}%"));
+        if (Enum.TryParse<RecipeCategory>(category, ignoreCase: true, out var cat))
+            query = query.Where(r => r.Category == cat);
 
         var total = await query.CountAsync(ct);
 
@@ -53,13 +56,12 @@ public static class AdminRecipeEndpoints
             .Skip((currentPage - 1) * size)
             .Take(size)
             .Select(r => new AdminRecipeListItem(
-                r.Id, r.Slug, r.Title, r.ImageUrl, r.PrepMinutes, r.Ingredients.Count))
+                r.Id, r.Slug, r.Title, r.ImageUrl, r.Category, r.PrepMinutes, r.Ingredients.Count))
             .ToListAsync(ct);
 
         return Results.Ok(new PagedResult<AdminRecipeListItem>(items, currentPage, size, total));
     }
 
-    // POST /api/admin/recipes
     private static async Task<IResult> Create(
         UpsertRecipeRequest request, RecipeDbContext db, CancellationToken ct)
     {
@@ -76,6 +78,7 @@ public static class AdminRecipeEndpoints
             Title = request.Title.Trim(),
             Description = request.Description?.Trim() ?? "",
             Emoji = string.IsNullOrWhiteSpace(request.Emoji) ? "🍽️" : request.Emoji,
+            Category = request.Category,
             PrepMinutes = request.PrepMinutes,
             Servings = request.Servings,
             ImageUrl = $"/images/recipes/{slug}.jpg",
@@ -97,31 +100,27 @@ public static class AdminRecipeEndpoints
         return Results.Created($"/api/recipes/{recipe.Id}", new { recipe.Id, recipe.Slug });
     }
 
-    // PUT /api/admin/recipes/{id}
     private static async Task<IResult> Update(
         int id, UpsertRecipeRequest request, RecipeDbContext db, CancellationToken ct)
     {
         var errors = Validate(request);
         if (errors.Count > 0) return Results.ValidationProblem(errors);
 
-        // Üç işlem birden: ya hepsi olur ya hiçbiri
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
         var recipe = await db.Recipes.SingleOrDefaultAsync(r => r.Id == id, ct);
         if (recipe is null) return Results.NotFound();
 
-        // 1. Eski malzeme ve adımları sil
         await db.Set<RecipeIngredient>().Where(i => i.RecipeId == id).ExecuteDeleteAsync(ct);
         await db.Set<RecipeStep>().Where(s => s.RecipeId == id).ExecuteDeleteAsync(ct);
 
-        // 2. Tarifin alanlarını güncelle (Slug bilerek DEĞİŞMİYOR)
         recipe.Title = request.Title.Trim();
         recipe.Description = request.Description?.Trim() ?? "";
         recipe.Emoji = string.IsNullOrWhiteSpace(request.Emoji) ? recipe.Emoji : request.Emoji;
+        recipe.Category = request.Category;
         recipe.PrepMinutes = request.PrepMinutes;
         recipe.Servings = request.Servings;
 
-        // 3. Yeni malzeme ve adımları ekle
         db.AddRange(request.Ingredients.Select(i =>
         {
             var entity = ToIngredient(i);
@@ -140,15 +139,11 @@ public static class AdminRecipeEndpoints
         return Results.NoContent();
     }
 
-    // DELETE /api/admin/recipes/{id}
     private static async Task<IResult> Delete(int id, RecipeDbContext db, CancellationToken ct)
     {
-        // Malzeme ve adımlar cascade delete ile birlikte silinir
         var deleted = await db.Recipes.Where(r => r.Id == id).ExecuteDeleteAsync(ct);
         return deleted == 0 ? Results.NotFound() : Results.NoContent();
     }
-
-    // ─── Yardımcılar ────────────────────────────────────────
 
     private static Dictionary<string, string[]> Validate(UpsertRecipeRequest r)
     {
@@ -158,6 +153,8 @@ public static class AdminRecipeEndpoints
             errors["title"] = ["Başlık 3-150 karakter olmalı."];
         if (r.Description is { Length: > 500 })
             errors["description"] = ["Açıklama en fazla 500 karakter olabilir."];
+        if (!Enum.IsDefined(r.Category))
+            errors["category"] = ["Geçersiz kategori."];
         if (r.PrepMinutes is < 1 or > 600)
             errors["prepMinutes"] = ["Süre 1-600 dakika arasında olmalı."];
         if (r.Servings is < 1 or > 50)
@@ -192,7 +189,6 @@ public static class AdminRecipeEndpoints
     private static List<RecipeStep> ToSteps(List<string> steps) =>
         steps.Select((text, index) => new RecipeStep { Order = index + 1, Text = text.Trim() }).ToList();
 
-    // "Fırında Mantarlı Tavuk" -> "firinda-mantarli-tavuk"
     private static string Slugify(string title)
     {
         var text = title.Trim().Replace('İ', 'i').Replace('I', 'i').ToLowerInvariant();

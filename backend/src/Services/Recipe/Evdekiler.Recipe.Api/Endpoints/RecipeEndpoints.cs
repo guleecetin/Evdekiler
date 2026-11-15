@@ -1,5 +1,6 @@
 ﻿using Evdekiler.Recipe.Api.Clients;
 using Evdekiler.Recipe.Api.Data;
+using Evdekiler.Recipe.Api.Entities;
 using Microsoft.EntityFrameworkCore;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
@@ -7,7 +8,8 @@ using Polly.Timeout;
 namespace Evdekiler.Recipe.Api.Endpoints;
 
 public record RecipeSuggestion(
-    int Id, string Title, string Emoji, string ImageUrl, int PrepMinutes, int Servings,
+    int Id, string Title, string Emoji, string ImageUrl, RecipeCategory Category,
+    int PrepMinutes, int Servings,
     int HaveCount, int RequiredCount, int MatchPercent, List<string> Missing);
 
 public record RecipeIngredientResponse(
@@ -15,7 +17,7 @@ public record RecipeIngredientResponse(
 
 public record RecipeDetailResponse(
     int Id, string Title, string Description, string Emoji, string ImageUrl,
-    int PrepMinutes, int Servings,
+    RecipeCategory Category, int PrepMinutes, int Servings,
     List<RecipeIngredientResponse> Ingredients, List<string> Steps);
 
 public static class RecipeEndpoints
@@ -28,8 +30,10 @@ public static class RecipeEndpoints
         group.MapGet("/{id:int}", GetById);
     }
 
+    // GET /api/recipes/suggestions?category=Soup
     private static async Task<IResult> GetSuggestions(
-        HttpContext http, PantryClient pantry, RecipeDbContext db, CancellationToken ct)
+        string? category, HttpContext http, PantryClient pantry,
+        RecipeDbContext db, CancellationToken ct)
     {
         HashSet<int> have;
         try
@@ -46,14 +50,18 @@ public static class RecipeEndpoints
                 statusCode: StatusCodes.Status503ServiceUnavailable);
         }
 
-        var recipes = await db.Recipes
-            .AsNoTracking()
+        var query = db.Recipes.AsNoTracking();
+        if (Enum.TryParse<RecipeCategory>(category, ignoreCase: true, out var cat))
+            query = query.Where(r => r.Category == cat);
+
+        var recipes = await query
             .Select(r => new
             {
                 r.Id,
                 r.Title,
                 r.Emoji,
                 r.ImageUrl,
+                r.Category,
                 r.PrepMinutes,
                 r.Servings,
                 Required = r.Ingredients
@@ -73,7 +81,7 @@ public static class RecipeEndpoints
                     .ToList();
                 var percent = r.Required.Count == 0 ? 100 : haveCount * 100 / r.Required.Count;
 
-                return new RecipeSuggestion(r.Id, r.Title, r.Emoji, r.ImageUrl,
+                return new RecipeSuggestion(r.Id, r.Title, r.Emoji, r.ImageUrl, r.Category,
                     r.PrepMinutes, r.Servings, haveCount, r.Required.Count, percent, missing);
             })
             .Where(s => s.HaveCount > 0)
@@ -92,7 +100,7 @@ public static class RecipeEndpoints
             .AsSplitQuery()
             .Where(r => r.Id == id)
             .Select(r => new RecipeDetailResponse(
-                r.Id, r.Title, r.Description, r.Emoji, r.ImageUrl,
+                r.Id, r.Title, r.Description, r.Emoji, r.ImageUrl, r.Category,
                 r.PrepMinutes, r.Servings,
                 r.Ingredients
                     .OrderBy(i => i.IsOptional)

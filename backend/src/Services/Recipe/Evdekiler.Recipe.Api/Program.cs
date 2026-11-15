@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
 using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Recipe.Api.Clients;
@@ -19,10 +20,12 @@ builder.Services
         client.BaseAddress = new Uri(builder.Configuration["Services:PantryUrl"]!))
     .AddStandardResilienceHandler();
 
-// Fotoğraf depolama (Azure Blob Storage / yerelde Azurite)
 builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
 builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["Storage:ConnectionString"]));
 builder.Services.AddSingleton<ImageStorage>();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEvdekilerJwtAuth(builder.Configuration);
 builder.Services.AddOpenApi();

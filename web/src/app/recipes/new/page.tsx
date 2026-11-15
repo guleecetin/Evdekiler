@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import AdminShell from "@/components/AdminShell";
 import RecipeForm from "@/components/RecipeForm";
 import { createRecipe } from "@/lib/recipes";
 import { useAdmin } from "@/lib/useAdmin";
@@ -13,20 +15,23 @@ export default function NewRecipePage() {
   if (!me) return <main className="p-10 text-muted">Yükleniyor…</main>;
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <Link href="/" className="text-sm font-semibold text-muted hover:text-ink">
-        ← Tarifler
-      </Link>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Yeni tarif</h1>
-      <div className="mt-8">
-        <RecipeForm
-          submitLabel="Tarifi oluştur"
-          onSubmit={async (data) => {
-            const created = await createRecipe(data);
-            router.push(`/recipes/${created.id}`);
-          }}
-        />
-      </div>
-    </main>
+    <AdminShell
+      me={me}
+      title="Yeni tarif"
+      subtitle="Tarifi kaydettikten sonra fotoğrafını ekleyebilirsiniz."
+      back={
+        <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
+          <ArrowLeft className="h-4 w-4" /> Tarifler
+        </Link>
+      }
+    >
+      <RecipeForm
+        submitLabel="Tarifi oluştur"
+        onSubmit={async (data) => {
+          const created = await createRecipe(data);
+          router.push(`/recipes/${created.id}`);
+        }}
+      />
+    </AdminShell>
   );
 }

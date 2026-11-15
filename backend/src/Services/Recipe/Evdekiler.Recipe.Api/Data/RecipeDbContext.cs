@@ -19,6 +19,13 @@ public class RecipeDbContext(DbContextOptions<RecipeDbContext> options) : DbCont
             entity.Property(r => r.Description).HasMaxLength(500);
             entity.Property(r => r.Emoji).HasMaxLength(16);
 
+            // Enum veritabanında metin olarak: "MainCourse", "Dessert"...
+            entity.Property(r => r.Category)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .HasDefaultValue(RecipeCategory.MainCourse);
+            entity.HasIndex(r => r.Category);
+
             entity.HasMany(r => r.Ingredients).WithOne().HasForeignKey(i => i.RecipeId);
             entity.HasMany(r => r.Steps).WithOne().HasForeignKey(s => s.RecipeId);
         });

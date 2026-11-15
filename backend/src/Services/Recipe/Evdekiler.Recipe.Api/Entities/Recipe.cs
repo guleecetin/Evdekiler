@@ -1,5 +1,17 @@
 ﻿namespace Evdekiler.Recipe.Api.Entities;
 
+// Sıra önemli: varsayılan değer (0) MainCourse
+public enum RecipeCategory
+{
+    MainCourse,   // Ana yemek
+    Dessert,      // Tatlı
+    Breakfast,    // Kahvaltılık
+    Soup,         // Çorba
+    Salad,        // Salata
+    Pastry,       // Hamur işi
+    Snack         // Atıştırmalık
+}
+
 public class Recipe
 {
     public int Id { get; set; }
@@ -8,6 +20,7 @@ public class Recipe
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Emoji { get; set; } = string.Empty;
+    public RecipeCategory Category { get; set; }
     public int PrepMinutes { get; set; }
     public int Servings { get; set; }
 

@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ArrowLeft, Camera, CheckCircle2, Loader2, Upload } from "lucide-react";
+import AdminShell from "@/components/AdminShell";
 import RecipeForm from "@/components/RecipeForm";
 import RecipeImage from "@/components/RecipeImage";
 import { ApiError } from "@/lib/api";
-import { getRecipe, updateRecipe, uploadRecipeImage, type RecipeForEdit } from "@/lib/recipes";
+import { categoryLabel, getRecipe, updateRecipe, uploadRecipeImage, type RecipeForEdit } from "@/lib/recipes";
 import { useAdmin } from "@/lib/useAdmin";
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -36,8 +38,7 @@ export default function EditRecipeClient() {
     if (!file || !recipe) return;
     setUploadError(null);
 
-    // Hızlı geri bildirim için tarayıcıda da kontrol (asıl kontrol backend'de)
-    if (!ALLOWED.includes(file.type)) return setUploadError("Sadece JPEG, PNG veya WebP yükleyebilirsin.");
+    if (!ALLOWED.includes(file.type)) return setUploadError("Sadece JPEG, PNG veya WebP yükleyebilirsiniz.");
     if (file.size > MAX_BYTES) return setUploadError("Fotoğraf 5 MB'ı geçemez.");
 
     setUploading(true);
@@ -54,88 +55,92 @@ export default function EditRecipeClient() {
 
   if (!me || (!recipe && !error)) return <main className="p-10 text-muted">Yükleniyor…</main>;
 
+  const back = (
+    <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
+      <ArrowLeft className="h-4 w-4" /> Tarifler
+    </Link>
+  );
+
+  if (!recipe) {
+    return (
+      <AdminShell me={me} title="Tarif bulunamadı" back={back}>
+        <p className="text-sm text-muted">{error}</p>
+      </AdminShell>
+    );
+  }
+
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <Link href="/" className="text-sm font-semibold text-muted hover:text-ink">
-        ← Tarifler
-      </Link>
-
-      {error && <p className="mt-6 text-red-700">{error}</p>}
-
-      {recipe && (
-        <>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{recipe.title}</h1>
-
-          {/* Fotoğraf alanı: tıkla ya da sürükle-bırak */}
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragging(false);
-              handleFile(e.dataTransfer.files[0]);
-            }}
-            className={`group relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl transition ${
-              dragging ? "ring-4 ring-basil" : ""
-            }`}
-          >
-            {/* key: adres değişince bileşen sıfırlansın (eski "fotoğraf yok" durumu kalmasın) */}
-            <RecipeImage key={recipe.imageUrl} path={recipe.imageUrl} alt={recipe.title} />
-
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
-              <button
-                type="button"
-                onClick={() => fileInput.current?.click()}
-                disabled={uploading}
-                className="rounded-full bg-white px-6 py-3 font-bold opacity-0 shadow-lg transition group-hover:opacity-100 disabled:opacity-100"
-              >
-                {uploading ? "Yükleniyor…" : "📷 Fotoğrafı değiştir"}
-              </button>
-            </div>
-
-            {dragging && (
-              <div className="absolute inset-0 flex items-center justify-center bg-basil/80 text-xl font-bold text-white">
-                Bırak, yükleyelim
-              </div>
-            )}
-          </div>
-
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-            onChange={(e) => handleFile(e.target.files?.[0])}
-          />
-
-          <p className="mt-2 text-sm text-muted">
-            Üzerine gelip tıkla ya da fotoğrafı sürükleyip bırak. JPEG, PNG veya WebP, en fazla 5 MB.
-          </p>
-          {uploadError && (
-            <p className="mt-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{uploadError}</p>
-          )}
-
-          {saved && (
-            <p className="mt-6 rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
-              Değişiklikler kaydedildi ✓
-            </p>
-          )}
-
-          <div className="mt-8">
-            <RecipeForm
-              initial={recipe}
-              submitLabel="Değişiklikleri kaydet"
-              onSubmit={async (data) => {
-                await updateRecipe(id, data);
-                setSaved(true);
-              }}
-            />
-          </div>
-        </>
+    <AdminShell me={me} title={recipe.title} subtitle={categoryLabel(recipe.category)} back={back}>
+      {saved && (
+        <div className="mb-6 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
+          <CheckCircle2 className="h-4 w-4" /> Değişiklikler kaydedildi.
+        </div>
       )}
-    </main>
+
+      {/* Fotoğraf kartı */}
+      <section className="mb-6 rounded-xl border border-line bg-white p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-bold">Fotoğraf</h2>
+            <p className="mt-0.5 text-sm text-muted">JPEG, PNG veya WebP · en fazla 5 MB</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => fileInput.current?.click()}
+            disabled={uploading}
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm font-semibold transition hover:border-neutral-400 disabled:opacity-60"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+            {uploading ? "Yükleniyor…" : "Fotoğrafı değiştir"}
+          </button>
+        </div>
+
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            handleFile(e.dataTransfer.files[0]);
+          }}
+          className="relative mt-5 aspect-[16/9] overflow-hidden rounded-lg"
+        >
+          <RecipeImage key={recipe.imageUrl} path={recipe.imageUrl} alt={recipe.title} />
+          {dragging && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white bg-ink/70 text-white">
+              <Upload className="h-8 w-8" strokeWidth={1.5} />
+              <span className="font-semibold">Bırakın, yükleyelim</span>
+            </div>
+          )}
+        </div>
+
+        <input
+          ref={fileInput}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(e) => handleFile(e.target.files?.[0])}
+        />
+
+        {uploadError && (
+          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            {uploadError}
+          </p>
+        )}
+      </section>
+
+      <RecipeForm
+        initial={recipe}
+        submitLabel="Değişiklikleri kaydet"
+        onSubmit={async (data) => {
+          await updateRecipe(id, data);
+          setRecipe({ ...recipe, ...data });
+          setSaved(true);
+        }}
+      />
+    </AdminShell>
   );
 }

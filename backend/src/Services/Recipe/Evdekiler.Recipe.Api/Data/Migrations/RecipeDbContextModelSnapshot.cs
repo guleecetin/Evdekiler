@@ -29,6 +29,13 @@ namespace Evdekiler.Recipe.Api.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("MainCourse");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -61,6 +68,8 @@ namespace Evdekiler.Recipe.Api.Data.Migrations
                         .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Category");
 
                     b.HasIndex("Slug")
                         .IsUnique();
