@@ -1,4 +1,76 @@
+import 'package:flutter/material.dart';
+
 import '../pantry/pantry_models.dart';
+
+// Backend'deki RecipeCategory enum'unun karşılığı; renkler web paneliyle aynı
+enum RecipeCategory {
+  mainCourse(
+    'MainCourse',
+    'Ana yemek',
+    Icons.dinner_dining_outlined,
+    Color(0xFFFBE9E2),
+    Color(0xFFB4532A),
+  ),
+  soup(
+    'Soup',
+    'Çorba',
+    Icons.soup_kitchen_outlined,
+    Color(0xFFFDF1D8),
+    Color(0xFFA86A0C),
+  ),
+  salad(
+    'Salad',
+    'Salata',
+    Icons.eco_outlined,
+    Color(0xFFE4F1E1),
+    Color(0xFF2F7A3B),
+  ),
+  breakfast(
+    'Breakfast',
+    'Kahvaltılık',
+    Icons.egg_alt_outlined,
+    Color(0xFFFEF6C9),
+    Color(0xFF8A6D00),
+  ),
+  pastry(
+    'Pastry',
+    'Hamur işi',
+    Icons.bakery_dining_outlined,
+    Color(0xFFF4E8D8),
+    Color(0xFF8B5A2B),
+  ),
+  dessert(
+    'Dessert',
+    'Tatlı',
+    Icons.cake_outlined,
+    Color(0xFFFBE4EC),
+    Color(0xFFB23A68),
+  ),
+  snack(
+    'Snack',
+    'Atıştırmalık',
+    Icons.cookie_outlined,
+    Color(0xFFECE6FA),
+    Color(0xFF6B46C1),
+  );
+
+  const RecipeCategory(
+    this.apiValue,
+    this.label,
+    this.icon,
+    this.background,
+    this.foreground,
+  );
+
+  final String apiValue;
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+
+  static RecipeCategory fromApi(String? value) =>
+      values.firstWhere((c) => c.apiValue == value, orElse: () => mainCourse);
+}
 
 class RecipeSuggestion {
   RecipeSuggestion({
@@ -6,6 +78,7 @@ class RecipeSuggestion {
     required this.title,
     required this.emoji,
     required this.imageUrl,
+    required this.category,
     required this.prepMinutes,
     required this.servings,
     required this.haveCount,
@@ -18,6 +91,7 @@ class RecipeSuggestion {
   final String title;
   final String emoji;
   final String imageUrl;
+  final RecipeCategory category;
   final int prepMinutes;
   final int servings;
   final int haveCount;
@@ -33,6 +107,7 @@ class RecipeSuggestion {
         title: json['title'] as String,
         emoji: json['emoji'] as String,
         imageUrl: json['imageUrl'] as String,
+        category: RecipeCategory.fromApi(json['category'] as String?),
         prepMinutes: json['prepMinutes'] as int,
         servings: json['servings'] as int,
         haveCount: json['haveCount'] as int,
@@ -76,6 +151,7 @@ class RecipeDetail {
     required this.description,
     required this.emoji,
     required this.imageUrl,
+    required this.category,
     required this.prepMinutes,
     required this.servings,
     required this.ingredients,
@@ -87,6 +163,7 @@ class RecipeDetail {
   final String description;
   final String emoji;
   final String imageUrl;
+  final RecipeCategory category;
   final int prepMinutes;
   final int servings;
   final List<RecipeIngredient> ingredients;
@@ -98,6 +175,7 @@ class RecipeDetail {
     description: json['description'] as String,
     emoji: json['emoji'] as String,
     imageUrl: json['imageUrl'] as String,
+    category: RecipeCategory.fromApi(json['category'] as String?),
     prepMinutes: json['prepMinutes'] as int,
     servings: json['servings'] as int,
     ingredients: (json['ingredients'] as List)
