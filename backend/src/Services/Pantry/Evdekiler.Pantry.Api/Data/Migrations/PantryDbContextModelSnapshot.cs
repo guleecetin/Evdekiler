@@ -537,6 +537,406 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                             DefaultUnit = "Milliliter",
                             Emoji = "🫗",
                             Name = "Sıvı yağ"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌾",
+                            Name = "İrmik"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌽",
+                            Name = "Nişasta"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍫",
+                            Name = "Kakao"
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍫",
+                            Name = "Bitter çikolata"
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍦",
+                            Name = "Vanilin"
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🧁",
+                            Name = "Kabartma tozu"
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍞",
+                            Name = "Kuru maya"
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Category = "Grain",
+                            DefaultUnit = "Piece",
+                            Emoji = "🫓",
+                            Name = "Yufka"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌰",
+                            Name = "Fındık"
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🥜",
+                            Name = "Antep fıstığı"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌰",
+                            Name = "Badem"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Category = "Fruit",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍇",
+                            Name = "Kuru üzüm"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🧂",
+                            Name = "Tarçın"
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍬",
+                            Name = "Pudra şekeri"
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🥥",
+                            Name = "Hindistan cevizi"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Category = "Fruit",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍓",
+                            Name = "Çilek"
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Category = "Dairy",
+                            DefaultUnit = "Gram",
+                            Emoji = "🧀",
+                            Name = "Labne"
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Category = "Dairy",
+                            DefaultUnit = "Gram",
+                            Emoji = "🧀",
+                            Name = "Lor peyniri"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫒",
+                            Name = "Zeytin"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Reçel"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Tahin"
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Pekmez"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Category = "Dairy",
+                            DefaultUnit = "Gram",
+                            Emoji = "🥛",
+                            Name = "Kaymak"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌭",
+                            Name = "Sosis"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🥩",
+                            Name = "Pastırma"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Category = "Vegetable",
+                            DefaultUnit = "Piece",
+                            Emoji = "🥬",
+                            Name = "Marul"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Category = "Vegetable",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌿",
+                            Name = "Roka"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Category = "Other",
+                            DefaultUnit = "Milliliter",
+                            Emoji = "🫙",
+                            Name = "Nar ekşisi"
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Category = "Fruit",
+                            DefaultUnit = "Piece",
+                            Emoji = "🍎",
+                            Name = "Nar"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Category = "Vegetable",
+                            DefaultUnit = "Piece",
+                            Emoji = "🥬",
+                            Name = "Mor lahana"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Category = "Vegetable",
+                            DefaultUnit = "Piece",
+                            Emoji = "🥕",
+                            Name = "Turp"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Category = "Vegetable",
+                            DefaultUnit = "Piece",
+                            Emoji = "🧅",
+                            Name = "Taze soğan"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Category = "Fruit",
+                            DefaultUnit = "Piece",
+                            Emoji = "🥑",
+                            Name = "Avokado"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Category = "Legume",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫘",
+                            Name = "Yeşil mercimek"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🥣",
+                            Name = "Tarhana"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍜",
+                            Name = "Arpa şehriye"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Category = "Other",
+                            DefaultUnit = "Milliliter",
+                            Emoji = "🫙",
+                            Name = "Sirke"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Hardal"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Mayonez"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Category = "Other",
+                            DefaultUnit = "Gram",
+                            Emoji = "🫙",
+                            Name = "Ketçap"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍞",
+                            Name = "Galeta unu"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Category = "Grain",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌽",
+                            Name = "Mısır unu"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌾",
+                            Name = "Susam"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌾",
+                            Name = "Çörek otu"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🌶️",
+                            Name = "Toz kırmızı biber"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            Category = "Spice",
+                            DefaultUnit = "Gram",
+                            Emoji = "🧂",
+                            Name = "Zerdeçal"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍖",
+                            Name = "Kuzu eti"
+                        },
+                        new
+                        {
+                            Id = 108,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🍗",
+                            Name = "Tavuk but"
+                        },
+                        new
+                        {
+                            Id = 109,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🐟",
+                            Name = "Hamsi"
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Category = "Meat",
+                            DefaultUnit = "Gram",
+                            Emoji = "🐟",
+                            Name = "Levrek"
                         });
                 });
 

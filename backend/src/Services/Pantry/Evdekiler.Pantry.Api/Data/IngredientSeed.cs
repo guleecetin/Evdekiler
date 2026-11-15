@@ -9,7 +9,7 @@ public static class IngredientSeed
 
     public static readonly Ingredient[] All =
     [
-        // --- İlk 30 ---
+        // --- Temel sebze, meyve, süt ürünleri, et, tahıl ---
         I(1,  "Domates",       "🍅", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(2,  "Salatalık",     "🥒", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(3,  "Biber",         "🫑", IngredientCategory.Vegetable, MeasureUnit.Piece),
@@ -41,7 +41,7 @@ public static class IngredientSeed
         I(29, "Tuz",           "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
         I(30, "Pul biber",     "🌶️", IngredientCategory.Spice,     MeasureUnit.Gram),
 
-        // --- Yeni 30 ---
+        // --- Ana yemek genişletmesi ---
         I(31, "Maydanoz",      "🌿", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(32, "Dereotu",       "🌿", IngredientCategory.Vegetable, MeasureUnit.Piece),
         I(33, "Nane",          "🌿", IngredientCategory.Spice,     MeasureUnit.Gram),
@@ -71,6 +71,70 @@ public static class IngredientSeed
         I(57, "Ceviz",         "🌰", IngredientCategory.Other,     MeasureUnit.Gram),
         I(58, "Muz",           "🍌", IngredientCategory.Fruit,     MeasureUnit.Piece),
         I(59, "Portakal",      "🍊", IngredientCategory.Fruit,     MeasureUnit.Piece),
-        I(60, "Sıvı yağ",      "🫗", IngredientCategory.Other,     MeasureUnit.Milliliter)
+        I(60, "Sıvı yağ",      "🫗", IngredientCategory.Other,     MeasureUnit.Milliliter),
+
+        // --- Tatlı ve hamur işi ---
+        I(61, "İrmik",           "🌾", IngredientCategory.Grain,     MeasureUnit.Gram),
+        I(62, "Nişasta",         "🌽", IngredientCategory.Grain,     MeasureUnit.Gram),
+        I(63, "Kakao",           "🍫", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(64, "Bitter çikolata", "🍫", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(65, "Vanilin",         "🍦", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(66, "Kabartma tozu",   "🧁", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(67, "Kuru maya",       "🍞", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(68, "Yufka",           "🫓", IngredientCategory.Grain,     MeasureUnit.Piece),
+        I(69, "Fındık",          "🌰", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(70, "Antep fıstığı",   "🥜", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(71, "Badem",           "🌰", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(72, "Kuru üzüm",       "🍇", IngredientCategory.Fruit,     MeasureUnit.Gram),
+        I(73, "Tarçın",          "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(74, "Pudra şekeri",    "🍬", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(75, "Hindistan cevizi","🥥", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(76, "Çilek",           "🍓", IngredientCategory.Fruit,     MeasureUnit.Gram),
+
+        // --- Kahvaltılık ---
+        I(77, "Labne",           "🧀", IngredientCategory.Dairy,     MeasureUnit.Gram),
+        I(78, "Lor peyniri",     "🧀", IngredientCategory.Dairy,     MeasureUnit.Gram),
+        I(79, "Zeytin",          "🫒", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(80, "Reçel",           "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(81, "Tahin",           "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(82, "Pekmez",          "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(83, "Kaymak",          "🥛", IngredientCategory.Dairy,     MeasureUnit.Gram),
+        I(84, "Sosis",           "🌭", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(85, "Pastırma",        "🥩", IngredientCategory.Meat,      MeasureUnit.Gram),
+
+        // --- Salata ---
+        I(86, "Marul",           "🥬", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(87, "Roka",            "🌿", IngredientCategory.Vegetable, MeasureUnit.Gram),
+        I(88, "Nar ekşisi",      "🫙", IngredientCategory.Other,     MeasureUnit.Milliliter),
+        I(89, "Nar",             "🍎", IngredientCategory.Fruit,     MeasureUnit.Piece),
+        I(90, "Mor lahana",      "🥬", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(91, "Turp",            "🥕", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(92, "Taze soğan",      "🧅", IngredientCategory.Vegetable, MeasureUnit.Piece),
+        I(93, "Avokado",         "🥑", IngredientCategory.Fruit,     MeasureUnit.Piece),
+
+        // --- Çorba ve bakliyat ---
+        I(94, "Yeşil mercimek",  "🫘", IngredientCategory.Legume,    MeasureUnit.Gram),
+        I(95, "Tarhana",         "🥣", IngredientCategory.Grain,     MeasureUnit.Gram),
+        I(96, "Arpa şehriye",    "🍜", IngredientCategory.Grain,     MeasureUnit.Gram),
+
+        // --- Soslar ve kuru gıda ---
+        I(97, "Sirke",           "🫙", IngredientCategory.Other,     MeasureUnit.Milliliter),
+        I(98, "Hardal",          "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(99, "Mayonez",         "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(100, "Ketçap",         "🫙", IngredientCategory.Other,     MeasureUnit.Gram),
+        I(101, "Galeta unu",     "🍞", IngredientCategory.Grain,     MeasureUnit.Gram),
+        I(102, "Mısır unu",      "🌽", IngredientCategory.Grain,     MeasureUnit.Gram),
+
+        // --- Baharat ---
+        I(103, "Susam",          "🌾", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(104, "Çörek otu",      "🌾", IngredientCategory.Spice,     MeasureUnit.Gram),
+        I(105, "Toz kırmızı biber","🌶️", IngredientCategory.Spice,   MeasureUnit.Gram),
+        I(106, "Zerdeçal",       "🧂", IngredientCategory.Spice,     MeasureUnit.Gram),
+
+        // --- Et ve balık ---
+        I(107, "Kuzu eti",       "🍖", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(108, "Tavuk but",      "🍗", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(109, "Hamsi",          "🐟", IngredientCategory.Meat,      MeasureUnit.Gram),
+        I(110, "Levrek",         "🐟", IngredientCategory.Meat,      MeasureUnit.Gram)
     ];
 }

@@ -1,0 +1,592 @@
+[
+  {
+    "slug": "sutlac",
+    "title": "Fırın Sütlaç",
+    "emoji": "🍮",
+    "category": "Dessert",
+    "prepMinutes": 60,
+    "servings": 6,
+    "description": "Üzeri fırında nar gibi kızaran, içi kremamsı kıvamdaki geleneksel sütlaç. Soğuk servis edildiğinde yaz akşamlarının, sıcak servis edildiğinde kış gecelerinin en sevilen tatlısıdır.",
+    "ingredients": [
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 1,
+        "unit": "Liter"
+      },
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 80,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 62,
+        "name": "Nişasta",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 65,
+        "name": "Vanilin",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 73,
+        "name": "Tarçın",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Pirinci yıkayıp bir su bardağı suyla, suyunu çekene kadar yumuşayıncaya dek haşlayın.",
+      "Sütü ekleyin ve karıştırarak kaynamaya bırakın; kaynayınca şekeri ilave edin.",
+      "Nişastayı yarım su bardağı soğuk suyla açın, karıştırmaya devam ederek tencereye yavaşça ekleyin ve 10 dakika pişirin.",
+      "Ocaktan almadan önce vanilini ekleyin, sütlacı fırın kaplarına paylaştırın.",
+      "Kapları içinde soğuk su bulunan bir fırın tepsisine dizin ve fırının üst ızgarasında üzerleri kızarana kadar pişirin.",
+      "Oda sıcaklığına geldikten sonra buzdolabında en az 2 saat dinlendirin; dilerseniz tarçınla servis edin."
+    ]
+  },
+  {
+    "slug": "revani",
+    "title": "Revani",
+    "emoji": "🍰",
+    "category": "Dessert",
+    "prepMinutes": 60,
+    "servings": 8,
+    "description": "İrmikli, yumuşacık keki limon aromalı şerbetle buluşturan, Osmanlı mutfağından gelen klasik bir şerbetli tatlı. Üzerine serpilen hindistan cevizi hem görüntüsünü hem de lezzetini tamamlar.",
+    "ingredients": [
+      {
+        "id": 61,
+        "name": "İrmik",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 450,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 66,
+        "name": "Kabartma tozu",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 75,
+        "name": "Hindistan cevizi",
+        "quantity": 30,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Şerbet için 300 gram şekeri 3 su bardağı suyla 15 dakika kaynatın, birkaç damla limon suyu ekleyip soğumaya bırakın.",
+      "Yumurtaları kalan 150 gram şekerle köpük köpük olana kadar çırpın; yoğurt ve sıvı yağı ekleyip karıştırın.",
+      "İrmik, un ve kabartma tozunu ekleyerek pürüzsüz bir hamur elde edin.",
+      "Hamuru yağlanmış bir tepsiye yayın ve önceden ısıtılmış 180°C fırında üzeri kızarana kadar yaklaşık 30 dakika pişirin.",
+      "Fırından çıkan sıcak revaninin üzerine soğuk şerbeti gezdirin; şerbeti çekince dilimleyip hindistan ceviziyle servis edin."
+    ]
+  },
+  {
+    "slug": "irmik-helvasi",
+    "title": "İrmik Helvası",
+    "emoji": "🥣",
+    "category": "Dessert",
+    "prepMinutes": 35,
+    "servings": 6,
+    "description": "Tereyağında sabırla kavrulan irmiğin sıcak sütle buluştuğu, evleri mis gibi kokutan bir tatlı. Paylaşmanın ve bir araya gelmenin simgesi olan, sıcak servis edilen klasik bir lezzettir.",
+    "ingredients": [
+      {
+        "id": 61,
+        "name": "İrmik",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 71,
+        "name": "Badem",
+        "quantity": 40,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 73,
+        "name": "Tarçın",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Sütü, bir su bardağı su ve şekerle birlikte şeker eriyene kadar ısıtın; şerbeti sıcak tutun.",
+      "Ayrı bir tencerede tereyağını eritin, irmiği ve dilerseniz bademleri ekleyin.",
+      "İrmiği kısık ateşte, sürekli karıştırarak açık kahverengi olana ve kokusu çıkana kadar yaklaşık 20 dakika kavurun.",
+      "Sıcak şerbeti dikkatlice ekleyin (sıçrayabilir), karıştırıp kapağı kapatın ve ocaktan alın.",
+      "Helvayı 10 dakika demlendirin, ardından karıştırıp tarçınla sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "kakaolu-puding",
+    "title": "Kakaolu Puding",
+    "emoji": "🍫",
+    "category": "Dessert",
+    "prepMinutes": 25,
+    "servings": 4,
+    "description": "Hazır paket kullanmadan, evdeki malzemelerle kolayca hazırlanan, ipeksi kıvamlı bir çikolatalı puding. Çocukların da büyüklerin de severek yediği pratik bir tatlıdır.",
+    "ingredients": [
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 62,
+        "name": "Nişasta",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 63,
+        "name": "Kakao",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 65,
+        "name": "Vanilin",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Süt, şeker, nişasta, un ve kakaoyu ocağa almadan önce bir tencerede topak kalmayacak şekilde çırpın.",
+      "Tencereyi orta ateşe alın ve sürekli karıştırarak koyulaşıp göz göz kaynayana kadar pişirin.",
+      "Ocaktan alıp tereyağını ve vanilini ekleyin, parlak bir kıvam alana kadar karıştırın.",
+      "Kâselere paylaştırın, üzerleri kabuk bağlamasın diye streç film kaplayıp buzdolabında soğutun."
+    ]
+  },
+  {
+    "slug": "muhallebi",
+    "title": "Muhallebi",
+    "emoji": "🍮",
+    "category": "Dessert",
+    "prepMinutes": 30,
+    "servings": 6,
+    "description": "Sade ve zarif lezzetiyle Türk mutfağının en temel sütlü tatlılarından biri. Üzerine serpilen tarçın ya da dövülmüş fıstıkla dilediğiniz gibi süsleyebilirsiniz.",
+    "ingredients": [
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 1,
+        "unit": "Liter"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 62,
+        "name": "Nişasta",
+        "quantity": 40,
+        "unit": "Gram"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 65,
+        "name": "Vanilin",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 70,
+        "name": "Antep fıstığı",
+        "quantity": 20,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Soğuk sütü, şekeri, nişastayı ve unu bir tencerede çırparak iyice karıştırın.",
+      "Orta ateşte, tahta kaşıkla tencerenin dibini sıyırarak sürekli karıştırın.",
+      "Koyulaşıp kaynamaya başladıktan sonra 2-3 dakika daha pişirip vanilini ekleyin.",
+      "Islatılmış kâselere paylaştırın ve buzdolabında en az 2 saat soğutun; fıstıkla süsleyerek servis edin."
+    ]
+  },
+  {
+    "slug": "firin-elma-tatlisi",
+    "title": "Fırında Cevizli Elma",
+    "emoji": "🍎",
+    "category": "Dessert",
+    "prepMinutes": 45,
+    "servings": 4,
+    "description": "Ortası cevizli ve tarçınlı harçla doldurulup fırında yumuşacık pişen elmalar. Hem hafif hem de evi saran kokusuyla sonbahar akşamlarına çok yakışan bir tatlıdır.",
+    "ingredients": [
+      {
+        "id": 12,
+        "name": "Elma",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 57,
+        "name": "Ceviz",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 73,
+        "name": "Tarçın",
+        "quantity": 3,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 83,
+        "name": "Kaymak",
+        "quantity": 100,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Elmaları yıkayın, kabuklarını soymadan çekirdek yuvalarını oyarak çıkarın.",
+      "İri dövülmüş ceviz, şeker ve tarçını karıştırıp elmaların içine doldurun.",
+      "Her elmanın üzerine küçük bir parça tereyağı koyun ve fırın kabına dizin; kabın dibine yarım su bardağı su ekleyin.",
+      "180°C fırında elmalar yumuşayana kadar yaklaşık 30 dakika pişirin; ılık olarak kaymakla servis edin."
+    ]
+  },
+  {
+    "slug": "kazandibi",
+    "title": "Kazandibi",
+    "emoji": "🍮",
+    "category": "Dessert",
+    "prepMinutes": 50,
+    "servings": 6,
+    "description": "Tabanı karamelize edilerek hafifçe yakılan, kendine özgü aromasıyla sütlü tatlıların en karakterlisi. Rulo şeklinde sarılarak sunulduğunda sofraya pastane şıklığı katar.",
+    "ingredients": [
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 1,
+        "unit": "Liter"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 62,
+        "name": "Nişasta",
+        "quantity": 40,
+        "unit": "Gram"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 65,
+        "name": "Vanilin",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Süt, 150 gram şeker, nişasta ve unu tencerede çırpın; sürekli karıştırarak koyu bir muhallebi kıvamına gelene kadar pişirip vanilini ekleyin.",
+      "Ocağa dayanıklı bir tepsiyi tereyağıyla yağlayın ve kalan 50 gram şekeri tabana eşit şekilde serpin.",
+      "Tepsiyi ocağın üzerinde, şeker karamelize olup kahverengileşene kadar her yerini eşit ısıtarak gezdirin.",
+      "Sıcak muhallebiyi karamelin üzerine dökün ve tepsiyi ocakta birkaç dakika daha tutarak tabanın hafifçe yanmasını sağlayın.",
+      "Soğuduktan sonra buzdolabında en az 3 saat dinlendirin; kare kesip yanık tarafı üste gelecek şekilde rulo yaparak servis edin."
+    ]
+  },
+  {
+    "slug": "islak-kek",
+    "title": "Islak Kek",
+    "emoji": "🍫",
+    "category": "Dessert",
+    "prepMinutes": 50,
+    "servings": 10,
+    "description": "Fırından çıkar çıkmaz üzerine dökülen çikolata sosuyla nemli ve yoğun bir dokuya kavuşan, misafirlerin tarifini en çok sorduğu keklerden biri. Bir top dondurmayla servis edildiğinde tadına doyum olmaz.",
+    "ingredients": [
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 350,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 150,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 63,
+        "name": "Kakao",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 66,
+        "name": "Kabartma tozu",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 64,
+        "name": "Bitter çikolata",
+        "quantity": 80,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yumurtaları 250 gram şekerle köpürene kadar çırpın; 1 su bardağı süt ve sıvı yağı ekleyin.",
+      "Unu, 40 gram kakaoyu ve kabartma tozunu eleyerek ekleyin, pürüzsüz bir kıvam alana kadar karıştırın.",
+      "Yağlanmış kalıba döküp önceden ısıtılmış 175°C fırında yaklaşık 35 dakika pişirin; kürdan temiz çıkmalı.",
+      "Sos için kalan süt, 100 gram şeker ve 20 gram kakaoyu kaynatın; ocaktan alıp dilerseniz bitter çikolatayı eritin.",
+      "Kek ılıkken üzerini çatalla delin, sosun yarısını gezdirip emmesini bekleyin; servis ederken kalan sosu dilimlerin üzerine dökün."
+    ]
+  },
+  {
+    "slug": "tavuk-gogsu-tatlisi",
+    "title": "Tavuk Göğsü Tatlısı",
+    "emoji": "🍮",
+    "category": "Dessert",
+    "prepMinutes": 90,
+    "servings": 6,
+    "description": "Saray mutfağının en şaşırtıcı mirası: ince ince didiklenmiş tavuk göğsüyle hazırlanan, tadında tavuk değil sadece eşsiz bir doku bırakan sütlü bir tatlı. Misafirlerinize tarifini söylediğinizde mutlaka şaşıracaklar.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 1,
+        "unit": "Liter"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 62,
+        "name": "Nişasta",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 65,
+        "name": "Vanilin",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 73,
+        "name": "Tarçın",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tavuk göğsünü tuzsuz suda iyice haşlayın, soğuyunca lif lif, iplik inceliğinde didikleyin.",
+      "Didiklenmiş tavuğu birkaç kez suya batırıp çıkararak kokusunu tamamen giderin ve iyice sıkın.",
+      "Süt, şeker ve nişastayı tencerede çırpın; orta ateşte sürekli karıştırarak kaynamaya bırakın.",
+      "Tavuk liflerini ekleyin ve koyulaşana kadar yaklaşık 15 dakika karıştırarak pişirin, son olarak vanilini ilave edin.",
+      "Kâselere ya da tepsiye paylaştırıp soğutun; tarçınla süsleyerek servis edin."
+    ]
+  },
+  {
+    "slug": "lokma",
+    "title": "Lokma Tatlısı",
+    "emoji": "🍩",
+    "category": "Dessert",
+    "prepMinutes": 70,
+    "servings": 6,
+    "description": "Dışı çıtır çıtır, içi yumuşacık, şerbete bulanmış küçük hamur topları. Hayırların ve kutlamaların vazgeçilmezi olan bu tatlı, sıcakken servis edildiğinde en güzel halini alır.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 67,
+        "name": "Kuru maya",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 420,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 750,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 73,
+        "name": "Tarçın",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Şerbet için 400 gram şekeri 2 su bardağı suyla 10 dakika kaynatın, birkaç damla limon suyu ekleyip soğumaya bırakın.",
+      "Mayayı ılık suyla ve kalan 20 gram şekerle açın; unu ekleyip yaklaşık 1,5 su bardağı ılık suyla akışkan, cıvık bir hamur hazırlayın.",
+      "Hamurun üzerini örtüp sıcak bir yerde iki katına çıkana kadar yaklaşık 45 dakika mayalandırın.",
+      "Elinizi ıslatarak hamuru avucunuzdan sıkıp, ıslak bir kaşıkla küçük toplar halinde kızgın yağa bırakın.",
+      "Lokmaları altın rengi olana kadar kızartın, süzüp hemen soğuk şerbete atın; şerbeti çekince tarçınla servis edin."
+    ]
+  }
+]
