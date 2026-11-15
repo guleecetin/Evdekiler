@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Pantry.Api.Data;
 using Evdekiler.Pantry.Api.Entities;
@@ -34,21 +35,50 @@ public static class PantryEndpoints
         group.MapDelete("/items/{id:guid}", DeleteItem);
     }
 
+    // GET /api/pantry/ingredients?search=SIR
     private static async Task<IResult> SearchIngredients(
         string? search, PantryDbContext db, CancellationToken ct)
     {
-        var query = db.Ingredients.AsNoTracking();
+        var q = Regex.Replace(search?.Trim() ?? "", @"[%_\\]", "");
 
-        if (!string.IsNullOrWhiteSpace(search))
-            query = query.Where(i => EF.Functions.ILike(i.Name, $"%{search.Trim()}%"));
+        List<Ingredient> ingredients;
 
-        var result = await query
-            .OrderBy(i => i.Name)
-            .Take(20)
-            .Select(i => new IngredientResponse(
-                i.Id, i.Name, i.Emoji, "/images/ingredients/" + i.Id + ".jpg",
-                i.Category, i.DefaultUnit))
-            .ToListAsync(ct);
+        if (q.Length == 0)
+        {
+            ingredients = await db.Ingredients.AsNoTracking()
+                .OrderBy(i => i.Name)
+                .Take(20)
+                .ToListAsync(ct);
+        }
+        else
+        {
+            var fuzzy = q.Length >= 3;
+
+            // tr_key: Türkçe kurallarla küçük harf ("SIR" -> "sır")
+            // search_key: Türkçe karakterler sadeleşmiş ("SIR" -> "sir", "Soğan" -> "sogan")
+            ingredients = await db.Ingredients.FromSql($"""
+                SELECT * FROM "Ingredients"
+                WHERE search_key("Name") LIKE '%' || search_key({q}) || '%'
+                   OR ({fuzzy} AND similarity(search_key("Name"), search_key({q})) > 0.3)
+                ORDER BY
+                    CASE
+                        WHEN tr_key("Name") LIKE tr_key({q}) || '%' THEN 0
+                        WHEN tr_key("Name") LIKE '%' || tr_key({q}) || '%' THEN 1
+                        WHEN search_key("Name") LIKE search_key({q}) || '%' THEN 2
+                        WHEN search_key("Name") LIKE '% ' || search_key({q}) || '%' THEN 3
+                        WHEN search_key("Name") LIKE '%' || search_key({q}) || '%' THEN 4
+                        ELSE 5
+                    END,
+                    similarity(search_key("Name"), search_key({q})) DESC,
+                    "Name"
+                LIMIT 20
+                """)
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
+        var result = ingredients.Select(i => new IngredientResponse(
+            i.Id, i.Name, i.Emoji, $"/images/ingredients/{i.Id}.jpg", i.Category, i.DefaultUnit));
 
         return Results.Ok(result);
     }

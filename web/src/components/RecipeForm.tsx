@@ -55,10 +55,24 @@ export default function RecipeForm({ initial, submitLabel, onSubmit }: Props) {
   useEffect(() => {
     const q = query.trim();
     if (!q) return;
+
+    // Kullanıcı yazmaya devam ederse bu isteğin cevabı artık geçersiz
+    let stale = false;
+
     const timer = setTimeout(() => {
-      searchIngredients(q).then(setOptions).catch(() => setOptions([]));
-    }, 250);
-    return () => clearTimeout(timer);
+      searchIngredients(q)
+        .then((result) => {
+          if (!stale) setOptions(result);
+        })
+        .catch(() => {
+          if (!stale) setOptions([]);
+        });
+    }, 200);
+
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   function update<K extends keyof RecipeInput>(key: K, value: RecipeInput[K]) {
