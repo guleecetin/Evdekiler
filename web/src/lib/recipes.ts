@@ -37,7 +37,6 @@ export type RecipeIngredientInput = {
   isOptional: boolean;
 };
 
-// Backend'deki UpsertRecipeRequest'in karşılığı
 export type RecipeInput = {
   title: string;
   description: string;
@@ -95,4 +94,14 @@ export function deleteRecipe(id: number) {
 
 export function searchIngredients(query: string) {
   return api<IngredientOption[]>(`/api/pantry/ingredients?search=${encodeURIComponent(query)}`);
+}
+
+// Fotoğrafı multipart/form-data olarak gönderir (alan adı backend'deki gibi: "file")
+export function uploadRecipeImage(id: number, file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  return api<{ id: number; imageUrl: string }>(`/api/admin/recipes/${id}/image`, {
+    method: "POST",
+    body: form,
+  });
 }
