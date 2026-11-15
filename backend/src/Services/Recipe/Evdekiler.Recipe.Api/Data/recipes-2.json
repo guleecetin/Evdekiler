@@ -1,0 +1,577 @@
+[
+  {
+    "slug": "karniyarik",
+    "title": "Karnıyarık",
+    "emoji": "🍆",
+    "prepMinutes": 60,
+    "servings": 4,
+    "description": "Kıymalı harçla doldurulmuş, fırında pişen klasik patlıcan yemeği.",
+    "ingredients": [
+      {
+        "id": 9,
+        "name": "Patlıcan",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patlıcanları alacalı soyup kızgın yağda her yüzünü kızart, tepsiye diz.",
+      "Soğan ve sarımsağı kavur, kıymayı ekleyip suyunu çekene kadar pişir.",
+      "Doğranmış domates, biber ve salçayı ekleyip 5 dakika daha pişir.",
+      "Patlıcanların ortasını yarıp harcı doldur, üstüne domates ve biber koy.",
+      "Yarım su bardağı sıcak su ekleyip 180°C fırında 25 dakika pişir."
+    ]
+  },
+  {
+    "slug": "kuru-fasulye",
+    "title": "Kuru Fasulye",
+    "emoji": "🫘",
+    "prepMinutes": 90,
+    "servings": 4,
+    "description": "Pilavın vazgeçilmez eşi, salçalı tereyağlı kuru fasulye.",
+    "ingredients": [
+      {
+        "id": 38,
+        "name": "Kuru fasulye",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Fasulyeleri bir gece önceden suya yatır, ertesi gün süzüp 10 dakika haşla.",
+      "Soğanı tereyağında kavur, salçayı ekleyip kokusu çıkana kadar karıştır.",
+      "Fasulyeleri ve üzerini iki parmak geçecek kadar sıcak su ekle.",
+      "Kısık ateşte fasulyeler yumuşayana kadar yaklaşık 1 saat pişir."
+    ]
+  },
+  {
+    "slug": "mantarli-tavuk",
+    "title": "Kremalı Mantarlı Tavuk",
+    "emoji": "🍄",
+    "prepMinutes": 30,
+    "servings": 3,
+    "description": "Kremalı sosta mantar ve tavuk; pilav ya da makarnayla harika gider.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 400,
+        "unit": "Gram"
+      },
+      {
+        "id": 34,
+        "name": "Mantar",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 48,
+        "name": "Krema",
+        "quantity": 200,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 54,
+        "name": "Kekik",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tavukları küp doğrayıp tereyağında suyunu çekene kadar sotele.",
+      "Soğanı ve dilimlenmiş mantarları ekleyip 5 dakika pişir.",
+      "Kremayı ekle, baharatlarla tatlandırıp kıvam alana kadar pişir."
+    ]
+  },
+  {
+    "slug": "firinda-somon",
+    "title": "Fırında Limonlu Somon",
+    "emoji": "🐟",
+    "prepMinutes": 25,
+    "servings": 2,
+    "description": "Sarımsak ve limonla tatlanan, dışı hafif çıtır somon.",
+    "ingredients": [
+      {
+        "id": 46,
+        "name": "Somon",
+        "quantity": 400,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 32,
+        "name": "Dereotu",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Zeytinyağı, ezilmiş sarımsak, limon suyu ve karabiberi karıştır.",
+      "Somonları yağlı kâğıt serili tepsiye koyup sosu üzerine sür.",
+      "200°C fırında 15-18 dakika pişir, dereotuyla servis et."
+    ]
+  },
+  {
+    "slug": "ezogelin-corbasi",
+    "title": "Ezogelin Çorbası",
+    "emoji": "🥣",
+    "prepMinutes": 40,
+    "servings": 4,
+    "description": "Mercimek, bulgur ve naneyle Anadolu'nun en sevilen çorbalarından.",
+    "ingredients": [
+      {
+        "id": 25,
+        "name": "Mercimek",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 23,
+        "name": "Bulgur",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 33,
+        "name": "Nane",
+        "quantity": 5,
+        "unit": "Gram"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Soğanı tereyağında kavur, salçayı ekleyip karıştır.",
+      "Yıkanmış mercimek, bulgur, pirinç ve 1,5 litre sıcak suyu ekle.",
+      "Kısık ateşte 30 dakika, malzemeler yumuşayana kadar pişir.",
+      "Kuru naneyi ve pul biberi ekleyip 2 dakika daha kaynat."
+    ]
+  },
+  {
+    "slug": "zeytinyagli-taze-fasulye",
+    "title": "Zeytinyağlı Taze Fasulye",
+    "emoji": "🫛",
+    "prepMinutes": 45,
+    "servings": 4,
+    "description": "Soğuk servis edilen, yaz sofralarının klasiği.",
+    "ingredients": [
+      {
+        "id": 37,
+        "name": "Taze fasulye",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 60,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Fasulyelerin uçlarını kesip ikiye böl.",
+      "Soğanı zeytinyağında kavur, fasulyeleri ekleyip birkaç dakika çevir.",
+      "Rendelenmiş domates, şeker ve yarım su bardağı sıcak su ekle.",
+      "Kısık ateşte 30 dakika pişir, soğuyunca servis et."
+    ]
+  },
+  {
+    "slug": "tavuklu-pilav",
+    "title": "Tavuklu Nohutlu Pilav",
+    "emoji": "🍗",
+    "prepMinutes": 40,
+    "servings": 4,
+    "description": "Didiklenmiş tavuk ve nohutla tek başına doyurucu bir öğün.",
+    "ingredients": [
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 26,
+        "name": "Nohut",
+        "quantity": 100,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tavuğu haşla, suyunu ayır ve etini didikle.",
+      "Pirinci tereyağında şeffaflaşana kadar kavur.",
+      "Tavuk suyu, haşlanmış nohut ve tavukları ekleyip kısık ateşte pişir.",
+      "Ocaktan alıp 10 dakika demlendir, karabiberle servis et."
+    ]
+  },
+  {
+    "slug": "mucver",
+    "title": "Mücver",
+    "emoji": "🥒",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Kabak, peynir ve dereotuyla çıtır kabak köftesi.",
+    "ingredients": [
+      {
+        "id": 8,
+        "name": "Kabak",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 32,
+        "name": "Dereotu",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 60,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 33,
+        "name": "Nane",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Kabakları rendeleyip suyunu iyice sık.",
+      "Yumurta, un, ufalanmış peynir ve doğranmış dereotuyla karıştır.",
+      "Kaşıkla kızgın yağa döküp iki yüzünü kızart, yoğurtla servis et."
+    ]
+  },
+  {
+    "slug": "kuru-kofte",
+    "title": "Kuru Köfte",
+    "emoji": "🍖",
+    "prepMinutes": 30,
+    "servings": 4,
+    "description": "Kimyonlu, tavada pişen ev köftesi.",
+    "ingredients": [
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 49,
+        "name": "Ekmek",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 53,
+        "name": "Kimyon",
+        "quantity": 5,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Bayat ekmeğin içini ıslatıp sık, rendelenmiş soğanla kıymaya ekle.",
+      "Yumurta, kimyon, tuz ve maydanozu ekleyip 5 dakika yoğur.",
+      "Köfte şekli verip yağlı tavada iki yüzünü pişir."
+    ]
+  },
+  {
+    "slug": "kremali-mantarli-makarna",
+    "title": "Kremalı Mantarlı Makarna",
+    "emoji": "🍝",
+    "prepMinutes": 25,
+    "servings": 3,
+    "description": "Sarımsaklı kremalı sos ve bol mantarla pratik makarna.",
+    "ingredients": [
+      {
+        "id": 22,
+        "name": "Makarna",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 34,
+        "name": "Mantar",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 48,
+        "name": "Krema",
+        "quantity": 200,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 16,
+        "name": "Kaşar peyniri",
+        "quantity": 60,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Makarnayı tuzlu suda haşla, süz.",
+      "Sarımsak ve mantarları tereyağında sotele.",
+      "Kremayı ekleyip kısık ateşte koyulaştır, makarnayla karıştır.",
+      "Üzerine rendelenmiş kaşar serpip servis et."
+    ]
+  }
+]

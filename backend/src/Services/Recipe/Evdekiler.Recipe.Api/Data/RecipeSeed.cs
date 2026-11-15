@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Evdekiler.Recipe.Api.Data;
 
-// JSON dosyasının yapısı
 internal record SeedIngredient(int Id, string Name, decimal Quantity, string Unit, bool Optional);
 
 internal record SeedRecipe(
@@ -15,13 +14,17 @@ public static class RecipeSeed
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    // Data klasöründeki bütün recipes*.json dosyalarını okur
     private static List<SeedRecipe> Load()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "Data", "recipes.json");
-        return JsonSerializer.Deserialize<List<SeedRecipe>>(File.ReadAllText(path), JsonOptions) ?? [];
+        var dir = Path.Combine(AppContext.BaseDirectory, "Data");
+        return Directory.GetFiles(dir, "recipes*.json")
+            .OrderBy(f => f)
+            .SelectMany(f => JsonSerializer.Deserialize<List<SeedRecipe>>(File.ReadAllText(f), JsonOptions) ?? [])
+            .ToList();
     }
 
-    // dotnet ef database update bunu çağırır
+    // dotnet ef database update çalışınca çağrılır
     public static void Seed(DbContext context)
     {
         var db = (RecipeDbContext)context;
@@ -33,7 +36,7 @@ public static class RecipeSeed
         db.SaveChanges();
     }
 
-    // Uygulama açılırken bu çağrılır
+    // Kodda Migrate/MigrateAsync çağrılırsa bu kullanılır
     public static async Task SeedAsync(DbContext context, CancellationToken ct)
     {
         var db = (RecipeDbContext)context;
