@@ -2,7 +2,6 @@ import { api } from "./api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
-// Backend'deki RecipeCategory enum'unun karşılığı
 export const CATEGORIES = [
   { value: "MainCourse", label: "Ana yemek", emoji: "🍲" },
   { value: "Soup", label: "Çorba", emoji: "🥣" },
@@ -124,4 +123,8 @@ export function uploadRecipeImage(id: number, file: File) {
     method: "POST",
     body: form,
   });
+}
+
+export function removeRecipeImage(id: number) {
+  return api<void>(`/api/admin/recipes/${id}/image`, { method: "DELETE" });
 }

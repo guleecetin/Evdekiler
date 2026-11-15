@@ -3,12 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Camera, CheckCircle2, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2, ExternalLink, ImageOff, Loader2, Upload } from "lucide-react";
 import AdminShell from "@/components/AdminShell";
 import RecipeForm from "@/components/RecipeForm";
 import RecipeImage from "@/components/RecipeImage";
 import { ApiError } from "@/lib/api";
-import { categoryLabel, getRecipe, updateRecipe, uploadRecipeImage, type RecipeForEdit } from "@/lib/recipes";
+import {
+  categoryLabel,
+  getRecipe,
+  removeRecipeImage,
+  updateRecipe,
+  uploadRecipeImage,
+  type RecipeForEdit,
+} from "@/lib/recipes";
 import { useAdmin } from "@/lib/useAdmin";
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -23,8 +30,8 @@ export default function EditRecipeClient() {
   const [recipe, setRecipe] = useState<RecipeForEdit | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<"upload" | "remove" | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
@@ -36,20 +43,34 @@ export default function EditRecipeClient() {
 
   async function handleFile(file: File | undefined) {
     if (!file || !recipe) return;
-    setUploadError(null);
+    setPhotoError(null);
 
-    if (!ALLOWED.includes(file.type)) return setUploadError("Sadece JPEG, PNG veya WebP yükleyebilirsiniz.");
-    if (file.size > MAX_BYTES) return setUploadError("Fotoğraf 5 MB'ı geçemez.");
+    if (!ALLOWED.includes(file.type)) return setPhotoError("Sadece JPEG, PNG veya WebP yükleyebilirsiniz.");
+    if (file.size > MAX_BYTES) return setPhotoError("Fotoğraf 5 MB'ı geçemez.");
 
-    setUploading(true);
+    setBusy("upload");
     try {
       const result = await uploadRecipeImage(id, file);
       setRecipe({ ...recipe, imageUrl: result.imageUrl });
     } catch (err) {
-      setUploadError(err instanceof ApiError ? err.message : "Fotoğraf yüklenemedi.");
+      setPhotoError(err instanceof ApiError ? err.message : "Fotoğraf yüklenemedi.");
     } finally {
-      setUploading(false);
+      setBusy(null);
       if (fileInput.current) fileInput.current.value = "";
+    }
+  }
+
+  async function handleRemove() {
+    if (!recipe || !confirm("Bu tarifin fotoğrafı kaldırılsın mı?")) return;
+    setPhotoError(null);
+    setBusy("remove");
+    try {
+      await removeRecipeImage(id);
+      setRecipe({ ...recipe, imageUrl: "" });
+    } catch (err) {
+      setPhotoError(err instanceof ApiError ? err.message : "Fotoğraf kaldırılamadı.");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -69,6 +90,8 @@ export default function EditRecipeClient() {
     );
   }
 
+  const searchTerm = encodeURIComponent(recipe.title);
+
   return (
     <AdminShell me={me} title={recipe.title} subtitle={categoryLabel(recipe.category)} back={back}>
       {saved && (
@@ -79,20 +102,33 @@ export default function EditRecipeClient() {
 
       {/* Fotoğraf kartı */}
       <section className="mb-6 rounded-xl border border-line bg-white p-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h2 className="font-bold">Fotoğraf</h2>
-            <p className="mt-0.5 text-sm text-muted">JPEG, PNG veya WebP · en fazla 5 MB</p>
+            <p className="mt-0.5 text-sm text-muted">JPEG, PNG veya WebP · en fazla 5 MB · sürükle-bırak desteklenir</p>
           </div>
-          <button
-            type="button"
-            onClick={() => fileInput.current?.click()}
-            disabled={uploading}
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm font-semibold transition hover:border-neutral-400 disabled:opacity-60"
-          >
-            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-            {uploading ? "Yükleniyor…" : "Fotoğrafı değiştir"}
-          </button>
+          <div className="flex gap-2">
+            {recipe.imageUrl && (
+              <button
+                type="button"
+                onClick={handleRemove}
+                disabled={busy !== null}
+                className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-sm font-semibold text-neutral-700 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+              >
+                {busy === "remove" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageOff className="h-4 w-4" />}
+                Kaldır
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => fileInput.current?.click()}
+              disabled={busy !== null}
+              className="inline-flex items-center gap-2 rounded-lg bg-basil px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-basil-dark disabled:opacity-60"
+            >
+              {busy === "upload" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+              {busy === "upload" ? "Yükleniyor…" : recipe.imageUrl ? "Değiştir" : "Fotoğraf yükle"}
+            </button>
+          </div>
         </div>
 
         <div
@@ -108,13 +144,34 @@ export default function EditRecipeClient() {
           }}
           className="relative mt-5 aspect-[16/9] overflow-hidden rounded-lg"
         >
-          <RecipeImage key={recipe.imageUrl} path={recipe.imageUrl} alt={recipe.title} />
+          <RecipeImage key={recipe.imageUrl} path={recipe.imageUrl} alt={recipe.title} category={recipe.category} />
           {dragging && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white bg-ink/70 text-white">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white bg-forest/75 text-white">
               <Upload className="h-8 w-8" strokeWidth={1.5} />
               <span className="font-semibold">Bırakın, yükleyelim</span>
             </div>
           )}
+        </div>
+
+        {/* Ücretsiz fotoğraf sitelerinde bu tarifi ara */}
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted">Ücretsiz fotoğraf bul:</span>
+          <a
+            href={`https://www.pexels.com/search/${searchTerm}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 font-semibold transition hover:border-basil hover:text-basil"
+          >
+            Pexels <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+          <a
+            href={`https://unsplash.com/s/photos/${searchTerm}?license=free`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 font-semibold transition hover:border-basil hover:text-basil"
+          >
+            Unsplash <ExternalLink className="h-3.5 w-3.5" />
+          </a>
         </div>
 
         <input
@@ -125,9 +182,9 @@ export default function EditRecipeClient() {
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
 
-        {uploadError && (
+        {photoError && (
           <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {uploadError}
+            {photoError}
           </p>
         )}
       </section>

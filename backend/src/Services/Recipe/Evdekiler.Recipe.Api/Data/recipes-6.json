@@ -1,0 +1,501 @@
+[
+  {
+    "slug": "cilbir",
+    "title": "Çılbır",
+    "emoji": "🥚",
+    "category": "Breakfast",
+    "prepMinutes": 15,
+    "servings": 2,
+    "description": "Sarımsaklı yoğurt yatağına bırakılan poşe yumurtaların, kırmızı biberli tereyağıyla taçlandırıldığı Osmanlı'dan kalma şık bir kahvaltılık. Taze ekmeği banmak için sofrada ayrı bir yer açtırır.",
+    "ingredients": [
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 3,
+        "unit": "Gram"
+      },
+      {
+        "id": 97,
+        "name": "Sirke",
+        "quantity": 15,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 32,
+        "name": "Dereotu",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yoğurdu ezilmiş sarımsakla karıştırıp oda sıcaklığına gelmesi için servis tabaklarına yayın.",
+      "Geniş bir tencerede suyu kaynatın, sirkeyi ekleyip ateşi kısın; su hafifçe kaynar halde olmalı.",
+      "Yumurtaları tek tek küçük bir kâseye kırıp suyun ortasında oluşturduğunuz girdaba yavaşça bırakın ve 3 dakika pişirin.",
+      "Kevgirle çıkardığınız yumurtaları yoğurdun üzerine yerleştirin.",
+      "Tereyağını eritip pul biberi kızdırın, yumurtaların üzerine gezdirin ve dereotuyla servis edin."
+    ]
+  },
+  {
+    "slug": "peynirli-omlet",
+    "title": "Peynirli Omlet",
+    "emoji": "🍳",
+    "category": "Breakfast",
+    "prepMinutes": 10,
+    "servings": 1,
+    "description": "Beyaz peynirin tuzluluğuyla dengelenen, içi yumuşacık ve kabarık bir omlet. Hafta içi sabahlarının en hızlı ve doyurucu kahvaltısıdır.",
+    "ingredients": [
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.05,
+        "unit": "Liter"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yumurtaları sütle birlikte köpürene kadar çırpın.",
+      "Tavada tereyağını orta ateşte eritin ve yumurtalı karışımı dökün.",
+      "Alt kısmı pişmeye başlayınca ufaladığınız peyniri ve kıyılmış maydanozu bir yarısına serpin.",
+      "Omleti ikiye katlayın, kapağını kapatıp 1 dakika daha pişirerek sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "mantarli-omlet",
+    "title": "Mantarlı Kaşarlı Omlet",
+    "emoji": "🍄",
+    "category": "Breakfast",
+    "prepMinutes": 15,
+    "servings": 1,
+    "description": "Tereyağında sotelenmiş mantarların eriyen kaşarla buluştuğu, hafta sonu kahvaltılarına yakışan zengin bir omlet. Yanında taze domates ve salatalıkla mükemmel bir tabak olur.",
+    "ingredients": [
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 34,
+        "name": "Mantar",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 16,
+        "name": "Kaşar peyniri",
+        "quantity": 40,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 1,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Mantarları ince dilimleyin ve tereyağında suyunu çekene kadar soteleyin.",
+      "Yumurtaları çırpıp karabiberle tatlandırın ve mantarların üzerine dökün.",
+      "Kısık ateşte alt kısmı pişince rendelenmiş kaşarı serpin.",
+      "Omleti katlayıp kapağı kapalı şekilde kaşar eriyene kadar pişirin."
+    ]
+  },
+  {
+    "slug": "pankek",
+    "title": "Pankek",
+    "emoji": "🥞",
+    "category": "Breakfast",
+    "prepMinutes": 25,
+    "servings": 3,
+    "description": "Kabarık ve yumuşacık dokusuyla hafta sonu kahvaltılarının yıldızı. Üzerine bal, reçel ya da taze meyve ekleyerek dilediğiniz gibi zenginleştirebilirsiniz.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.3,
+        "unit": "Liter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 66,
+        "name": "Kabartma tozu",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 56,
+        "name": "Bal",
+        "quantity": 50,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yumurta, süt, şeker ve eritilmiş tereyağını çırpın.",
+      "Un ve kabartma tozunu eleyerek ekleyin; hamur akışkan ama koyu kıvamda olmalı. 10 dakika dinlendirin.",
+      "Yapışmaz tavayı orta ateşte ısıtın, bir kepçe hamur döküp yüzeyinde kabarcıklar oluşana kadar pişirin.",
+      "Çevirip diğer yüzünü de 1 dakika pişirin; üst üste dizip bal ile servis edin."
+    ]
+  },
+  {
+    "slug": "yumurtali-ekmek",
+    "title": "Yumurtalı Ekmek",
+    "emoji": "🍞",
+    "category": "Breakfast",
+    "prepMinutes": 15,
+    "servings": 2,
+    "description": "Bayat ekmekleri değerlendirmenin en lezzetli yolu: yumurtaya bulanıp kızartılan, dışı çıtır içi yumuşak dilimler. Çocukluğumuzun pazar kahvaltılarını hatırlatan bir lezzettir.",
+    "ingredients": [
+      {
+        "id": 49,
+        "name": "Ekmek",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.1,
+        "unit": "Liter"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 60,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Bayat ekmekten 6-8 dilim kesin.",
+      "Yumurtaları süt ve tuzla geniş bir kapta çırpın.",
+      "Ekmek dilimlerini karışıma her iki yüzü de ıslanacak şekilde batırın.",
+      "Kızgın yağda iki yüzü de altın rengi olana kadar kızartın, kâğıt havlu üzerinde fazla yağını alıp sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "pastirmali-yumurta",
+    "title": "Pastırmalı Yumurta",
+    "emoji": "🥩",
+    "category": "Breakfast",
+    "prepMinutes": 10,
+    "servings": 2,
+    "description": "Kayseri mutfağının en sevilen kahvaltılıklarından biri; pastırmanın çemen aroması tereyağında yumurtayla buluşur. Sahanda servis edildiğinde kokusuyla sofradaki herkesi toplar.",
+    "ingredients": [
+      {
+        "id": 85,
+        "name": "Pastırma",
+        "quantity": 80,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 15,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Sahanda tereyağını kısık ateşte eritin.",
+      "Pastırma dilimlerini ekleyip 30 saniye kadar, sertleşmeden hafifçe ısıtın.",
+      "Yumurtaları pastırmaların üzerine kırın.",
+      "Kapağı kapatıp beyazları pişene, sarıları akışkan kalana kadar 3-4 dakika pişirin ve sahanında servis edin."
+    ]
+  },
+  {
+    "slug": "patatesli-yumurta",
+    "title": "Patatesli Yumurta",
+    "emoji": "🥔",
+    "category": "Breakfast",
+    "prepMinutes": 25,
+    "servings": 3,
+    "description": "Küp küp kızarmış patateslerin yumurtayla bütünleştiği, hem kahvaltıda hem de akşam yemeğinde severek yenen doyurucu bir tava. Pul biberle tatlandırıldığında lezzeti bir kat daha artar.",
+    "ingredients": [
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 60,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patatesleri küçük küpler halinde doğrayın; dilerseniz soğanı da ince kıyın.",
+      "Geniş bir tavada yağı ısıtın, patatesleri ve soğanı ekleyip ara ara karıştırarak yumuşayıp kızarana kadar pişirin.",
+      "Yumurtaları çırpıp tuz ve pul biberle tatlandırın, patateslerin üzerine dökün.",
+      "Yumurtalar pişene kadar hafifçe karıştırarak pişirin ve sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "acuka",
+    "title": "Acuka",
+    "emoji": "🌶️",
+    "category": "Breakfast",
+    "prepMinutes": 15,
+    "servings": 6,
+    "description": "Cevizli, baharatlı ve hafif ekşimsi bir kahvaltılık sos; ekmeğe sürmek için birebir. Buzdolabında birkaç gün saklanabildiği için önceden hazırlamak da çok pratiktir.",
+    "ingredients": [
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 57,
+        "name": "Ceviz",
+        "quantity": 80,
+        "unit": "Gram"
+      },
+      {
+        "id": 101,
+        "name": "Galeta unu",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 60,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 53,
+        "name": "Kimyon",
+        "quantity": 2,
+        "unit": "Gram"
+      },
+      {
+        "id": 88,
+        "name": "Nar ekşisi",
+        "quantity": 15,
+        "unit": "Milliliter",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Cevizleri iri parçalar kalacak şekilde dövün ya da rondodan kısaca geçirin.",
+      "Salça, ezilmiş sarımsak, kimyon ve zeytinyağını bir kapta karıştırın.",
+      "Ceviz, galeta unu ve nar ekşisini ekleyip sürülebilir bir kıvam elde edene kadar karıştırın.",
+      "Kapalı bir kavanozda buzdolabında saklayıp kahvaltıda ekmekle servis edin."
+    ]
+  },
+  {
+    "slug": "mihlama",
+    "title": "Mıhlama",
+    "emoji": "🧀",
+    "category": "Breakfast",
+    "prepMinutes": 20,
+    "servings": 3,
+    "description": "Karadeniz'in bol tereyağlı, uzayan peyniriyle meşhur mısır unlu kahvaltılığı. Sıcak sıcak, ekmekle doğrudan tavadan yemek bu lezzetin en güzel geleneğidir.",
+    "ingredients": [
+      {
+        "id": 102,
+        "name": "Mısır unu",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 16,
+        "name": "Kaşar peyniri",
+        "quantity": 150,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Tereyağını tavada eritin ve mısır ununu ekleyip kokusu çıkana kadar 3-4 dakika kavurun.",
+      "Bir su bardağı sıcak suyu karıştırarak ekleyin, kıvamlanana kadar pişirin.",
+      "Rendelenmiş kaşarı ekleyin ve peynir eriyip uzayana, tereyağı yüzeye çıkana kadar kısık ateşte karıştırın.",
+      "Tavasında, sıcak olarak servis edin."
+    ]
+  },
+  {
+    "slug": "avokadolu-ekmek",
+    "title": "Yumurtalı Avokado Ekmek",
+    "emoji": "🥑",
+    "category": "Breakfast",
+    "prepMinutes": 10,
+    "servings": 2,
+    "description": "Kızarmış ekmeğin üzerine limonlu avokado ezmesi ve rafadan yumurta; modern kahvaltı sofralarının hafif ama doyurucu bir favorisi. Pul biber ve zeytinyağıyla tamamlanır.",
+    "ingredients": [
+      {
+        "id": 93,
+        "name": "Avokado",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 49,
+        "name": "Ekmek",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 10,
+        "unit": "Milliliter",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 1,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yumurtaları kaynar suda 6 dakika haşlayın, soğuk suya alıp kabuklarını soyun.",
+      "Ekmekten 2 kalın dilim kesip tost makinesinde ya da tavada kızartın.",
+      "Avokadoyu çatalla ezin, limon suyu ve bir tutam tuzla karıştırın.",
+      "Ezmeyi ekmeklere sürün, ikiye kestiğiniz yumurtaları üzerine yerleştirin; zeytinyağı ve pul biberle servis edin."
+    ]
+  }
+]

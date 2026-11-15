@@ -1,0 +1,562 @@
+[
+  {
+    "slug": "yayla-corbasi",
+    "title": "Yayla Çorbası",
+    "emoji": "🥣",
+    "category": "Soup",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Yoğurt, pirinç ve naneli tereyağının buluştuğu, hem hafif hem de içi ısıtan klasik bir Anadolu çorbası. Hasta olduğumuzda annelerimizin ilk aklına gelen şifa kâsesidir.",
+    "ingredients": [
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 21,
+        "name": "Pirinç",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 33,
+        "name": "Nane",
+        "quantity": 5,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Pirinci yıkayıp 1,5 litre suda yumuşayana kadar yaklaşık 20 dakika haşlayın.",
+      "Ayrı bir kapta yoğurt, yumurta ve unu pürüzsüz olana kadar çırpın.",
+      "Terbiyeyi kesilmemesi için tencereden birkaç kepçe sıcak suyla ılıştırın, ardından karıştırarak tencereye ekleyin.",
+      "Çorbayı sürekli karıştırarak kaynayana kadar pişirin ve 2-3 dakika daha kaynatın.",
+      "Tereyağını eritip kuru naneyi ekleyin, kızdırdığınız naneli yağı servis ederken çorbanın üzerine gezdirin."
+    ]
+  },
+  {
+    "slug": "tarhana-corbasi",
+    "title": "Tarhana Çorbası",
+    "emoji": "🥣",
+    "category": "Soup",
+    "prepMinutes": 25,
+    "servings": 4,
+    "description": "Yazdan hazırlanıp kışa saklanan tarhananın ekşimsi ve derin lezzetiyle hazırlanan, köklü bir Anadolu çorbası. Soğuk kış günlerinde bir dilim ekmekle tam bir öğün yerine geçer.",
+    "ingredients": [
+      {
+        "id": 95,
+        "name": "Tarhana",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 25,
+        "unit": "Gram"
+      },
+      {
+        "id": 33,
+        "name": "Nane",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tarhanayı bir su bardağı ılık suda 15 dakika bekleterek yumuşatın.",
+      "Tereyağını tencerede eritip salçayı ekleyin ve kokusu çıkana kadar kavurun.",
+      "Islattığınız tarhanayı ekleyip karıştırın, ardından 1 litre sıcak suyu yavaş yavaş ilave edin.",
+      "Topaklanmaması için sık sık karıştırarak kısık ateşte 10-15 dakika pişirin.",
+      "Dilerseniz servis ederken nane ve pul biberle tatlandırın."
+    ]
+  },
+  {
+    "slug": "terbiyeli-tavuk-corbasi",
+    "title": "Terbiyeli Tavuk Çorbası",
+    "emoji": "🍗",
+    "category": "Soup",
+    "prepMinutes": 50,
+    "servings": 4,
+    "description": "Tavuk suyunda pişen şehriye ve limonlu yumurta terbiyesiyle kadifemsi bir kıvama kavuşan, besleyici bir ev çorbası. Kış aylarında bağışıklığı desteklemek için en sevilen tariflerdendir.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 51,
+        "name": "Tel şehriye",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Tavuk göğsünü 1,5 litre suda yumuşayana kadar yaklaşık 30 dakika haşlayın; suyunu süzüp ayırın ve etini didikleyin.",
+      "Tencerede tereyağını eritip unu hafifçe kavurun, tavuk suyunu yavaşça ekleyerek karıştırın.",
+      "Şehriyeyi ve didiklenmiş tavuğu ekleyip şehriyeler yumuşayana kadar 10 dakika pişirin.",
+      "Yumurtayı limon suyuyla çırpın, birkaç kepçe sıcak çorbayla ılıştırarak terbiyeyi hazırlayın.",
+      "Terbiyeyi karıştırarak çorbaya ekleyin, bir taşım kaynatıp ocaktan alın."
+    ]
+  },
+  {
+    "slug": "domates-corbasi",
+    "title": "Kremalı Domates Çorbası",
+    "emoji": "🍅",
+    "category": "Soup",
+    "prepMinutes": 30,
+    "servings": 4,
+    "description": "Olgun domateslerin sütle yumuşatılıp rendelenmiş kaşarla taçlandırıldığı, renginden lezzetine kadar iştah açan bir çorba. Kıtır ekmek küpleriyle servis edildiğinde restoran tadı verir.",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 6,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.25,
+        "unit": "Liter"
+      },
+      {
+        "id": 16,
+        "name": "Kaşar peyniri",
+        "quantity": 50,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 54,
+        "name": "Kekik",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Domatesleri rendeleyin ya da kabuklarını soyup blenderdan geçirin.",
+      "Tereyağını eritip unu ekleyin ve kokusu çıkana kadar 2-3 dakika kavurun.",
+      "Domatesleri ekleyip karıştırın; 1 litre sıcak suyu topaklanmayacak şekilde azar azar ilave edin.",
+      "Kaynadıktan sonra kısık ateşte 10 dakika pişirin, ardından sütü ekleyip bir taşım daha kaynatın.",
+      "Rendelenmiş kaşar ve kekikle sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "mantar-corbasi",
+    "title": "Kremalı Mantar Çorbası",
+    "emoji": "🍄",
+    "category": "Soup",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Tereyağında sotelenmiş mantarların süt ve krema ile buluştuğu, yoğun aromalı ve kadifemsi bir çorba. Özel akşam yemeklerinde başlangıç olarak sunmak için idealdir.",
+    "ingredients": [
+      {
+        "id": 34,
+        "name": "Mantar",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 48,
+        "name": "Krema",
+        "quantity": 100,
+        "unit": "Milliliter",
+        "optional": true
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Mantarları ve soğanı ince ince doğrayın.",
+      "Tereyağında soğanı pembeleşene kadar kavurun, mantarları ekleyip suyunu salıp çekene kadar soteleyin.",
+      "Unu ekleyip 2 dakika kavurun; ardından 0,5 litre sıcak suyu ve sütü yavaşça ilave edin.",
+      "Kısık ateşte 15 dakika pişirin; dilerseniz bir kısmını blenderdan geçirerek kıvamını yoğunlaştırın.",
+      "Kremayı ekleyip bir taşım kaynatın, karabiberle servis edin."
+    ]
+  },
+  {
+    "slug": "sehriye-corbasi",
+    "title": "Domatesli Şehriye Çorbası",
+    "emoji": "🍜",
+    "category": "Soup",
+    "prepMinutes": 20,
+    "servings": 4,
+    "description": "Birkaç malzemeyle dakikalar içinde hazırlanan, okul dönüşü çocuklara ve yorgun akşamlara en çok yakışan pratik bir çorba. Limon sıkarak servis etmenizi öneririz.",
+    "ingredients": [
+      {
+        "id": 51,
+        "name": "Tel şehriye",
+        "quantity": 60,
+        "unit": "Gram"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tereyağını tencerede eritin ve şehriyeleri ekleyip hafifçe renk alana kadar kavurun.",
+      "Salçayı ekleyip birkaç saniye daha kavurun.",
+      "1 litre sıcak su ekleyin ve şehriyeler yumuşayana kadar yaklaşık 10 dakika pişirin.",
+      "İnce kıyılmış maydanoz ve limonla sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "brokoli-corbasi",
+    "title": "Brokoli Çorbası",
+    "emoji": "🥦",
+    "category": "Soup",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Brokolinin canlı yeşili ve patatesin yumuşak dokusuyla hazırlanan, vitamin deposu bir çorba. Sebze yemeyi sevmeyenlere bile sevdirecek kadar kremamsı ve hafif bir lezzettir.",
+    "ingredients": [
+      {
+        "id": 35,
+        "name": "Brokoli",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.25,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.5,
+        "unit": "Liter"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 48,
+        "name": "Krema",
+        "quantity": 100,
+        "unit": "Milliliter",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Brokoliyi küçük çiçeklerine ayırın; patates ve soğanı küp küp doğrayın.",
+      "Tereyağında soğanı kavurun, patates ve brokoliyi ekleyip birkaç dakika çevirin.",
+      "Sebzelerin üzerini geçecek kadar sıcak su ekleyin ve yumuşayana kadar 20 dakika pişirin.",
+      "Blenderdan geçirip pürüzsüz hale getirin, sütü ve dilerseniz kremayı ekleyip bir taşım kaynatın."
+    ]
+  },
+  {
+    "slug": "yesil-mercimek-corbasi",
+    "title": "Yeşil Mercimek Çorbası",
+    "emoji": "🫘",
+    "category": "Soup",
+    "prepMinutes": 50,
+    "servings": 4,
+    "description": "Tane tane yeşil mercimeğin sebzelerle birlikte piştiği, lif ve protein açısından zengin, doyurucu bir çorba. Kimyon ve limonla birlikte kendine has bir lezzete kavuşur.",
+    "ingredients": [
+      {
+        "id": 94,
+        "name": "Yeşil mercimek",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 15,
+        "unit": "Gram"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 53,
+        "name": "Kimyon",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Mercimekleri yıkayıp 10 dakika ön haşlama yapın ve süzün.",
+      "Zeytinyağında doğranmış soğan ve havucu kavurun, salçayı ekleyin.",
+      "Mercimekleri ve 1,5 litre sıcak suyu ilave edip mercimekler yumuşayana kadar yaklaşık 30 dakika pişirin.",
+      "Kimyonla tatlandırıp limonla servis edin."
+    ]
+  },
+  {
+    "slug": "sebze-corbasi",
+    "title": "Sebze Çorbası",
+    "emoji": "🥕",
+    "category": "Soup",
+    "prepMinutes": 40,
+    "servings": 4,
+    "description": "Mevsim sebzelerinin rengarenk buluşmasıyla hazırlanan, hafif ve sağlıklı bir çorba. Buzdolabında kalan sebzeleri değerlendirmek için de harika bir seçenektir.",
+    "ingredients": [
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.25,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 8,
+        "name": "Kabak",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 40,
+        "name": "Bezelye",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Bütün sebzeleri küçük küpler halinde doğrayın.",
+      "Zeytinyağında soğanı kavurun, rendelenmiş domatesi ekleyin.",
+      "Havuç ve patatesleri ekleyip birkaç dakika çevirin, ardından 1,5 litre sıcak su ilave edin.",
+      "15 dakika pişirdikten sonra kabak ve bezelyeyi ekleyin, sebzeler yumuşayana kadar 10 dakika daha pişirin."
+    ]
+  },
+  {
+    "slug": "dugun-corbasi",
+    "title": "Düğün Çorbası",
+    "emoji": "🥣",
+    "category": "Soup",
+    "prepMinutes": 80,
+    "servings": 6,
+    "description": "Adını düğün sofralarından alan, didiklenmiş et ve limonlu yoğurt terbiyesiyle hazırlanan zengin bir çorba. Üzerine gezdirilen kırmızı biberli tereyağı, sunumunu bir şölene dönüştürür.",
+    "ingredients": [
+      {
+        "id": 107,
+        "name": "Kuzu eti",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 20,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 25,
+        "unit": "Gram"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Kuzu etini 2 litre suda, köpüğünü alarak yumuşayana kadar yaklaşık 1 saat haşlayın; etini didikleyip suyunu ayırın.",
+      "Yoğurt, yumurta, un ve limon suyunu pürüzsüz olana kadar çırparak terbiyeyi hazırlayın.",
+      "Et suyunu kaynatın; terbiyeyi birkaç kepçe sıcak suyla ılıştırıp karıştırarak tencereye ekleyin.",
+      "Didiklenmiş eti ekleyin ve sürekli karıştırarak 5 dakika kaynatın.",
+      "Tereyağını eritip pul biberi kızdırın, servis ederken çorbanın üzerine gezdirin."
+    ]
+  }
+]

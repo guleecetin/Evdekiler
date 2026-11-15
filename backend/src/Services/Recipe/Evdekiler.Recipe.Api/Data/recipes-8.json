@@ -1,0 +1,616 @@
+[
+  {
+    "slug": "gavurdagi-salatasi",
+    "title": "Gavurdağı Salatası",
+    "emoji": "🥗",
+    "category": "Salad",
+    "prepMinutes": 15,
+    "servings": 4,
+    "description": "Güneydoğu'nun kebap sofralarından gelen, cevizli ve nar ekşili, ince ince kıyılmış ferah bir salata. Izgara etlerin en güzel eşlikçisidir.",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 57,
+        "name": "Ceviz",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 88,
+        "name": "Nar ekşisi",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Domatesleri, biberleri, soğanı ve maydanozu olabildiğince küçük, ince ince doğrayın.",
+      "Cevizleri iri parçalar halinde kırın.",
+      "Bütün malzemeleri geniş bir kapta birleştirin.",
+      "Nar ekşisi, zeytinyağı, tuz ve pul biberi ekleyip karıştırın; servis etmeden önce 10 dakika dinlendirin."
+    ]
+  },
+  {
+    "slug": "roka-salatasi",
+    "title": "Narlı Peynirli Roka Salatası",
+    "emoji": "🌿",
+    "category": "Salad",
+    "prepMinutes": 10,
+    "servings": 2,
+    "description": "Rokanın hafif acılığı, beyaz peynirin tuzu ve nar tanelerinin tatlı ekşiliğiyle dengelenen şık bir salata. Hem davet sofralarına hem de hızlı bir öğle yemeğine yakışır.",
+    "ingredients": [
+      {
+        "id": 87,
+        "name": "Roka",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 80,
+        "unit": "Gram"
+      },
+      {
+        "id": 89,
+        "name": "Nar",
+        "quantity": 0.5,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 20,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 88,
+        "name": "Nar ekşisi",
+        "quantity": 15,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 57,
+        "name": "Ceviz",
+        "quantity": 30,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Rokaları yıkayıp iyice kurulayın ve iri iri doğrayın.",
+      "Narı tanelerine ayırın, peyniri küp küp kesin.",
+      "Zeytinyağı ile nar ekşisini çırparak sosu hazırlayın.",
+      "Rokaları servis tabağına alın, peynir, nar ve cevizleri üzerine yerleştirip sosu servis anında gezdirin."
+    ]
+  },
+  {
+    "slug": "mevsim-salatasi",
+    "title": "Mevsim Salatası",
+    "emoji": "🥬",
+    "category": "Salad",
+    "prepMinutes": 15,
+    "servings": 4,
+    "description": "Marul, domates, salatalık ve havucun buluştuğu, her sofraya yakışan çıtır ve rengarenk bir salata. Limonlu sosuyla hem hafif hem de ferahlatıcıdır.",
+    "ingredients": [
+      {
+        "id": 86,
+        "name": "Marul",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 2,
+        "name": "Salatalık",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 41,
+        "name": "Mısır",
+        "quantity": 50,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Marulu yıkayıp ince ince kıyın; domates ve salatalığı doğrayın, havucu rendeleyin.",
+      "Bütün sebzeleri ve dilerseniz mısırı geniş bir kâsede birleştirin.",
+      "Limon suyu, zeytinyağı ve tuzu çırparak sosu hazırlayın.",
+      "Sosu servis etmeden hemen önce ekleyip karıştırın ki marul diriliğini korusun."
+    ]
+  },
+  {
+    "slug": "piyaz",
+    "title": "Fasulye Piyazı",
+    "emoji": "🫘",
+    "category": "Salad",
+    "prepMinutes": 20,
+    "servings": 4,
+    "description": "Haşlanmış kuru fasulyenin sumaklı soğan, maydanoz ve sirkeli sosla buluştuğu, köftecilerin değişmez eşlikçisi. Üzerine haşlanmış yumurta dilimleri eklendiğinde Antalya usulüne bir adım yaklaşır.",
+    "ingredients": [
+      {
+        "id": 38,
+        "name": "Kuru fasulye",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 97,
+        "name": "Sirke",
+        "quantity": 15,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 40,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Bir gece önceden ıslattığınız fasulyeleri dağılmadan yumuşayana kadar haşlayıp süzün ve soğutun.",
+      "Soğanı piyazlık doğrayıp biraz tuzla ovarak acısını alın; maydanozu ve domatesi doğrayın.",
+      "Sirke, zeytinyağı ve tuzu çırparak sosu hazırlayın.",
+      "Fasulyeleri soğan, maydanoz ve domatesle karıştırıp sosu ekleyin; üzerine haşlanmış yumurta dilimleri ve pul biberle servis edin."
+    ]
+  },
+  {
+    "slug": "ton-balikli-salata",
+    "title": "Ton Balıklı Salata",
+    "emoji": "🐟",
+    "category": "Salad",
+    "prepMinutes": 10,
+    "servings": 2,
+    "description": "Ton balığı, mısır ve taze yeşilliklerle hazırlanan, protein bakımından zengin ve tek başına doyurucu bir salata. Yoğun günlerde hızlı ve sağlıklı bir öğle yemeği için idealdir.",
+    "ingredients": [
+      {
+        "id": 47,
+        "name": "Ton balığı",
+        "quantity": 160,
+        "unit": "Gram"
+      },
+      {
+        "id": 86,
+        "name": "Marul",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 41,
+        "name": "Mısır",
+        "quantity": 80,
+        "unit": "Gram"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 20,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 79,
+        "name": "Zeytin",
+        "quantity": 50,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Marulu yıkayıp doğrayın, domatesi küp küp kesin.",
+      "Ton balığının yağını süzüp iri parçalar halinde ayırın.",
+      "Marul, domates, mısır ve zeytinleri bir kâsede birleştirin, ton balığını üzerine yerleştirin.",
+      "Limon suyu ve zeytinyağıyla tatlandırıp hemen servis edin."
+    ]
+  },
+  {
+    "slug": "kisir",
+    "title": "Kısır",
+    "emoji": "🌾",
+    "category": "Salad",
+    "prepMinutes": 30,
+    "servings": 6,
+    "description": "İnce bulgurun salça, nar ekşisi ve bol yeşillikle yoğrulduğu, kabul günlerinin ve çay saatlerinin vazgeçilmez lezzeti. Marul yapraklarına sarılarak servis edildiğinde hem şık hem pratik olur.",
+    "ingredients": [
+      {
+        "id": 23,
+        "name": "Bulgur",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 92,
+        "name": "Taze soğan",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 33,
+        "name": "Nane",
+        "quantity": 3,
+        "unit": "Gram"
+      },
+      {
+        "id": 88,
+        "name": "Nar ekşisi",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 40,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 86,
+        "name": "Marul",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "İnce bulguru geniş bir kaba alın, üzerini geçecek kadar kaynar su dökün ve kapağını kapatıp 15 dakika demlendirin.",
+      "Salçayı ekleyip bulgurla birlikte iyice yoğurun.",
+      "İnce kıyılmış domates, taze soğan, maydanoz ve naneyi ilave edin.",
+      "Nar ekşisi, zeytinyağı ve tuzla tatlandırıp karıştırın; marul yapraklarıyla servis edin."
+    ]
+  },
+  {
+    "slug": "patates-salatasi",
+    "title": "Patates Salatası",
+    "emoji": "🥔",
+    "category": "Salad",
+    "prepMinutes": 30,
+    "servings": 4,
+    "description": "Haşlanmış patateslerin taze soğan, maydanoz ve limonlu zeytinyağıyla buluştuğu, piknik sepetlerinin ve çay saatlerinin klasik salatası. Hafif ve doyurucu bir yan lezzettir.",
+    "ingredients": [
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 92,
+        "name": "Taze soğan",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 40,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 32,
+        "name": "Dereotu",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patatesleri kabuklarıyla yumuşayana kadar haşlayın, soğuyunca soyup küp küp doğrayın.",
+      "Taze soğan, maydanoz ve dereotunu ince ince kıyın.",
+      "Limon suyu, zeytinyağı, tuz ve pul biberi çırparak sosu hazırlayın.",
+      "Bütün malzemeleri sosla nazikçe karıştırın; patatesler dağılmasın diye fazla ezmeyin."
+    ]
+  },
+  {
+    "slug": "mor-lahana-salatasi",
+    "title": "Mor Lahana Salatası",
+    "emoji": "🥬",
+    "category": "Salad",
+    "prepMinutes": 15,
+    "servings": 4,
+    "description": "Canlı rengiyle sofraya neşe katan, havuçla tatlanan çıtır bir salata. Lahanayı tuz ve limonla ovarak yumuşatmak, lezzetin en önemli püf noktasıdır.",
+    "ingredients": [
+      {
+        "id": 90,
+        "name": "Mor lahana",
+        "quantity": 0.5,
+        "unit": "Piece"
+      },
+      {
+        "id": 7,
+        "name": "Havuç",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 4,
+        "unit": "Gram"
+      },
+      {
+        "id": 97,
+        "name": "Sirke",
+        "quantity": 10,
+        "unit": "Milliliter",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Lahanayı incecik kıyın, havucu rendeleyin.",
+      "Lahanayı tuz ve limon suyuyla birkaç dakika elinizle ovarak yumuşatın.",
+      "Havucu ekleyin, zeytinyağı ve dilerseniz sirkeyle tatlandırın.",
+      "Lezzetlerin birleşmesi için servis etmeden önce 10 dakika dinlendirin."
+    ]
+  },
+  {
+    "slug": "tavuklu-salata",
+    "title": "Izgara Tavuklu Salata",
+    "emoji": "🍗",
+    "category": "Salad",
+    "prepMinutes": 25,
+    "servings": 2,
+    "description": "Izgarada pişmiş sulu tavuk dilimlerinin taze yeşilliklerle ve hardallı sosla buluştuğu, tek başına bir ana öğün yerine geçen doyurucu salata. Spor sonrası beslenme için de harika bir seçenektir.",
+    "ingredients": [
+      {
+        "id": 19,
+        "name": "Tavuk göğsü",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 86,
+        "name": "Marul",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 2,
+        "name": "Salatalık",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 41,
+        "name": "Mısır",
+        "quantity": 50,
+        "unit": "Gram"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 30,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 98,
+        "name": "Hardal",
+        "quantity": 10,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Tavuk göğsünü biraz zeytinyağı, tuz ve karabiberle ovup ızgara tavada her yüzünü 5-6 dakika pişirin; dinlendirip dilimleyin.",
+      "Marulu doğrayın, domates ve salatalığı küp küp kesin.",
+      "Kalan zeytinyağı, limon suyu ve hardalı çırparak sosu hazırlayın.",
+      "Sebzeleri ve mısırı sosla karıştırıp tabağa alın, tavuk dilimlerini üzerine yerleştirerek servis edin."
+    ]
+  },
+  {
+    "slug": "patlican-salatasi",
+    "title": "Közlenmiş Patlıcan Salatası",
+    "emoji": "🍆",
+    "category": "Salad",
+    "prepMinutes": 35,
+    "servings": 4,
+    "description": "Közün dumanlı aromasını taşıyan patlıcan ve kırmızı biberlerin sarımsaklı zeytinyağıyla buluştuğu, mangal sofralarının yıldızı. Hem sıcak hem de soğuk olarak servis edilebilir.",
+    "ingredients": [
+      {
+        "id": 9,
+        "name": "Patlıcan",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 43,
+        "name": "Kırmızı biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 5,
+        "name": "Sarımsak",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 28,
+        "name": "Zeytinyağı",
+        "quantity": 40,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 97,
+        "name": "Sirke",
+        "quantity": 15,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patlıcan ve biberleri ocakta, mangalda ya da fırının ızgarasında kabukları kararıp içleri yumuşayana kadar közleyin.",
+      "Sıcakken bir poşete koyup 10 dakika bekletin; bu sayede kabukları kolayca soyulur.",
+      "Kabuklarını soyup bıçakla iri iri doğrayın.",
+      "Ezilmiş sarımsak, zeytinyağı, sirke ve tuzla karıştırın; kıyılmış maydanozla servis edin."
+    ]
+  }
+]

@@ -1,0 +1,608 @@
+[
+  {
+    "slug": "su-boregi",
+    "title": "Su Böreği",
+    "emoji": "🥐",
+    "category": "Pastry",
+    "prepMinutes": 75,
+    "servings": 8,
+    "description": "Haşlanan ince yufka katlarının bol tereyağı ve peynirle buluştuğu, böreklerin sultanı sayılan zahmetli ama emeğe değen bir lezzet. Özel günlerin, bayram sabahlarının ve misafir sofralarının baş tacıdır.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 4,
+        "unit": "Piece"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 250,
+        "unit": "Gram"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 125,
+        "unit": "Gram"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.2,
+        "unit": "Liter"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Peyniri ufalayıp ince kıyılmış maydanozla karıştırarak iç harcı hazırlayın; tereyağını eritin.",
+      "Yufkaları tepsi boyutunda kesin; geniş bir tencerede tuzlu suyu kaynatın ve yanına bir kap soğuk su hazırlayın.",
+      "Yufkaları tek tek 1 dakika haşlayıp soğuk suya alın, süzerek tereyağlı tepsiye kat kat serin ve her kata tereyağı sürün.",
+      "Katların yarısına gelince peynirli harcı yayın, kalan yufkaları da aynı şekilde üzerine dizin.",
+      "Yumurta ve sütü çırpıp üzerine gezdirin; önceden ısıtılmış 190°C fırında üzeri kızarana kadar yaklaşık 35 dakika pişirin. Biraz dinlendirip dilimleyerek servis edin."
+    ]
+  },
+  {
+    "slug": "ispanakli-kol-boregi",
+    "title": "Ispanaklı Kol Böreği",
+    "emoji": "🥬",
+    "category": "Pastry",
+    "prepMinutes": 60,
+    "servings": 8,
+    "description": "Hazır yufkayla kolayca hazırlanan, ıspanak ve peynirle dolu çıtır rulolar. Çay saatlerinin ve kalabalık kahvaltıların en çok tercih edilen böreklerinden biridir.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 10,
+        "name": "Ispanak",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.2,
+        "unit": "Liter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 103,
+        "name": "Susam",
+        "quantity": 10,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Ispanakları yıkayıp doğrayın; soğanı biraz yağda kavurup ıspanakları ekleyin ve suyunu çekene kadar pişirin. Soğuyunca peyniri karıştırın.",
+      "Süt, sıvı yağ ve yumurtanın sarısını ayırıp kalanını çırparak sosu hazırlayın.",
+      "Her yufkayı ikiye kesin, üzerine sostan sürün ve kenarına iç harçtan bir sıra koyun.",
+      "Yufkayı rulo şeklinde sarıp yağlanmış tepsiye dizin; kalan sosu üzerlerine gezdirin, yumurta sarısı sürüp susam serpin.",
+      "Önceden ısıtılmış 180°C fırında üzerleri kızarana kadar yaklaşık 35 dakika pişirin."
+    ]
+  },
+  {
+    "slug": "patatesli-rulo-borek",
+    "title": "Patatesli Rulo Börek",
+    "emoji": "🥔",
+    "category": "Pastry",
+    "prepMinutes": 60,
+    "servings": 8,
+    "description": "Pul biberli patates harcıyla doldurulan, dışı çıtır içi yumuşacık rulo börekler. Çocukların severek yediği, ekonomik ve pratik bir ev böreğidir.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 6,
+        "name": "Patates",
+        "quantity": 0.5,
+        "unit": "Kilogram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.2,
+        "unit": "Liter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 3,
+        "unit": "Gram",
+        "optional": true
+      },
+      {
+        "id": 104,
+        "name": "Çörek otu",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Patatesleri haşlayıp ezin; soğanı biraz yağda kavurup patateslere ekleyin, tuz ve pul biberle tatlandırın.",
+      "Süt ve sıvı yağı karıştırarak sosu hazırlayın; yumurta sarısını üzeri için ayırın.",
+      "Yufkaları üçgen dilimlere kesin, sostan sürün, geniş kenarına patates harcı koyup sıkıca sarın.",
+      "Ruloları tepsiye dizin, yumurta sarısı sürüp çörek otu serpin.",
+      "180°C fırında altın rengi olana kadar yaklaşık 30 dakika pişirin."
+    ]
+  },
+  {
+    "slug": "kiymali-borek",
+    "title": "Kıymalı Tepsi Böreği",
+    "emoji": "🥩",
+    "category": "Pastry",
+    "prepMinutes": 70,
+    "servings": 8,
+    "description": "Soğanla kavrulmuş kıymanın yufka katları arasında piştiği, hem öğle yemeğine hem de çaya eşlik edebilen doyurucu bir börek. Yanında ayranla servis etmenizi öneririz.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.25,
+        "unit": "Liter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 100,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 52,
+        "name": "Karabiber",
+        "quantity": 2,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Soğanları yemeklik doğrayıp kavurun, kıymayı ekleyip suyunu çekene kadar pişirin; tuz ve karabiberle tatlandırıp soğutun.",
+      "Süt, sıvı yağ ve bir yumurtayı çırparak sosu hazırlayın.",
+      "Tepsiye bir yufka serin, sos sürün; ikinci yufkayı buruşturarak katlar halinde yerleştirip yine sos sürün.",
+      "Kıymalı harcı yayın, son yufkayı da aynı şekilde üzerine yerleştirip kalan sosu gezdirin; üzerine yumurta sarısı sürün.",
+      "Kare dilimlere kesip 180°C fırında üzeri kızarana kadar yaklaşık 35 dakika pişirin."
+    ]
+  },
+  {
+    "slug": "peynirli-pogaca",
+    "title": "Peynirli Poğaça",
+    "emoji": "🥯",
+    "category": "Pastry",
+    "prepMinutes": 50,
+    "servings": 15,
+    "description": "Ağızda dağılan yumuşacık hamuru ve peynirli iç harcıyla pastane poğaçalarını aratmayan bir tarif. Sabah kahvaltısına da, okul beslenme çantasına da çok yakışır.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 14,
+        "name": "Yoğurt",
+        "quantity": 100,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 125,
+        "unit": "Milliliter"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.1,
+        "unit": "Liter"
+      },
+      {
+        "id": 18,
+        "name": "Yumurta",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 66,
+        "name": "Kabartma tozu",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      },
+      {
+        "id": 104,
+        "name": "Çörek otu",
+        "quantity": 5,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Yoğurt, sıvı yağ, süt, yumurtanın beyazı ve bir tutam tuzu karıştırın; yumurta sarısını üzeri için ayırın.",
+      "Unu ve kabartma tozunu azar azar ekleyerek ele yapışmayan, kulak memesi yumuşaklığında bir hamur yoğurun.",
+      "Peyniri ufalayıp kıyılmış maydanozla karıştırın.",
+      "Hamurdan ceviz büyüklüğünde parçalar koparıp açın, ortasına peynir koyup kapatın ve tepsiye dizin.",
+      "Üzerlerine yumurta sarısı sürüp çörek otu serpin; 180°C fırında altın rengi olana kadar yaklaşık 25 dakika pişirin."
+    ]
+  },
+  {
+    "slug": "pisi",
+    "title": "Pişi",
+    "emoji": "🫓",
+    "category": "Pastry",
+    "prepMinutes": 70,
+    "servings": 6,
+    "description": "Mayalı hamurun kızgın yağda balon gibi kabardığı, sıcakken peynir ve reçelle yenen nostaljik bir kahvaltılık. Pazar sabahlarının en çok özlenen kokularındandır.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 67,
+        "name": "Kuru maya",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 55,
+        "name": "Şeker",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.25,
+        "unit": "Liter"
+      },
+      {
+        "id": 29,
+        "name": "Tuz",
+        "quantity": 8,
+        "unit": "Gram"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 500,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Ilık süt, bir su bardağı ılık su, şeker ve mayayı karıştırıp 5 dakika bekletin.",
+      "Un ve tuzu ekleyip yumuşak bir hamur yoğurun; üzerini örtüp iki katına çıkana kadar yaklaşık 45 dakika mayalandırın.",
+      "Elinizi yağlayarak hamurdan mandalina büyüklüğünde parçalar koparın, avucunuzda yassılaştırıp ortasını parmağınızla delin.",
+      "Kızgın yağda iki yüzü de altın rengi olana kadar kızartın, kâğıt havlu üzerinde fazla yağını alıp sıcak servis edin."
+    ]
+  },
+  {
+    "slug": "sigara-boregi",
+    "title": "Sigara Böreği",
+    "emoji": "🥖",
+    "category": "Pastry",
+    "prepMinutes": 35,
+    "servings": 6,
+    "description": "İnce ve uzun şekliyle adını alan, peynirli içi ve çıtır kabuğuyla misafir ikramlarının vazgeçilmezi. Çay saatlerinde tabakta en hızlı biten lezzettir.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 3,
+        "unit": "Piece"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 200,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 60,
+        "name": "Sıvı yağ",
+        "quantity": 500,
+        "unit": "Milliliter"
+      }
+    ],
+    "steps": [
+      "Peyniri ufalayıp ince kıyılmış maydanozla karıştırın.",
+      "Yufkaları önce 4'e, sonra her parçayı üçgen olacak şekilde ikiye kesin.",
+      "Geniş kenara bir çay kaşığı harç koyun, yanları içe katlayıp sigara şeklinde sıkıca sarın; uçlarını suyla ıslatarak yapıştırın.",
+      "Kızgın yağda altın rengi olana kadar kızartın ve kâğıt havlu üzerinde fazla yağını alarak servis edin."
+    ]
+  },
+  {
+    "slug": "lahmacun",
+    "title": "Ev Usulü Lahmacun",
+    "emoji": "🍕",
+    "category": "Pastry",
+    "prepMinutes": 90,
+    "servings": 6,
+    "description": "İncecik açılmış hamurun üzerine yayılan baharatlı kıymalı harçla fırında pişen, limon ve maydanozla dürülen sevilen bir lezzet. Ev fırınında da çıtır kenarlı lahmacun yapmak mümkün.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 400,
+        "unit": "Gram"
+      },
+      {
+        "id": 67,
+        "name": "Kuru maya",
+        "quantity": 7,
+        "unit": "Gram"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 27,
+        "name": "Salça",
+        "quantity": 30,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 30,
+        "name": "Pul biber",
+        "quantity": 5,
+        "unit": "Gram"
+      },
+      {
+        "id": 11,
+        "name": "Limon",
+        "quantity": 1,
+        "unit": "Piece",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Un, maya, bir tutam tuz ve ılık suyla yumuşak bir hamur yoğurun; üzerini örtüp 40 dakika dinlendirin.",
+      "Soğan, domates, biber ve maydanozu çok ince kıyın ya da rondodan geçirin; kıyma, salça, pul biber ve tuzla iyice yoğurun.",
+      "Hamuru 10-12 bezeye ayırıp her birini merdaneyle incecik açın.",
+      "İç harcı hamurların üzerine ince bir tabaka halinde kenarlara kadar yayın.",
+      "Fırının en yüksek sıcaklığında (250°C), önceden ısıtılmış tepside 8-10 dakika pişirin; limon ve maydanozla servis edin."
+    ]
+  },
+  {
+    "slug": "kiymali-pide",
+    "title": "Kıymalı Pide",
+    "emoji": "🫓",
+    "category": "Pastry",
+    "prepMinutes": 90,
+    "servings": 4,
+    "description": "Kayık şeklindeki mayalı hamurun içinde sulu kıymalı harçla pişen, fırından tereyağı sürülerek çıkan doyurucu bir pide. Bir tabak çoban salatası ve ayranla tam bir ziyafet olur.",
+    "ingredients": [
+      {
+        "id": 24,
+        "name": "Un",
+        "quantity": 500,
+        "unit": "Gram"
+      },
+      {
+        "id": 67,
+        "name": "Kuru maya",
+        "quantity": 10,
+        "unit": "Gram"
+      },
+      {
+        "id": 13,
+        "name": "Süt",
+        "quantity": 0.15,
+        "unit": "Liter"
+      },
+      {
+        "id": 20,
+        "name": "Kıyma",
+        "quantity": 300,
+        "unit": "Gram"
+      },
+      {
+        "id": 4,
+        "name": "Soğan",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 1,
+        "name": "Domates",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 3,
+        "name": "Biber",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 20,
+        "unit": "Gram",
+        "optional": true
+      }
+    ],
+    "steps": [
+      "Ilık süt, bir su bardağı ılık su, maya ve bir tutam tuzla unu yoğurun; üzerini örtüp 45 dakika mayalandırın.",
+      "Soğan, domates ve biberi ince doğrayıp kıymayla karıştırarak çiğ harcı hazırlayın; tuz ve karabiberle tatlandırın.",
+      "Hamuru 4 parçaya bölüp oval şekilde açın, ortasına harcı yayın ve kenarlarını kıvırıp uçlarını sıkıştırarak kayık şekli verin.",
+      "Önceden ısıtılmış 230°C fırında kenarları kızarana kadar 15-18 dakika pişirin.",
+      "Fırından çıkar çıkmaz kenarlarına tereyağı sürüp dilimleyerek servis edin."
+    ]
+  },
+  {
+    "slug": "peynirli-gozleme",
+    "title": "Peynirli Gözleme",
+    "emoji": "🫓",
+    "category": "Pastry",
+    "prepMinutes": 25,
+    "servings": 2,
+    "description": "Sacda pişen köy gözlemesinin evde, hazır yufka ve tavayla yapılan pratik hali. Peynir ve maydanozun sade uyumu, tereyağıyla sıcak sıcak yendiğinde unutulmaz bir tat bırakır.",
+    "ingredients": [
+      {
+        "id": 68,
+        "name": "Yufka",
+        "quantity": 2,
+        "unit": "Piece"
+      },
+      {
+        "id": 15,
+        "name": "Beyaz peynir",
+        "quantity": 150,
+        "unit": "Gram"
+      },
+      {
+        "id": 31,
+        "name": "Maydanoz",
+        "quantity": 1,
+        "unit": "Piece"
+      },
+      {
+        "id": 17,
+        "name": "Tereyağı",
+        "quantity": 30,
+        "unit": "Gram"
+      }
+    ],
+    "steps": [
+      "Peyniri ufalayıp ince kıyılmış maydanozla karıştırın.",
+      "Yufkayı ikiye kesin; yarım yufkanın bir kenarına harç koyup kenarlarını içe katlayarak zarf şeklinde kapatın.",
+      "Geniş tavayı orta ateşte ısıtın ve gözlemeyi yağ koymadan iki yüzünü de kızarana kadar pişirin.",
+      "Tavadan alır almaz üzerine tereyağı sürün ve dilimleyerek sıcak servis edin."
+    ]
+  }
+]
