@@ -3,7 +3,8 @@
 namespace Evdekiler.Pantry.Api.Receipts;
 
 public sealed record CatalogIngredient(
-    int Id, string Name, string Emoji, IngredientCategory Category, MeasureUnit DefaultUnit);
+    int Id, string Name, string Emoji, IngredientCategory Category, MeasureUnit DefaultUnit,
+    string? ImageUrl = null);
 
 public sealed record CatalogAlias(string Alias, int IngredientId);
 
@@ -43,14 +44,12 @@ public sealed class IngredientMatcher
         var padded = $" {key} ";
         var lineWords = key.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        // 1. Eşanlamlılar
         foreach (var (alias, ingredient) in _aliases)
         {
             if (padded.Contains($" {alias}"))
                 return new IngredientMatch(ingredient, MatchConfidence.High);
         }
 
-        // 2. Malzeme adı: her kelime eşleşmeli, en az biri TAM eşleşmeli
         IngredientMatch? best = null;
         var bestWords = 0;
         var bestLength = 0;
@@ -60,9 +59,8 @@ public sealed class IngredientMatcher
             var results = words.Select(w => BestMatch(w, lineWords)).ToArray();
 
             if (results.Any(r => r == WordMatch.None)) continue;
-            if (!results.Any(r => r == WordMatch.Full)) continue;   // sadece kısaltma yetmez
+            if (!results.Any(r => r == WordMatch.Full)) continue;
 
-            // En çok kelimeli, sonra en uzun ad kazanır ("Mısır unu" > "Mısır", "Zeytinyağı" > "Zeytin")
             if (words.Length > bestWords || (words.Length == bestWords && length > bestLength))
             {
                 var confidence = results.All(r => r == WordMatch.Full) ? MatchConfidence.High : MatchConfidence.Medium;
@@ -81,17 +79,14 @@ public sealed class IngredientMatcher
 
         foreach (var lineWord in lineWords)
         {
-            // Kısa kelimeler sadece birebir: "un" ile "unlu" eşleşmesin
             if (nameWord.Length <= 3)
             {
                 if (lineWord == nameWord) return WordMatch.Full;
                 continue;
             }
 
-            // "zeytinyagi" satırında "zeytinyagi" ya da ekli hali: tam eşleşme
             if (lineWord.StartsWith(nameWord)) return WordMatch.Full;
 
-            // Kısaltma: "peyn" -> "peyniri"; en az 4 harf ve kelimenin en az yarısı
             if (lineWord.Length >= 4 && lineWord.Length * 2 >= nameWord.Length && nameWord.StartsWith(lineWord))
                 result = WordMatch.Abbreviation;
         }

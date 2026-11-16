@@ -24,6 +24,9 @@ public record UpdatePantryItemRequest(
 
 public static class PantryEndpoints
 {
+    // Yüklenen fotoğraf varsa o, yoksa wwwroot'taki eski fotoğraf
+    public static string ImageFor(Ingredient i) => i.ImageUrl ?? $"/images/ingredients/{i.Id}.jpg";
+
     public static void MapPantryEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/pantry").RequireAuthorization();
@@ -35,7 +38,6 @@ public static class PantryEndpoints
         group.MapDelete("/items/{id:guid}", DeleteItem);
     }
 
-    // GET /api/pantry/ingredients?search=SIR
     private static async Task<IResult> SearchIngredients(
         string? search, PantryDbContext db, CancellationToken ct)
     {
@@ -54,8 +56,6 @@ public static class PantryEndpoints
         {
             var fuzzy = q.Length >= 3;
 
-            // tr_key: Türkçe kurallarla küçük harf ("SIR" -> "sır")
-            // search_key: Türkçe karakterler sadeleşmiş ("SIR" -> "sir", "Soğan" -> "sogan")
             ingredients = await db.Ingredients.FromSql($"""
                 SELECT * FROM "Ingredients"
                 WHERE search_key("Name") LIKE '%' || search_key({q}) || '%'
@@ -78,7 +78,7 @@ public static class PantryEndpoints
         }
 
         var result = ingredients.Select(i => new IngredientResponse(
-            i.Id, i.Name, i.Emoji, $"/images/ingredients/{i.Id}.jpg", i.Category, i.DefaultUnit));
+            i.Id, i.Name, i.Emoji, ImageFor(i), i.Category, i.DefaultUnit));
 
         return Results.Ok(result);
     }
@@ -96,7 +96,7 @@ public static class PantryEndpoints
             .ThenBy(p => p.Ingredient.Name)
             .Select(p => new PantryItemResponse(
                 p.Id, p.IngredientId, p.Ingredient.Name, p.Ingredient.Emoji,
-                "/images/ingredients/" + p.IngredientId + ".jpg",
+                p.Ingredient.ImageUrl ?? "/images/ingredients/" + p.IngredientId + ".jpg",
                 p.Ingredient.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version))
             .ToListAsync(ct);
 
@@ -185,7 +185,7 @@ public static class PantryEndpoints
     }
 
     private static PantryItemResponse ToResponse(PantryItem p, Ingredient i) =>
-        new(p.Id, i.Id, i.Name, i.Emoji, $"/images/ingredients/{i.Id}.jpg",
+        new(p.Id, i.Id, i.Name, i.Emoji, ImageFor(i),
             i.Category, p.Quantity, p.Unit, p.ExpiresAt, p.Version);
 
     private static IResult QuantityError() =>

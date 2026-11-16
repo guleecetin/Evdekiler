@@ -27,12 +27,13 @@ export type AdminIngredient = {
   name: string;
   emoji: string;
   imageUrl: string;
+  hasCustomImage: boolean;
   category: IngredientCategory;
   defaultUnit: MeasureUnit;
   aliasCount: number;
 };
 
-export type IngredientInput = Omit<AdminIngredient, "id" | "imageUrl" | "aliasCount">;
+export type IngredientInput = Omit<AdminIngredient, "id" | "imageUrl" | "hasCustomImage" | "aliasCount">;
 
 export type IngredientPage = { items: AdminIngredient[]; page: number; pageSize: number; totalCount: number };
 
@@ -56,6 +57,19 @@ export function createIngredient(input: IngredientInput) {
 
 export function updateIngredient(id: number, input: IngredientInput) {
   return api<void>(`/api/admin/ingredients/${id}`, { method: "PUT", body: input });
+}
+
+export function uploadIngredientImage(id: number, file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  return api<{ id: number; imageUrl: string }>(`/api/admin/ingredients/${id}/image`, {
+    method: "POST",
+    body: form,
+  });
+}
+
+export function removeIngredientImage(id: number) {
+  return api<void>(`/api/admin/ingredients/${id}/image`, { method: "DELETE" });
 }
 
 export function listAliases(ingredientId: number) {

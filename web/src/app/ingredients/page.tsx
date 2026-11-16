@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState, type SyntheticEvent } from "react";
-import { Loader2, Pencil, Plus, Search, SearchX, Tags, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type SyntheticEvent } from "react";
+import { Camera, ImageOff, Loader2, Pencil, Plus, Search, SearchX, Tags, Upload, X } from "lucide-react";
 import AdminShell from "@/components/AdminShell";
 import { ApiError } from "@/lib/api";
 import {
@@ -13,8 +13,10 @@ import {
   ingredientCategoryLabel,
   listAliases,
   listIngredients,
+  removeIngredientImage,
   unitLabel,
   updateIngredient,
+  uploadIngredientImage,
   type AdminIngredient,
   type AliasItem,
   type IngredientInput,
@@ -115,7 +117,7 @@ export default function IngredientsPage() {
               <tr key={i.id} className="group cursor-pointer transition hover:bg-cream" onClick={() => setEditing(i)}>
                 <td className="px-4 py-2.5">
                   <div className="flex items-center gap-3">
-                    <IngredientThumb ingredient={i} />
+                    <IngredientThumb key={i.imageUrl} url={i.imageUrl} emoji={i.emoji} />
                     <span className="font-semibold text-forest">{i.name}</span>
                   </div>
                 </td>
@@ -180,7 +182,7 @@ export default function IngredientsPage() {
           initial={editing === "new" ? null : editing}
           onClose={async () => {
             setEditing(null);
-            await load(); // eşanlamlı sayısı değişmiş olabilir
+            await load();
           }}
         />
       )}
@@ -188,23 +190,16 @@ export default function IngredientsPage() {
   );
 }
 
-function IngredientThumb({ ingredient }: { ingredient: AdminIngredient }) {
+function IngredientThumb({ url, emoji, size = "h-10 w-10" }: { url: string; emoji: string; size?: string }) {
   const [failed, setFailed] = useState(false);
 
   if (failed) {
-    return (
-      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-cream text-xl">{ingredient.emoji}</span>
-    );
+    return <span className={`flex ${size} items-center justify-center rounded-lg bg-cream text-xl`}>{emoji}</span>;
   }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={mediaUrl(ingredient.imageUrl)}
-      alt=""
-      onError={() => setFailed(true)}
-      className="h-10 w-10 rounded-lg object-cover"
-    />
+    <img src={mediaUrl(url)} alt="" onError={() => setFailed(true)} className={`${size} rounded-lg object-cover`} />
   );
 }
 
@@ -231,7 +226,6 @@ function IngredientDialog({ initial, onClose }: { initial: AdminIngredient | nul
       if (savedId) {
         await updateIngredient(savedId, form);
       } else {
-        // Yeni malzeme eklendikten sonra pencere açık kalır, eşanlamlı eklenebilir
         const created = await createIngredient(form);
         setSavedId(created.id);
       }
@@ -245,7 +239,10 @@ function IngredientDialog({ initial, onClose }: { initial: AdminIngredient | nul
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-forest/40 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl"
+      >
         <form onSubmit={handleSubmit}>
           <div className="flex items-start justify-between">
             <div>
@@ -338,13 +335,145 @@ function IngredientDialog({ initial, onClose }: { initial: AdminIngredient | nul
         </form>
 
         {savedId ? (
-          <AliasEditor ingredientId={savedId} />
+          <>
+            <PhotoEditor
+              ingredientId={savedId}
+              emoji={form.emoji}
+              initialUrl={initial?.imageUrl ?? `/images/ingredients/${savedId}.jpg`}
+              initialCustom={initial?.hasCustomImage ?? false}
+            />
+            <AliasEditor ingredientId={savedId} />
+          </>
         ) : (
           <p className="mt-6 border-t border-line pt-5 text-sm text-muted">
-            Eşanlamlı ekleyebilmek için önce malzemeyi kaydedin.
+            Fotoğraf ve eşanlamlı ekleyebilmek için önce malzemeyi kaydedin.
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+const MAX_BYTES = 5 * 1024 * 1024;
+const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+
+function PhotoEditor({
+  ingredientId,
+  emoji,
+  initialUrl,
+  initialCustom,
+}: {
+  ingredientId: number;
+  emoji: string;
+  initialUrl: string;
+  initialCustom: boolean;
+}) {
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [url, setUrl] = useState(initialUrl);
+  const [custom, setCustom] = useState(initialCustom);
+  const [busy, setBusy] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    setError(null);
+    if (!ALLOWED.includes(file.type)) return setError("Sadece JPEG, PNG veya WebP yükleyebilirsiniz.");
+    if (file.size > MAX_BYTES) return setError("Fotoğraf 5 MB'ı geçemez.");
+
+    setBusy(true);
+    try {
+      const result = await uploadIngredientImage(ingredientId, file);
+      setUrl(result.imageUrl);
+      setCustom(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Yüklenemedi.");
+    } finally {
+      setBusy(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  }
+
+  async function handleRemove() {
+    setError(null);
+    setBusy(true);
+    try {
+      await removeIngredientImage(ingredientId);
+      setUrl(`/images/ingredients/${ingredientId}.jpg`);
+      setCustom(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Kaldırılamadı.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-6 border-t border-line pt-5">
+      <h3 className="flex items-center gap-2 font-bold text-forest">
+        <Camera className="h-4 w-4" /> Fotoğraf
+      </h3>
+
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          handleFile(e.dataTransfer.files[0]);
+        }}
+        className={`mt-3 flex items-center gap-4 rounded-xl border-2 border-dashed p-3 transition ${
+          dragging ? "border-basil bg-[#e3ece4]" : "border-neutral-200"
+        }`}
+      >
+        <div className="relative">
+          <IngredientThumb key={url} url={url} emoji={emoji} size="h-20 w-20" />
+          {busy && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-white/70">
+              <Loader2 className="h-5 w-5 animate-spin text-basil" />
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 text-sm">
+          <p className="flex items-center gap-1.5 text-muted">
+            <Upload className="h-4 w-4" /> Sürükleyip bırakın ya da seçin
+          </p>
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => fileInput.current?.click()}
+              disabled={busy}
+              className="rounded-lg bg-basil px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-basil-dark disabled:opacity-60"
+            >
+              {custom ? "Değiştir" : "Yükle"}
+            </button>
+            {custom && (
+              <button
+                type="button"
+                onClick={handleRemove}
+                disabled={busy}
+                className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-3 py-1.5 text-xs font-semibold text-neutral-700 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+              >
+                <ImageOff className="h-3.5 w-3.5" /> Kaldır
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => handleFile(e.target.files?.[0])}
+      />
+
+      {error && <p className="mt-2 text-sm font-medium text-red-700">{error}</p>}
     </div>
   );
 }
@@ -391,8 +520,7 @@ function AliasEditor({ ingredientId }: { ingredientId: number }) {
         <Tags className="h-4 w-4" /> Fişteki yazılışları
       </h3>
       <p className="mt-0.5 text-sm text-muted">
-        Fişlerde bu malzeme farklı yazılıyorsa ekleyin: ör. <span className="font-mono">siyahcay</span>,{" "}
-        <span className="font-mono">caykur</span>.
+        Fişte nasıl yazıyorsa öyle ekleyin: ör. <span className="font-mono">siyahcay</span>.
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">

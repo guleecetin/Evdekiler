@@ -7,4 +7,7 @@ public class Ingredient
     public string Emoji { get; set; } = string.Empty;
     public IngredientCategory Category { get; set; }
     public MeasureUnit DefaultUnit { get; set; }
+
+    // Panelden yüklenen fotoğraf (Blob Storage). Boşsa eski kural: /images/ingredients/{Id}.jpg
+    public string? ImageUrl { get; set; }
 }

@@ -18,8 +18,10 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
             entity.Property(i => i.Emoji).HasMaxLength(16);
             entity.Property(i => i.Category).HasConversion<string>().HasMaxLength(20);
             entity.Property(i => i.DefaultUnit).HasConversion<string>().HasMaxLength(20);
+            entity.Property(i => i.ImageUrl).HasMaxLength(200);
             entity.HasData(IngredientSeed.All);
         });
+
         modelBuilder.ApplyConfiguration(new IngredientAliasConfiguration());
 
         modelBuilder.Entity<PantryItem>(entity =>
@@ -32,9 +34,10 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
                 .WithMany()
                 .HasForeignKey(p => p.IngredientId)
                 .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasIndex(p => p.SourceShoppingItemId)
-    .IsUnique()
-    .HasFilter("\"SourceShoppingItemId\" IS NOT NULL");
+                .IsUnique()
+                .HasFilter("\"SourceShoppingItemId\" IS NOT NULL");
 
             entity.HasIndex(p => new { p.UserId, p.ExpiresAt });
 

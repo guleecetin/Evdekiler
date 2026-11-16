@@ -1,14 +1,16 @@
-﻿using Evdekiler.BuildingBlocks.Auth;
+﻿using System.Text.RegularExpressions;
+using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Pantry.Api.Data;
 using Evdekiler.Pantry.Api.Entities;
 using Evdekiler.Pantry.Api.Receipts;
+using Evdekiler.Pantry.Api.Storage;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace Evdekiler.Pantry.Api.Endpoints;
 
 public record AdminIngredientItem(
-    int Id, string Name, string Emoji, string ImageUrl,
+    int Id, string Name, string Emoji, string ImageUrl, bool HasCustomImage,
     IngredientCategory Category, MeasureUnit DefaultUnit, int AliasCount);
 
 public record IngredientPage(List<AdminIngredientItem> Items, int Page, int PageSize, int TotalCount);
@@ -22,6 +24,8 @@ public record AddAliasRequest(string Alias);
 
 public static class AdminIngredientEndpoints
 {
+    private const long MaxImageBytes = 5 * 1024 * 1024;
+
     public static void MapAdminIngredientEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/admin/ingredients").RequireAuthorization(AuthPolicies.Admin);
@@ -29,9 +33,10 @@ public static class AdminIngredientEndpoints
         group.MapGet("/", GetPaged);
         group.MapPost("/", Create);
         group.MapPut("/{id:int}", Update);
-        // Bilerek DELETE yok: tarifler malzemelere Id ile bağlı (başka serviste, FK olmadan)
 
-        // Eşanlamlılar: sadece Pantry kullanıyor, silmek güvenli
+        group.MapPost("/{id:int}/image", UploadImage).DisableAntiforgery();
+        group.MapDelete("/{id:int}/image", RemoveImage);
+
         group.MapGet("/{id:int}/aliases", GetAliases);
         group.MapPost("/{id:int}/aliases", AddAlias);
         group.MapDelete("/aliases/{aliasId:int}", DeleteAlias);
@@ -63,7 +68,10 @@ public static class AdminIngredientEndpoints
             .Skip((currentPage - 1) * size)
             .Take(size)
             .Select(i => new AdminIngredientItem(
-                i.Id, i.Name, i.Emoji, "/images/ingredients/" + i.Id + ".jpg", i.Category, i.DefaultUnit,
+                i.Id, i.Name, i.Emoji,
+                i.ImageUrl ?? "/images/ingredients/" + i.Id + ".jpg",
+                i.ImageUrl != null,
+                i.Category, i.DefaultUnit,
                 db.Set<IngredientAlias>().Count(a => a.IngredientId == i.Id)))
             .ToListAsync(ct);
 
@@ -119,6 +127,51 @@ public static class AdminIngredientEndpoints
         return Results.NoContent();
     }
 
+    // ─── Fotoğraf ───────────────────────────────────────────
+
+    private static async Task<IResult> UploadImage(
+        int id, IFormFile file, PantryDbContext db, ImageStorage storage, CancellationToken ct)
+    {
+        if (file.Length is 0 or > MaxImageBytes)
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["Dosya boş olamaz ve 5 MB'ı geçemez."] });
+
+        await using var stream = file.OpenReadStream();
+        var header = new byte[12];
+        var read = await stream.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false, ct);
+        stream.Position = 0;
+
+        var format = read == header.Length ? ImageFormats.Detect(header) : null;
+        if (format is null)
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["Sadece JPEG, PNG veya WebP yüklenebilir."] });
+
+        var ingredient = await db.Ingredients.SingleOrDefaultAsync(i => i.Id == id, ct);
+        if (ingredient is null) return Results.NotFound();
+
+        // "Siyah çay" -> "siyah-cay-<guid>.jpg"
+        var slug = Regex.Replace(IngredientMatcher.Key(ingredient.Name), "[^a-z0-9]+", "-").Trim('-');
+        var blobName = $"ingredients/{slug}-{Guid.NewGuid():N}.{format.Value.Extension}";
+
+        var oldUrl = ingredient.ImageUrl;
+        ingredient.ImageUrl = await storage.UploadAsync(stream, blobName, format.Value.ContentType, ct);
+        await db.SaveChangesAsync(ct);
+        await storage.DeleteByUrlAsync(oldUrl, ct);
+
+        return Results.Ok(new { ingredient.Id, ingredient.ImageUrl });
+    }
+
+    private static async Task<IResult> RemoveImage(int id, PantryDbContext db, ImageStorage storage, CancellationToken ct)
+    {
+        var ingredient = await db.Ingredients.SingleOrDefaultAsync(i => i.Id == id, ct);
+        if (ingredient is null) return Results.NotFound();
+
+        var oldUrl = ingredient.ImageUrl;
+        ingredient.ImageUrl = null; // eski kurala (wwwroot) geri döner
+        await db.SaveChangesAsync(ct);
+        await storage.DeleteByUrlAsync(oldUrl, ct);
+
+        return Results.NoContent();
+    }
+
     // ─── Eşanlamlılar ───────────────────────────────────────
 
     private static async Task<IResult> GetAliases(int id, PantryDbContext db, CancellationToken ct)
@@ -138,7 +191,6 @@ public static class AdminIngredientEndpoints
         if (!await db.Ingredients.AnyAsync(i => i.Id == id, ct))
             return Results.NotFound();
 
-        // Eşleştiricinin kullandığı biçime çevir: "SIYAH ÇAY" -> "siyah cay"
         var key = string.Join(' ',
             IngredientMatcher.Key(request.Alias ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
@@ -165,7 +217,6 @@ public static class AdminIngredientEndpoints
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException
         { SqlState: PostgresErrorCodes.UniqueViolation })
         {
-            // Kontrolle kayıt arasında başkası aynı eşanlamlıyı eklediyse
             return Conflict("Bu eşanlamlı az önce başka biri tarafından eklendi.");
         }
 

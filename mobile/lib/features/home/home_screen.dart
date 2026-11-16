@@ -35,6 +35,64 @@ const _categoryLabel = {
   _ => ('$days gün', AppColors.basil),
 };
 
+// Aramada Türkçe karakter duyarsızlık: "sogan" -> "Soğan"
+String _fold(String s) => s
+    .replaceAll('İ', 'i')
+    .replaceAll('I', 'i')
+    .toLowerCase()
+    .replaceAll('ç', 'c')
+    .replaceAll('ğ', 'g')
+    .replaceAll('ı', 'i')
+    .replaceAll('ö', 'o')
+    .replaceAll('ş', 's')
+    .replaceAll('ü', 'u');
+
+// Aynı malzemenin farklı partileri (farklı tarihlerde alınmış) tek kartta
+class _FridgeGroup {
+  _FridgeGroup(this.items);
+
+  final List<PantryItem> items;
+
+  PantryItem get first => items.first;
+  String get name => first.ingredientName;
+  String get imageUrl => first.imageUrl;
+  String get emoji => first.emoji;
+  String get category => first.category;
+
+  // En yakın son kullanma tarihi
+  int? get daysLeft {
+    final days = items.map((i) => i.daysLeft).whereType<int>();
+    return days.isEmpty ? null : days.reduce(min);
+  }
+
+  // Birimlere göre toplam: "33 adet" ya da "1 adet + 1,25 kg"
+  String get quantityText {
+    final sums = <MeasureUnit, double>{};
+    for (final i in items) {
+      sums[i.unit] = (sums[i.unit] ?? 0) + i.quantity;
+    }
+    return sums.entries.map((e) => formatQuantity(e.value, e.key)).join(' + ');
+  }
+}
+
+List<_FridgeGroup> _groupItems(List<PantryItem> list) {
+  final map = <int, List<PantryItem>>{};
+  for (final item in list) {
+    map.putIfAbsent(item.ingredientId, () => []).add(item);
+  }
+
+  final groups = map.values.map(_FridgeGroup.new).toList();
+  // Önce son kullanma tarihi yaklaşanlar, sonra tarihsizler; kendi içinde alfabetik
+  groups.sort((a, b) {
+    final da = a.daysLeft, db = b.daysLeft;
+    if (da != null && db != null && da != db) return da.compareTo(db);
+    if (da != null && db == null) return -1;
+    if (da == null && db != null) return 1;
+    return a.name.compareTo(b.name);
+  });
+  return groups;
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -44,6 +102,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _category;
+  String _query = '';
 
   void _openAddSheet() => showModalBottomSheet(
     context: context,
@@ -123,10 +182,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     final urgent = list.where((i) => i.isUrgent).toList();
-    final categories = list.map((i) => i.category).toSet().toList();
-    final filtered = _category == null
-        ? list
-        : list.where((i) => i.category == _category).toList();
+    final groups = _groupItems(list);
+    final categories = groups.map((g) => g.category).toSet().toList();
+
+    final q = _fold(_query.trim());
+    final filtered = groups.where((g) {
+      if (_category != null && g.category != _category) return false;
+      if (q.isNotEmpty && !_fold(g.name).contains(q)) return false;
+      return true;
+    }).toList();
 
     return [
       if (suggestions.isNotEmpty) ...[
@@ -173,8 +237,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       SliverToBoxAdapter(
         child: _SectionHeader(
           title: 'Buzdolabında',
-          subtitle: '${list.length} ürün',
+          subtitle: '${groups.length} çeşit ürün',
         ),
+      ),
+      SliverToBoxAdapter(
+        child: _FridgeSearch(onChanged: (v) => setState(() => _query = v)),
       ),
       SliverToBoxAdapter(
         child: _CategoryTabs(
@@ -183,21 +250,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onSelected: (c) => setState(() => _category = c),
         ),
       ),
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-        sliver: SliverGrid(
-          delegate: SliverChildBuilderDelegate(
-            (_, i) => _ItemCard(item: filtered[i]),
-            childCount: filtered.length,
+      if (filtered.isEmpty)
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 40, 20, 0),
+            child: Center(
+              child: Text(
+                'Aradığın ürün buzdolabında yok.',
+                style: TextStyle(color: AppColors.muted),
+              ),
+            ),
           ),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 20,
-            childAspectRatio: 0.78,
+        )
+      else
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate(
+              (_, i) => _GroupCard(group: filtered[i]),
+              childCount: filtered.length,
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 20,
+              childAspectRatio: 0.74,
+            ),
           ),
         ),
-      ),
     ];
   }
 }
@@ -302,7 +382,10 @@ class _AddPill extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.search_rounded, color: AppColors.ink),
+                    const Icon(
+                      Icons.add_circle_outline_rounded,
+                      color: AppColors.ink,
+                    ),
                     const SizedBox(width: 14),
                     const Expanded(
                       child: Column(
@@ -341,7 +424,6 @@ class _AddPill extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          // Fiş okut
           GestureDetector(
             onTap: onScan,
             child: Container(
@@ -360,6 +442,43 @@ class _AddPill extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _FridgeSearch extends StatelessWidget {
+  const _FridgeSearch({required this.onChanged});
+
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      child: TextField(
+        onChanged: onChanged,
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintText: 'Buzdolabında ara…',
+          prefixIcon: const Icon(Icons.search_rounded),
+          isDense: true,
+          filled: true,
+          fillColor: const Color(0xFFF5F5F5),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: AppColors.ink),
+          ),
+        ),
       ),
     );
   }
@@ -639,97 +758,207 @@ class _CategoryTabs extends StatelessWidget {
   }
 }
 
-// ─── Ürün kartı ─────────────────────────────────────────────
+// ─── Gruplanmış ürün kartı ──────────────────────────────────
 
-class _ItemCard extends ConsumerWidget {
-  const _ItemCard({required this.item});
+class _GroupCard extends StatelessWidget {
+  const _GroupCard({required this.group});
 
-  final PantryItem item;
+  final _FridgeGroup group;
 
-  Future<void> _delete(BuildContext context, WidgetRef ref) async {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showModalBottomSheet(
+        context: context,
+        showDragHandle: true,
+        backgroundColor: Colors.white,
+        builder: (_) => _BatchSheet(group: group),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AppImage(group.imageUrl, fallbackEmoji: group.emoji),
+                ),
+                if (group.daysLeft != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: _ExpiryPill(days: group.daysLeft!),
+                  ),
+                if (group.items.length > 1)
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.ink.withValues(alpha: 0.8),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${group.items.length} parti',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            group.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          ),
+          Text(
+            group.quantityText,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppColors.muted, fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Karta dokununca: bu malzemenin buzdolabındaki partileri
+class _BatchSheet extends ConsumerWidget {
+  const _BatchSheet({required this.group});
+
+  final _FridgeGroup group;
+
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    PantryItem item,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     try {
       await ref.read(pantryRepositoryProvider).deleteItem(item.id);
       ref.invalidate(pantryItemsProvider);
+      ref.invalidate(recipeSuggestionsProvider);
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text('${group.name} buzdolabından çıkarıldı')),
+      );
     } on ApiException catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.message)));
-      }
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: AppImage(item.imageUrl, fallbackEmoji: item.emoji),
-              ),
-              if (item.daysLeft != null)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: _ExpiryPill(days: item.daysLeft!),
-                ),
-              Positioned(
-                top: 6,
-                right: 6,
-                child: Material(
-                  color: Colors.white,
-                  shape: const CircleBorder(),
+    final batches = [...group.items]
+      ..sort((a, b) => (a.daysLeft ?? 9999).compareTo(b.daysLeft ?? 9999));
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
                   child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: PopupMenuButton<String>(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.more_horiz_rounded, size: 18),
-                      onSelected: (_) => _delete(context, ref),
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_outline_rounded),
-                              SizedBox(width: 12),
-                              Text('Sil'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    width: 52,
+                    height: 52,
+                    child: AppImage(group.imageUrl, fallbackEmoji: group.emoji),
                   ),
                 ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        group.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        'Toplam ${group.quantityText}',
+                        style: const TextStyle(color: AppColors.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Partiler',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            for (final item in batches)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AppColors.line)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        formatQuantity(item.quantity, item.unit),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    if (item.daysLeft != null)
+                      _ExpiryPill(days: item.daysLeft!, outlined: true),
+                    if (item.daysLeft == null)
+                      const Text(
+                        'Tarih yok',
+                        style: TextStyle(color: AppColors.muted, fontSize: 12),
+                      ),
+                    IconButton(
+                      onPressed: () => _delete(context, ref, item),
+                      icon: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: AppColors.muted,
+                      ),
+                      tooltip: 'Bu partiyi çıkar',
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+          ],
         ),
-        const SizedBox(height: 10),
-        Text(
-          item.ingredientName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-        ),
-        Text(
-          formatQuantity(item.quantity, item.unit),
-          style: const TextStyle(color: AppColors.muted, fontSize: 13),
-        ),
-      ],
+      ),
     );
   }
 }
 
 class _ExpiryPill extends StatelessWidget {
-  const _ExpiryPill({required this.days});
+  const _ExpiryPill({required this.days, this.outlined = false});
 
   final int days;
+  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
@@ -739,6 +968,7 @@ class _ExpiryPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
+        border: outlined ? Border.all(color: AppColors.line) : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -778,7 +1008,7 @@ class _EmptyFridge extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Evdeki malzemelerini ekle,\nsana ne pişireceğini söyleyelim.',
+            'Evdeki malzemelerini ekle\nya da market fişini okut.',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.muted),
           ),

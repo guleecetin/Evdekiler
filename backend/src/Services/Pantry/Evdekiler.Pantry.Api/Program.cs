@@ -1,9 +1,11 @@
 using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Pantry.Api.Consumers;
 using Evdekiler.Pantry.Api.Data;
 using Evdekiler.Pantry.Api.Endpoints;
 using Evdekiler.Pantry.Api.Receipts;
+using Evdekiler.Pantry.Api.Storage;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +32,11 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IngredientCatalog>();
+
+// Malzeme fotoğrafları (Azure Blob Storage / yerelde Azurite)
+builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
+builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["Storage:ConnectionString"]));
+builder.Services.AddSingleton<ImageStorage>();
 
 builder.Services.AddEvdekilerJwtAuth(builder.Configuration);
 

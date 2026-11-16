@@ -14,7 +14,6 @@ public static class ReceiptEndpoints
 {
     public static void MapReceiptEndpoints(this IEndpointRouteBuilder app)
     {
-        // POST /api/pantry/receipts/parse  { "lines": ["DOMATES KG 1,250 ...", ...] }
         app.MapPost("/api/pantry/receipts/parse", Parse).RequireAuthorization();
     }
 
@@ -42,12 +41,10 @@ public static class ReceiptEndpoints
                 continue;
             }
 
-            // Fişte birim yoksa malzemenin varsayılan birimi, miktar yoksa 1
             var unit = Enum.TryParse<MeasureUnit>(line.Unit, out var u) ? u : match.Ingredient.DefaultUnit;
             matched.Add((match, line.Quantity ?? 1, unit, line.Raw));
         }
 
-        // Aynı malzeme aynı birimle birden çok satırdaysa topla
         var items = matched
             .GroupBy(m => (m.Match.Ingredient.Id, m.Unit))
             .Select(g =>
@@ -55,7 +52,8 @@ public static class ReceiptEndpoints
                 var ing = g.First().Match.Ingredient;
                 var confidence = g.Any(m => m.Match.Confidence == MatchConfidence.Medium) ? "Medium" : "High";
                 return new ReceiptItem(
-                    new IngredientResponse(ing.Id, ing.Name, ing.Emoji, $"/images/ingredients/{ing.Id}.jpg",
+                    new IngredientResponse(ing.Id, ing.Name, ing.Emoji,
+                        ing.ImageUrl ?? $"/images/ingredients/{ing.Id}.jpg",
                         ing.Category, ing.DefaultUnit),
                     g.Sum(m => m.Quantity),
                     g.Key.Unit,
