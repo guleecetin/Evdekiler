@@ -29,4 +29,7 @@ public sealed class IngredientCatalog(PantryDbContext db, IMemoryCache cache)
 
         return matcher!;
     }
+
+    // Katalog değişince çağrılır: bir sonraki fiş en güncel katalogla eşleştirilir
+    public void Invalidate() => cache.Remove(CacheKey);
 }

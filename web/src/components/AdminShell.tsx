@@ -16,9 +16,14 @@ type Props = {
 
 const NAV = [
   { href: "/", label: "Tarifler", icon: BookOpen, ready: true },
-  { href: "#", label: "Malzemeler", icon: Carrot, ready: false },
+  { href: "/ingredients", label: "Malzemeler", icon: Carrot, ready: true },
   { href: "#", label: "Kullanıcılar", icon: Users, ready: false },
 ];
+
+function isActive(href: string, pathname: string) {
+  if (href === "/") return pathname === "/" || pathname.startsWith("/recipes");
+  return pathname.startsWith(href);
+}
 
 export default function AdminShell({ me, title, subtitle, actions, back, children }: Props) {
   const router = useRouter();
@@ -26,7 +31,6 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
 
   return (
     <div className="min-h-screen bg-cream">
-      {/* Sol menü */}
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col bg-forest text-white lg:flex">
         <div className="flex items-center gap-3 px-6 py-7">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15">
@@ -41,9 +45,24 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
         <p className="px-6 pb-2 text-[11px] font-bold uppercase tracking-widest text-white/40">Menü</p>
         <nav className="flex-1 space-y-1 px-3">
           {NAV.map((item) => {
-            const active = item.ready && (pathname === "/" || pathname.startsWith("/recipes"));
             const Icon = item.icon;
-            return item.ready ? (
+            if (!item.ready) {
+              return (
+                <span
+                  key={item.label}
+                  className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-white/35"
+                >
+                  <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                  {item.label}
+                  <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/50">
+                    Yakında
+                  </span>
+                </span>
+              );
+            }
+
+            const active = isActive(item.href, pathname);
+            return (
               <Link
                 key={item.label}
                 href={item.href}
@@ -55,17 +74,6 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
                 {item.label}
                 {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-tomato" />}
               </Link>
-            ) : (
-              <span
-                key={item.label}
-                className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-white/35"
-              >
-                <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-                {item.label}
-                <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/50">
-                  Yakında
-                </span>
-              </span>
             );
           })}
         </nav>
@@ -93,7 +101,6 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
         </div>
       </aside>
 
-      {/* İçerik */}
       <div className="lg:pl-64">
         <main className="mx-auto max-w-6xl px-6 py-8 lg:px-10">
           {back}

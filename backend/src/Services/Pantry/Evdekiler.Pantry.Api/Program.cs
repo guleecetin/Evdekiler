@@ -53,5 +53,6 @@ app.UseAuthorization();
 app.MapPantryEndpoints();
 app.MapPantryBulkEndpoints();
 app.MapReceiptEndpoints();
+app.MapAdminIngredientEndpoints();
 
 app.Run();
