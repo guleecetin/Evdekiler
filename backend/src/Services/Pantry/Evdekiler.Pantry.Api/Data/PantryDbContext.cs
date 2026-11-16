@@ -23,6 +23,7 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
         });
 
         modelBuilder.ApplyConfiguration(new IngredientAliasConfiguration());
+        modelBuilder.ApplyConfiguration(new AliasSuggestionConfiguration());
 
         modelBuilder.Entity<PantryItem>(entity =>
         {

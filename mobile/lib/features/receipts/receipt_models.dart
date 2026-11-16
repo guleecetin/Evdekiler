@@ -1,6 +1,5 @@
 import '../pantry/pantry_models.dart';
 
-// Fişte bulunan ve onay ekranında düzenlenebilen bir ürün
 class ReceiptCandidate {
   ReceiptCandidate({
     required this.ingredientId,
@@ -16,9 +15,8 @@ class ReceiptCandidate {
   final String name;
   final String imageUrl;
   final bool highConfidence;
-  final List<String> lines; // fişteki orijinal satırlar
+  final List<String> lines;
 
-  // Kullanıcı onay ekranında değiştirebilir
   double quantity;
   MeasureUnit unit;
   bool selected = true;
@@ -29,7 +27,8 @@ class ReceiptCandidate {
       ingredientId: ingredient['id'] as int,
       name: ingredient['name'] as String,
       imageUrl: ingredient['imageUrl'] as String,
-      highConfidence: json['confidence'] == 'High',
+      // High ve Manual (kullanıcı seçti) güvenilir; sadece Medium kontrol ister
+      highConfidence: json['confidence'] != 'Medium',
       lines: (json['lines'] as List).cast<String>(),
       quantity: (json['quantity'] as num).toDouble(),
       unit: MeasureUnit.fromApi(json['unit'] as String),
@@ -48,6 +47,6 @@ class ReceiptScanResult {
         items: (json['items'] as List)
             .map((e) => ReceiptCandidate.fromJson(e as Map<String, dynamic>))
             .toList(),
-        unmatched: (json['unmatched'] as List).cast<String>(),
+        unmatched: (json['unmatched'] as List).cast<String>().toList(),
       );
 }

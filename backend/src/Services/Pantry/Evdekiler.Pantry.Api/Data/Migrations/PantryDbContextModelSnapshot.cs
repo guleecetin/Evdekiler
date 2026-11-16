@@ -22,6 +22,48 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.AliasSuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SampleLine")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Count");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("Text", "IngredientId")
+                        .IsUnique();
+
+                    b.ToTable("AliasSuggestion");
+                });
+
             modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.Ingredient", b =>
                 {
                     b.Property<int>("Id")
@@ -1142,6 +1184,17 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                     b.HasIndex("UserId", "ExpiresAt");
 
                     b.ToTable("PantryItems");
+                });
+
+            modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.AliasSuggestion", b =>
+                {
+                    b.HasOne("Evdekiler.Pantry.Api.Entities.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
                 });
 
             modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.IngredientAlias", b =>

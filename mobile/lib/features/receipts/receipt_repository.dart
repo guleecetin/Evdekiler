@@ -10,7 +10,6 @@ class ReceiptRepository {
 
   final Dio _dio;
 
-  // Okunan satırları backend'e gönderir, eşleşen malzemeleri alır (henüz kaydetmez)
   Future<ReceiptScanResult> parse(List<String> lines) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -23,7 +22,19 @@ class ReceiptRepository {
     }
   }
 
-  // Seçilenleri tek istekte buzdolabına ekler (backend'de tek transaction)
+  // Tanınmayan satır için kullanıcının seçtiği malzeme: ürün döner, backend öneri kaydeder
+  Future<ReceiptCandidate> resolve(String line, int ingredientId) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/pantry/receipts/resolve',
+        data: {'line': line, 'ingredientId': ingredientId},
+      );
+      return ReceiptCandidate.fromJson(response.data!);
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
+  }
+
   Future<void> addAll(List<ReceiptCandidate> items) async {
     try {
       await _dio.post(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,10 +23,44 @@ class ReceiptReviewScreen extends ConsumerStatefulWidget {
 }
 
 class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
+  late final List<ReceiptCandidate> _items = [...widget.result.items];
+  late final List<String> _unmatched = [...widget.result.unmatched];
   bool _saving = false;
 
   List<ReceiptCandidate> get _selected =>
-      widget.result.items.where((i) => i.selected).toList();
+      _items.where((i) => i.selected).toList();
+
+  // Tanınmayan satıra malzeme seç → listeye ekle, sistem öğrensin
+  Future<void> _resolve(String line) async {
+    final ingredient = await showModalBottomSheet<Ingredient>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      builder: (_) => _IngredientPicker(line: line),
+    );
+    if (ingredient == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final candidate = await ref
+          .read(receiptRepositoryProvider)
+          .resolve(line, ingredient.id);
+      setState(() {
+        _unmatched.remove(line);
+        _items.add(candidate);
+      });
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Eklendi. Bu yazılışı öğrenmemiz için öneri olarak kaydettik 🧠',
+          ),
+        ),
+      );
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
 
   Future<void> _editQuantity(ReceiptCandidate item) async {
     final controller = TextEditingController(
@@ -111,8 +147,8 @@ class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.result.items;
     final selectedCount = _selected.length;
+    final nothing = _items.isEmpty && _unmatched.isEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -123,13 +159,15 @@ class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
-      body: items.isEmpty
+      body: nothing
           ? const _NothingFound()
           : ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               children: [
                 Text(
-                  'Fişinde ${items.length} ürün bulduk',
+                  _items.isEmpty
+                      ? 'Ürün tanıyamadık'
+                      : 'Fişinde ${_items.length} ürün bulduk',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
@@ -142,7 +180,7 @@ class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
                   style: TextStyle(color: AppColors.muted, height: 1.4),
                 ),
                 const SizedBox(height: 20),
-                for (final item in items) ...[
+                for (final item in _items) ...[
                   _CandidateTile(
                     item: item,
                     onToggle: () =>
@@ -151,44 +189,74 @@ class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
-                if (widget.result.unmatched.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Theme(
-                    data: Theme.of(context)
-                        .copyWith(dividerColor: Colors.transparent),
-                    child: ExpansionTile(
-                      tilePadding: EdgeInsets.zero,
-                      title: Text(
-                        'Tanıyamadıklarımız (${widget.result.unmatched.length})',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      subtitle: const Text(
-                        'Katalogda karşılığı olmayan satırlar',
-                        style: TextStyle(color: AppColors.muted, fontSize: 13),
-                      ),
-                      children: [
-                        for (final line in widget.result.unmatched)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Text(
-                                line,
-                                style: const TextStyle(
-                                  color: AppColors.muted,
-                                  fontFamily: 'monospace',
+                if (_unmatched.isNotEmpty) ...[
+                  const SizedBox(height: 18),
+                  Text(
+                    'Tanıyamadıklarımız (${_unmatched.length})',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'Bir ürünse dokun ve seç; uygulama bu yazılışı öğrensin.',
+                    style: TextStyle(color: AppColors.muted, fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  for (final line in _unmatched)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: InkWell(
+                        onTap: () => _resolve(line),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.line,
+                              style: BorderStyle.solid,
+                            ),
+                            color: const Color(0xFFFAFAFA),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  line,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontFamily: 'monospace',
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.add_circle_outline_rounded,
+                                color: AppColors.basil,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              const Text(
+                                'Ürünü seç',
+                                style: TextStyle(
+                                  color: AppColors.basil,
+                                  fontWeight: FontWeight.w700,
                                   fontSize: 12,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ],
             ),
-      bottomNavigationBar: items.isEmpty
+      bottomNavigationBar: _items.isEmpty
           ? null
           : Container(
               decoration: const BoxDecoration(
@@ -212,6 +280,143 @@ class _ReceiptReviewScreenState extends ConsumerState<ReceiptReviewScreen> {
     );
   }
 }
+
+// ─── Malzeme seçici (tanınmayan satır için) ─────────────────
+
+class _IngredientPicker extends ConsumerStatefulWidget {
+  const _IngredientPicker({required this.line});
+
+  final String line;
+
+  @override
+  ConsumerState<_IngredientPicker> createState() => _IngredientPickerState();
+}
+
+class _IngredientPickerState extends ConsumerState<_IngredientPicker> {
+  List<Ingredient> _results = [];
+  Timer? _debounce;
+  bool _loading = false;
+
+  void _search(String query) {
+    _debounce?.cancel();
+    if (query.trim().isEmpty) {
+      setState(() => _results = []);
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 250), () async {
+      setState(() => _loading = true);
+      try {
+        final results = await ref
+            .read(pantryRepositoryProvider)
+            .searchIngredients(query.trim());
+        if (mounted) setState(() => _results = results);
+      } catch (_) {
+        if (mounted) setState(() => _results = []);
+      } finally {
+        if (mounted) setState(() => _loading = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      // Klavye açılınca sayfa yukarı kaysın
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Bu hangi ürün?',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.cream,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  widget.line,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                autofocus: true,
+                onChanged: _search,
+                decoration: InputDecoration(
+                  hintText: 'Malzeme ara… (ör. çay)',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  suffixIcon: _loading
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _results.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (_, i) {
+                    final ing = _results[i];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: AppImage(
+                            ing.imageUrl,
+                            fallbackEmoji: ing.emoji,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        ing.name,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => Navigator.pop(context, ing),
+                    );
+                  },
+                ),
+              ),
+              const Text(
+                'Aradığın ürün yoksa katalogda henüz bulunmuyor; yakında eklenecek.',
+                style: TextStyle(color: AppColors.muted, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Ürün satırı ────────────────────────────────────────────
 
 class _CandidateTile extends StatelessWidget {
   const _CandidateTile({

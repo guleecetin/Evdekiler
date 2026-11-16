@@ -33,7 +33,6 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IngredientCatalog>();
 
-// Malzeme fotoğrafları (Azure Blob Storage / yerelde Azurite)
 builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
 builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration["Storage:ConnectionString"]));
 builder.Services.AddSingleton<ImageStorage>();
@@ -61,5 +60,6 @@ app.MapPantryEndpoints();
 app.MapPantryBulkEndpoints();
 app.MapReceiptEndpoints();
 app.MapAdminIngredientEndpoints();
+app.MapAdminSuggestionEndpoints();
 
 app.Run();

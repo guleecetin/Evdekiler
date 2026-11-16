@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Carrot, LogOut, Users } from "lucide-react";
+import { BookOpen, Carrot, LogOut, Sparkles, Users } from "lucide-react";
 import { logout, type Me } from "@/lib/api";
+import { listSuggestions } from "@/lib/suggestions";
 
 type Props = {
   me: Me;
@@ -17,6 +19,7 @@ type Props = {
 const NAV = [
   { href: "/", label: "Tarifler", icon: BookOpen, ready: true },
   { href: "/ingredients", label: "Malzemeler", icon: Carrot, ready: true },
+  { href: "/suggestions", label: "Öneriler", icon: Sparkles, ready: true },
   { href: "#", label: "Kullanıcılar", icon: Users, ready: false },
 ];
 
@@ -28,6 +31,14 @@ function isActive(href: string, pathname: string) {
 export default function AdminShell({ me, title, subtitle, actions, back, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const [pending, setPending] = useState<number | null>(null);
+
+  // Bekleyen öneri sayısı (menüdeki rozet)
+  useEffect(() => {
+    listSuggestions()
+      .then((list) => setPending(list.length))
+      .catch(() => setPending(null));
+  }, [pathname]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -62,6 +73,7 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
             }
 
             const active = isActive(item.href, pathname);
+            const badge = item.href === "/suggestions" && pending ? pending : null;
             return (
               <Link
                 key={item.label}
@@ -72,7 +84,11 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
                 {item.label}
-                {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-tomato" />}
+                {badge ? (
+                  <span className="ml-auto rounded-full bg-tomato px-2 py-0.5 text-[11px] font-bold text-white">{badge}</span>
+                ) : (
+                  active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-tomato" />
+                )}
               </Link>
             );
           })}
