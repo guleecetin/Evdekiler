@@ -12,6 +12,7 @@ import '../auth/auth_controller.dart';
 import '../pantry/add_item_sheet.dart';
 import '../pantry/pantry_models.dart';
 import '../pantry/pantry_repository.dart';
+import '../receipts/receipt_reader.dart';
 import '../recipes/recipe_models.dart';
 import '../recipes/recipe_repository.dart';
 
@@ -81,7 +82,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ref.read(authControllerProvider.notifier).logout(),
                   ),
                 ),
-                SliverToBoxAdapter(child: _AddPill(onTap: _openAddSheet)),
+                SliverToBoxAdapter(
+                  child: _AddPill(
+                    onTap: _openAddSheet,
+                    onScan: () => startReceiptScan(context, ref),
+                  ),
+                ),
                 ...items.when<List<Widget>>(
                   loading: () => const [
                     SliverFillRemaining(
@@ -263,66 +269,97 @@ class _Header extends StatelessWidget {
 }
 
 class _AddPill extends StatelessWidget {
-  const _AddPill({required this.onTap});
+  const _AddPill({required this.onTap, required this.onScan});
 
   final VoidCallback onTap;
+  final VoidCallback onScan;
 
   @override
   Widget build(BuildContext context) {
+    final shadow = [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.08),
+        blurRadius: 16,
+        offset: const Offset(0, 4),
+      ),
+    ];
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.only(left: 20, right: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: AppColors.line),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search_rounded, color: AppColors.ink),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: onTap,
+              child: Container(
+                height: 60,
+                padding: const EdgeInsets.only(left: 20, right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(40),
+                  border: Border.all(color: AppColors.line),
+                  boxShadow: shadow,
+                ),
+                child: Row(
                   children: [
-                    Text(
-                      'Malzeme ekle',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                    const Icon(Icons.search_rounded, color: AppColors.ink),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Malzeme ekle',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            'Domates, süt, yumurta…',
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      'Domates, süt, yumurta…',
-                      style: TextStyle(color: AppColors.muted, fontSize: 13),
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: AppColors.basil,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.add_rounded, color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: AppColors.basil,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.add_rounded, color: Colors.white),
-              ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(width: 10),
+          // Fiş okut
+          GestureDetector(
+            onTap: onScan,
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.line),
+                boxShadow: shadow,
+              ),
+              child: const Icon(
+                Icons.receipt_long_rounded,
+                color: AppColors.basil,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
