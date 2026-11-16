@@ -29,11 +29,14 @@ export type AdminIngredient = {
   imageUrl: string;
   category: IngredientCategory;
   defaultUnit: MeasureUnit;
+  aliasCount: number;
 };
 
-export type IngredientInput = Omit<AdminIngredient, "id" | "imageUrl">;
+export type IngredientInput = Omit<AdminIngredient, "id" | "imageUrl" | "aliasCount">;
 
 export type IngredientPage = { items: AdminIngredient[]; page: number; pageSize: number; totalCount: number };
+
+export type AliasItem = { id: number; alias: string };
 
 export const ingredientCategoryLabel = (v: string) =>
   INGREDIENT_CATEGORIES.find((c) => c.value === v)?.label ?? v;
@@ -53,4 +56,16 @@ export function createIngredient(input: IngredientInput) {
 
 export function updateIngredient(id: number, input: IngredientInput) {
   return api<void>(`/api/admin/ingredients/${id}`, { method: "PUT", body: input });
+}
+
+export function listAliases(ingredientId: number) {
+  return api<AliasItem[]>(`/api/admin/ingredients/${ingredientId}/aliases`);
+}
+
+export function addAlias(ingredientId: number, alias: string) {
+  return api<AliasItem>(`/api/admin/ingredients/${ingredientId}/aliases`, { method: "POST", body: { alias } });
+}
+
+export function deleteAlias(aliasId: number) {
+  return api<void>(`/api/admin/ingredients/aliases/${aliasId}`, { method: "DELETE" });
 }
