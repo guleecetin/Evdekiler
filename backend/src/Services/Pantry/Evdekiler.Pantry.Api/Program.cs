@@ -3,6 +3,7 @@ using Evdekiler.BuildingBlocks.Auth;
 using Evdekiler.Pantry.Api.Consumers;
 using Evdekiler.Pantry.Api.Data;
 using Evdekiler.Pantry.Api.Endpoints;
+using Evdekiler.Pantry.Api.Receipts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,10 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+// Fiş eşleştirme: katalog önbelleği
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IngredientCatalog>();
+
 builder.Services.AddEvdekilerJwtAuth(builder.Configuration);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -36,7 +41,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// wwwroot klasöründeki dosyaları (ikonlar) herkese açık sun
 app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
@@ -48,5 +52,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapPantryEndpoints();
+app.MapReceiptEndpoints();
 
 app.Run();

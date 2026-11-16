@@ -940,6 +940,154 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.IngredientAlias", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Alias")
+                        .IsUnique();
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("IngredientAlias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Alias = "domates salcasi",
+                            IngredientId = 27
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Alias = "biber salcasi",
+                            IngredientId = 27
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Alias = "unlu mam",
+                            IngredientId = 49
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Alias = "francala",
+                            IngredientId = 49
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Alias = "kasar",
+                            IngredientId = 16
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Alias = "beyaz peyn",
+                            IngredientId = 15
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Alias = "tavuk gogus",
+                            IngredientId = 19
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Alias = "pilic gogus",
+                            IngredientId = 19
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Alias = "pilic but",
+                            IngredientId = 108
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Alias = "aycicek",
+                            IngredientId = 60
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Alias = "zeytin yagi",
+                            IngredientId = 28
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Alias = "baldo",
+                            IngredientId = 21
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Alias = "osmancik",
+                            IngredientId = 21
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Alias = "spagetti",
+                            IngredientId = 22
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Alias = "penne",
+                            IngredientId = 22
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Alias = "kirmizi mercimek",
+                            IngredientId = 25
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Alias = "toz seker",
+                            IngredientId = 55
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Alias = "kup seker",
+                            IngredientId = 55
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Alias = "maydonoz",
+                            IngredientId = 31
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Alias = "dana kiyma",
+                            IngredientId = 20
+                        });
+                });
+
             modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.PantryItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -990,6 +1138,17 @@ namespace Evdekiler.Pantry.Api.Data.Migrations
                     b.HasIndex("UserId", "ExpiresAt");
 
                     b.ToTable("PantryItems");
+                });
+
+            modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.IngredientAlias", b =>
+                {
+                    b.HasOne("Evdekiler.Pantry.Api.Entities.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
                 });
 
             modelBuilder.Entity("Evdekiler.Pantry.Api.Entities.PantryItem", b =>

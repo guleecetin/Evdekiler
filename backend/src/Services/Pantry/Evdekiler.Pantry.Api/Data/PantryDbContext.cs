@@ -20,6 +20,7 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
             entity.Property(i => i.DefaultUnit).HasConversion<string>().HasMaxLength(20);
             entity.HasData(IngredientSeed.All);
         });
+        modelBuilder.ApplyConfiguration(new IngredientAliasConfiguration());
 
         modelBuilder.Entity<PantryItem>(entity =>
         {
