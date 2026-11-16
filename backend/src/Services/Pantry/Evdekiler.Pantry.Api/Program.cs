@@ -28,7 +28,6 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-// Fiş eşleştirme: katalog önbelleği
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IngredientCatalog>();
 
@@ -52,6 +51,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapPantryEndpoints();
+app.MapPantryBulkEndpoints();
 app.MapReceiptEndpoints();
 
 app.Run();

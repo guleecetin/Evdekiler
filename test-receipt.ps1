@@ -4,6 +4,7 @@ $Base = "http://localhost:5000"
 
 $body = @{ email = $Email; password = $Password } | ConvertTo-Json
 $token = (Invoke-RestMethod -Method Post "$Base/api/auth/login" -ContentType "application/json" -Body $body).accessToken
+$headers = @{ Authorization = "Bearer $token" }
 
 # Gima fişi + birkaç modern market satırı
 $lines = @(
@@ -20,9 +21,10 @@ $lines = @(
     "TOPLAM *6.550.500", "NAKIT *10.000.000"
 )
 
+# --- 1. Fişi oku ---
 $req = @{ lines = $lines } | ConvertTo-Json
 $res = Invoke-RestMethod -Method Post "$Base/api/pantry/receipts/parse" `
-    -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json; charset=utf-8" `
+    -Headers $headers -ContentType "application/json; charset=utf-8" `
     -Body ([System.Text.Encoding]::UTF8.GetBytes($req))
 
 Write-Host "`nBULUNANLAR" -ForegroundColor Green
@@ -32,3 +34,15 @@ foreach ($i in $res.items) {
 
 Write-Host "`nESLESMEYENLER" -ForegroundColor Yellow
 foreach ($u in $res.unmatched) { Write-Host "  $u" }
+
+# --- 2. Bulunanları buzdolabına toplu ekle ---
+$bulk = @{
+    items = @($res.items | ForEach-Object {
+        @{ ingredientId = $_.ingredient.id; quantity = $_.quantity; unit = $_.unit }
+    })
+} | ConvertTo-Json -Depth 4
+
+$added = Invoke-RestMethod -Method Post "$Base/api/pantry/items/bulk" `
+    -Headers $headers -ContentType "application/json" -Body $bulk
+
+Write-Host "`nBUZDOLABINA EKLENDI: $($added.Count) urun" -ForegroundColor Cyan
