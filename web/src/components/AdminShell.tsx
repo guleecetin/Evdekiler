@@ -17,10 +17,10 @@ type Props = {
 };
 
 const NAV = [
-  { href: "/", label: "Tarifler", icon: BookOpen, ready: true },
-  { href: "/ingredients", label: "Malzemeler", icon: Carrot, ready: true },
-  { href: "/suggestions", label: "Öneriler", icon: Sparkles, ready: true },
-  { href: "#", label: "Kullanıcılar", icon: Users, ready: false },
+  { href: "/", label: "Tarifler", icon: BookOpen },
+  { href: "/ingredients", label: "Malzemeler", icon: Carrot },
+  { href: "/suggestions", label: "Öneriler", icon: Sparkles },
+  { href: "/users", label: "Kullanıcılar", icon: Users },
 ];
 
 function isActive(href: string, pathname: string) {
@@ -33,7 +33,6 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
   const pathname = usePathname();
   const [pending, setPending] = useState<number | null>(null);
 
-  // Bekleyen öneri sayısı (menüdeki rozet)
   useEffect(() => {
     listSuggestions()
       .then((list) => setPending(list.length))
@@ -57,21 +56,6 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
         <nav className="flex-1 space-y-1 px-3">
           {NAV.map((item) => {
             const Icon = item.icon;
-            if (!item.ready) {
-              return (
-                <span
-                  key={item.label}
-                  className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-white/35"
-                >
-                  <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-                  {item.label}
-                  <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/50">
-                    Yakında
-                  </span>
-                </span>
-              );
-            }
-
             const active = isActive(item.href, pathname);
             const badge = item.href === "/suggestions" && pending ? pending : null;
             return (
