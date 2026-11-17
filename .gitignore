@@ -7,3 +7,7 @@ node_modules/
 
 # Ham ekran kayitlari
 *.mp4
+
+# IDE dosyalari
+.vs/
+*.user
