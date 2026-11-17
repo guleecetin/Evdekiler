@@ -12,7 +12,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PantryDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PantryDb")));
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("PantryDb"))
+        .UseSeeding((context, _) => PantrySeed.Seed(context))
+        .UseAsyncSeeding((context, _, ct) => PantrySeed.SeedAsync(context, ct)));
 
 builder.Services.AddMassTransit(x =>
 {

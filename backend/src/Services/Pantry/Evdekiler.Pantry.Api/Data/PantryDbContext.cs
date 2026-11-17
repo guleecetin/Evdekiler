@@ -19,7 +19,7 @@ public class PantryDbContext(DbContextOptions<PantryDbContext> options) : DbCont
             entity.Property(i => i.Category).HasConversion<string>().HasMaxLength(20);
             entity.Property(i => i.DefaultUnit).HasConversion<string>().HasMaxLength(20);
             entity.Property(i => i.ImageUrl).HasMaxLength(200);
-            entity.HasData(IngredientSeed.All);
+            // Seed artık PantrySeed'de (yoksa ekle); HasData yok
         });
 
         modelBuilder.ApplyConfiguration(new IngredientAliasConfiguration());
