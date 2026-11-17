@@ -1,0 +1,8 @@
+# Yerel betikler (icinde API anahtari olabilir)
+/*.ps1
+
+# Bagimliliklar
+node_modules/
+
+# Ham ekran kayitlari
+*.mp4
