@@ -1,5 +1,6 @@
 # Yerel betikler (icinde API anahtari olabilir)
 /*.ps1
+/scripts/local/
 
 # Bagimliliklar
 node_modules/

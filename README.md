@@ -233,6 +233,8 @@ Evdekiler/
 ├── web/                          # Next.js yönetim paneli
 ├── mobile/                       # Flutter uygulaması
 ├── tools/branding/               # Logo ve uygulama simgelerini üreten betik
+├── scripts/                      # Docker'sız yerel çalıştırma (start/stop-backend.cmd)
+├── docs/                         # Ekran görüntüleri ve demo GIF'i
 ├── docker-compose.yml
 └── .github/workflows/ci.yml      # Derleme, test, Docker imajları, panel derlemesi
 ```

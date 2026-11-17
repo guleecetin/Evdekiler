@@ -1,7 +1,7 @@
 @echo off
 call "%~dp0stop-backend.cmd"
 
-cd /d "%~dp0backend"
+cd /d "%~dp0..\backend"
 echo Derleniyor...
 dotnet build || (echo DERLEME HATASI & pause & exit /b 1)
 
