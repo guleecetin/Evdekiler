@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # 1. .NET derleme + birim testleri
+  backend:
+    name: Backend (build + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore Evdekiler.slnx
+
+      - name: Build
+        run: dotnet build Evdekiler.slnx --no-restore -c Release
+
+      - name: Test
+        run: dotnet test Evdekiler.slnx --no-build -c Release --logger "trx;LogFileName=results.trx"
+
+      - name: Test sonuçlarını sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: backend/**/TestResults/*.trx
+
+  # 2. Bütün Docker imajları derleniyor mu?
+  docker:
+    name: Docker imajları
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose build
+        run: docker compose build
+
+  # 3. Web paneli derleniyor mu?
+  web:
+    name: Web paneli (build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
