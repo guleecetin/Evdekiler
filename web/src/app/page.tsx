@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock, ListChecks, Plus, Search, SearchX, Trash2 } from "lucide-react";
 import AdminShell from "@/components/AdminShell";
+import PageLoader from "@/components/PageLoader";
 import CategoryIcon, { categoryStyle } from "@/components/CategoryIcon";
 import RecipeImage from "@/components/RecipeImage";
 import { CATEGORIES, categoryLabel, deleteRecipe, listRecipes, type RecipeListItem } from "@/lib/recipes";
@@ -70,7 +71,7 @@ export default function HomePage() {
     }
   }
 
-  if (!me) return <main className="p-10 text-muted">Yükleniyor…</main>;
+  if (!me) return <PageLoader />;
 
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const tabs: { value: string | null; key: string; label: string }[] = [

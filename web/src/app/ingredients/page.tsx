@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type SyntheticEvent } from "react";
 import { Camera, ImageOff, Loader2, Pencil, Plus, Search, SearchX, Tags, Upload, X } from "lucide-react";
 import AdminShell from "@/components/AdminShell";
+import PageLoader from "@/components/PageLoader";
 import { ApiError } from "@/lib/api";
 import {
   INGREDIENT_CATEGORIES,
@@ -55,7 +56,7 @@ export default function IngredientsPage() {
     if (me) load();
   }, [me, load]);
 
-  if (!me) return <main className="p-10 text-muted">Yükleniyor…</main>;
+  if (!me) return <PageLoader />;
 
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
