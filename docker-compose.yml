@@ -1,4 +1,34 @@
+# Tek komutla bütün sistem: docker compose up --build
+
+# ─── Ortak ayarlar (YAML anchor): bir kez yaz, her yerde kullan ───
+x-dotnet: &dotnet
+  restart: unless-stopped
+
+x-blob: &blob "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+
+x-identity-env: &identity-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__IdentityDb: "Host=postgres;Port=5432;Database=evdekiler_identity;Username=evdekiler;Password=evdekiler_dev_pw"
+
+x-pantry-env: &pantry-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__PantryDb: "Host=postgres;Port=5432;Database=evdekiler_pantry;Username=evdekiler;Password=evdekiler_dev_pw"
+  RabbitMq__Host: rabbitmq
+  Storage__ConnectionString: *blob
+
+x-recipe-env: &recipe-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__RecipeDb: "Host=postgres;Port=5432;Database=evdekiler_recipe;Username=evdekiler;Password=evdekiler_dev_pw"
+  Services__PantryUrl: http://pantry:8080
+  Storage__ConnectionString: *blob
+
+x-shopping-env: &shopping-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ConnectionStrings__ShoppingDb: "Host=postgres;Port=5432;Database=evdekiler_shopping;Username=evdekiler;Password=evdekiler_dev_pw"
+  RabbitMq__Host: rabbitmq
+
 services:
+  # ─── Altyapı ──────────────────────────────────────────────
   postgres:
     image: postgres:17
     container_name: evdekiler-postgres
@@ -10,6 +40,10 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evdekiler"]
+      interval: 5s
+      retries: 20
 
   rabbitmq:
     image: rabbitmq:4-management
@@ -22,6 +56,10 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 20
 
   redis:
     image: redis:7-alpine
@@ -37,6 +75,122 @@ services:
       - "10000:10000"
     volumes:
       - azurite-data:/data
+
+  # ─── Migration'lar: çalışır, veritabanını günceller, KAPANIR ───
+  identity-migrations:
+    build: &identity-build
+      context: ./backend
+      args:
+        PROJECT: src/Services/Identity/Evdekiler.Identity.Api
+        APP_DLL: Evdekiler.Identity.Api.dll
+        BUNDLE: "true"
+    image: evdekiler/identity
+    entrypoint: ["./efbundle"]
+    environment: *identity-env
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  pantry-migrations:
+    build: &pantry-build
+      context: ./backend
+      args:
+        PROJECT: src/Services/Pantry/Evdekiler.Pantry.Api
+        APP_DLL: Evdekiler.Pantry.Api.dll
+        BUNDLE: "true"
+    image: evdekiler/pantry
+    entrypoint: ["./efbundle"]
+    environment: *pantry-env
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  recipe-migrations:
+    build: &recipe-build
+      context: ./backend
+      args:
+        PROJECT: src/Services/Recipe/Evdekiler.Recipe.Api
+        APP_DLL: Evdekiler.Recipe.Api.dll
+        BUNDLE: "true"
+    image: evdekiler/recipe
+    entrypoint: ["./efbundle"]
+    environment: *recipe-env
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  shopping-migrations:
+    build: &shopping-build
+      context: ./backend
+      args:
+        PROJECT: src/Services/Shopping/Evdekiler.Shopping.Api
+        APP_DLL: Evdekiler.Shopping.Api.dll
+        BUNDLE: "true"
+    image: evdekiler/shopping
+    entrypoint: ["./efbundle"]
+    environment: *shopping-env
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  # ─── Servisler: kendi migration'ı BAŞARIYLA bitince başlar ───
+  identity:
+    <<: *dotnet
+    build: *identity-build
+    image: evdekiler/identity
+    environment: *identity-env
+    depends_on:
+      identity-migrations: { condition: service_completed_successfully }
+
+  pantry:
+    <<: *dotnet
+    build: *pantry-build
+    image: evdekiler/pantry
+    environment: *pantry-env
+    depends_on:
+      pantry-migrations: { condition: service_completed_successfully }
+      rabbitmq: { condition: service_healthy }
+      azurite: { condition: service_started }
+
+  recipe:
+    <<: *dotnet
+    build: *recipe-build
+    image: evdekiler/recipe
+    environment: *recipe-env
+    depends_on:
+      recipe-migrations: { condition: service_completed_successfully }
+      pantry: { condition: service_started }
+      azurite: { condition: service_started }
+
+  shopping:
+    <<: *dotnet
+    build: *shopping-build
+    image: evdekiler/shopping
+    environment: *shopping-env
+    depends_on:
+      shopping-migrations: { condition: service_completed_successfully }
+      rabbitmq: { condition: service_healthy }
+
+  gateway:
+    <<: *dotnet
+    build:
+      context: ./backend
+      args:
+        PROJECT: src/Gateway/Evdekiler.Gateway
+        APP_DLL: Evdekiler.Gateway.dll
+    image: evdekiler/gateway
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Cors__Origins__0: http://localhost:3000
+      # Dikkat: değişken adlarında tire (-) olmamalı, Linux kabuğu onları siler
+      ReverseProxy__Clusters__identity__Destinations__identity1__Address: http://identity:8080
+      ReverseProxy__Clusters__pantry__Destinations__pantry1__Address: http://pantry:8080
+      ReverseProxy__Clusters__recipe__Destinations__recipe1__Address: http://recipe:8080
+      ReverseProxy__Clusters__shopping__Destinations__shopping1__Address: http://shopping:8080
+      ReverseProxy__Clusters__storage__Destinations__storage1__Address: http://azurite:10000
+    depends_on:
+      - identity
+      - pantry
+      - recipe
+      - shopping
 
 volumes:
   postgres-data:
