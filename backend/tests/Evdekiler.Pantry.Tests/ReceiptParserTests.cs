@@ -149,4 +149,66 @@ public class ReceiptParserTests
         Assert.Contains(result, r => r.Text == "EKMEK");
         Assert.DoesNotContain(result, r => r.Text.Contains("MARKET") || r.Text.Contains("GOKTURK") || r.Text.Contains("KREDI"));
     }
+
+    // ─── A101 fişinde bulunan hatalar ──────────────────────────
+
+    [Theory]
+    [InlineData("Kadıköy / İstanbul")]
+    [InlineData("ÇANKAYA/ANKARA")]
+    [InlineData("Provizyon No: 475832")]
+    public void Ignores_district_city_and_payment_reference_lines(string raw)
+    {
+        Assert.Empty(ReceiptParser.Parse([raw]));
+    }
+
+    [Fact]
+    public void Reads_two_letter_product_when_line_has_a_price()
+    {
+        var line = Assert.Single(ReceiptParser.Parse(["Su 5 L %1 *19,90"]));
+
+        Assert.Equal("SU", line.Text);
+        Assert.Equal(5m, line.Quantity);
+        Assert.Equal("Liter", line.Unit);
+    }
+
+    [Fact]
+    public void Skips_two_letter_fragments_without_a_price()
+    {
+        // OCR kırıntısı: fiyatı olmayan iki harf ürün değildir
+        Assert.Empty(ReceiptParser.Parse(["TL 12"]));
+    }
+
+    [Fact]
+    public void Real_receipt_a101()
+    {
+        string[] receipt =
+        [
+            "A101",
+            "YENİ MAĞAZACILIK A.Ş.",
+            "Atatürk Mah. Cumhuriyet Cad. No:24",
+            "Kadıköy / İstanbul",
+            "V.D.: Üsküdar 9480423762",
+            "TARİH : 26.01.2025",
+            "SAAT : 14:37",
+            "FİŞ NO : 0123",
+            "ALIŞVERİŞ FİŞİ",
+            "Süt 1 L %1 *27,50",
+            "Ekmek %1 *12,50",
+            "Yumurta 10'lu %1 *64,90",
+            "Muz 1 kg %1 *49,90",
+            "Peynir 500 g %1 *139,00",
+            "Su 5 L %1 *19,90",
+            "TOPLAM KDV *3,13",
+            "GENEL TOPLAM *313,70",
+            "KREDİ KARTI *313,70",
+            "Provizyon No: 475832",
+            "Banka: Yapı Kredi",
+            "Alışverişiniz için teşekkür ederiz.",
+            "8691234567890"
+        ];
+
+        var texts = ReceiptParser.Parse(receipt).Select(r => r.Text).ToList();
+
+        Assert.Equal(["SUT", "EKMEK", "YUMURTA", "MUZ", "PEYNIR", "SU"], texts);
+    }
 }

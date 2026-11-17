@@ -9,7 +9,7 @@ public static partial class ReceiptParser
 {
     // Ürün olmayan satırlar: toplamlar, ödeme, adres, mağaza bilgisi, iptal başlığı.
     // TEL sadece "TEL:" olarak (telefon numarası); "TEL SEHRIYE" bir ürün.
-    [GeneratedRegex(@"\b(TOPLAM|TOPKDV|ARATOP|TOP|KDV|NAKIT|KREDI|KART|P\.?\s?USTU|PARA USTU|ODEME|INDIRIM|TARIH|SAAT|FIS|FATURA|VERGI|V\.D|MERSIS|TEL\s*:|KASIYER|TESEKKUR|BANKA|ONAY|POS|EKU|Z NO|A\.S|LTD|STI|TIC|MAGAZA\w*|MARKET|CAD|MAH|SOK|HATA)")]
+    [GeneratedRegex(@"\b(TOPLAM|TOPKDV|ARATOP|TOP|KDV|NAKIT|KREDI|KART|P\.?\s?USTU|PARA USTU|ODEME|INDIRIM|TARIH|SAAT|FIS|FATURA|VERGI|V\.D|MERSIS|TEL\s*:|KASIYER|TESEKKUR|BANKA|ONAY|POS|EKU|Z NO|PROVIZYON|NO\s*:|A\.S|LTD|STI|TIC|MAGAZA\w*|MARKET|CAD|MAH|SOK|HATA)")]
     private static partial Regex IgnoredRegex();
 
     // "2 X", "2 X 1.0 AD", "3 X 1.0 KG" gibi adet satırları
@@ -42,6 +42,14 @@ public static partial class ReceiptParser
     [GeneratedRegex(@"[A-Z]{2,}")]
     private static partial Regex HasWordRegex();
 
+    // Adresin ilçe/il satırı: "KADIKOY / ISTANBUL", "CANKAYA/ANKARA" (rakam içermez)
+    [GeneratedRegex(@"^[A-Z.\s]+/\s*[A-Z.\s]+$")]
+    private static partial Regex DistrictCityRegex();
+
+    // Satırda fiyat var mı: "*19,90", "42,50"
+    [GeneratedRegex(@"\d+[.,]\d{2}\b")]
+    private static partial Regex PriceRegex();
+
     [GeneratedRegex(@"\*?-?\d+[.,]\d+(?:[.,]\d+)*[A-Z]?\b|%\s*\d+|\bX\b|\b\d+[.,]?\d*\s*(?:KG|GR|G|LT|L|ML|'?LI|'?LU)?\b|\bKG\b|[^A-Z\s]")]
     private static partial Regex NoiseRegex();
 
@@ -71,9 +79,14 @@ public static partial class ReceiptParser
             // 2. Barkod gibi harfsiz satırlar ve bilinen ürün dışı satırlar
             if (!HasWordRegex().IsMatch(line)) continue;
             if (IgnoredRegex().IsMatch(line)) continue;
+            if (DistrictCityRegex().IsMatch(line)) continue;
 
             var text = SpacesRegex().Replace(NoiseRegex().Replace(line, " "), " ").Trim();
-            if (text.Length < 3) continue;
+
+            // "SU 5 L *19,90" gibi iki harfli ürünler: sadece yanında fiyat varsa ürün say,
+            // yoksa OCR'ın ürettiği kırıntı ("TL", "AD") olma ihtimali yüksek
+            if (text.Length < 2) continue;
+            if (text.Length == 2 && !PriceRegex().IsMatch(line)) continue;
 
             // 3. İptal satırı: aynı üründen en son ekleneni listeden çıkar
             if (NegativePriceRegex().IsMatch(line))

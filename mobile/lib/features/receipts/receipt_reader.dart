@@ -12,6 +12,7 @@ import 'receipt_review_screen.dart';
 Future<void> startReceiptScan(BuildContext context, WidgetRef ref) async {
   final source = await showModalBottomSheet<ImageSource>(
     context: context,
+    useRootNavigator: true, // alt çubuğun arkasında kalmasın
     showDragHandle: true,
     backgroundColor: Colors.white,
     builder: (_) => const _SourceSheet(),
