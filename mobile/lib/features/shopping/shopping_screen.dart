@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
 import '../../core/api/api_exception.dart';
+import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_image.dart';
+import '../../core/widgets/app_loader.dart';
+import '../../core/widgets/page_header.dart';
 import '../pantry/pantry_models.dart';
 import '../pantry/pantry_repository.dart';
 import 'shopping_repository.dart';
@@ -39,44 +43,57 @@ class ShoppingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(shoppingItemsProvider);
-    final pendingCount = items.maybeWhen(
-      data: (l) => l.where((i) => !i.isPurchased).length,
-      orElse: () => 0,
+    final list = items.maybeWhen(
+      data: (l) => l,
+      orElse: () => const <ShoppingItem>[],
     );
+    final pendingCount = list.where((i) => !i.isPurchased).length;
+    final doneCount = list.length - pendingCount;
 
-    return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: () => ref.refresh(shoppingItemsProvider.future),
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-            children: [
-              const Text(
-                'Alışveriş',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.8,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AppBackground(
+          child: RefreshIndicator(
+            color: Brand.forest,
+            onRefresh: () => ref.refresh(shoppingItemsProvider.future),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                PageHeader(
+                  title: 'Alışveriş',
+                  subtitle: 'Eksikler tek listede',
+                  icon: Icons.shopping_basket_rounded,
+                  chips: [
+                    if (pendingCount > 0)
+                      HeaderChip(
+                        icon: Icons.radio_button_unchecked_rounded,
+                        text: '$pendingCount alınacak',
+                      ),
+                    if (doneCount > 0)
+                      HeaderChip(
+                        icon: Icons.check_rounded,
+                        text: '$doneCount alındı',
+                      ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                pendingCount == 0
-                    ? 'Listende alınacak bir şey yok'
-                    : '$pendingCount ürün alınacak',
-                style: const TextStyle(color: AppColors.muted, fontSize: 15),
-              ),
-              const SizedBox(height: 12),
-              items.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.only(top: 80),
-                  child: Center(child: CircularProgressIndicator()),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                  child: items.when(
+                    loading: () => const Padding(
+                      padding: EdgeInsets.only(top: 60),
+                      child: AppLoader(
+                        compact: true,
+                        message: 'Liste hazırlanıyor…',
+                      ),
+                    ),
+                    error: (e, _) => Text('Liste yüklenemedi: $e'),
+                    data: (list) => _Content(list: list),
+                  ),
                 ),
-                error: (e, _) => Text('Liste yüklenemedi: $e'),
-                data: (list) => _Content(list: list),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -97,37 +114,52 @@ class _Content extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (pending.isEmpty)
-          const _EmptyState()
-        else ...[
-          const SizedBox(height: 8),
-          for (var i = 0; i < pending.length; i++) ...[
-            _ShoppingRow(item: pending[i]),
-            if (i < pending.length - 1) const Divider(height: 1),
-          ],
-        ],
+        if (pending.isEmpty) const _EmptyState() else _ListCard(items: pending),
         if (done.isNotEmpty) ...[
-          const SizedBox(height: 36),
-          const Text(
-            'Son alınanlar',
-            style: TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.3,
-            ),
-          ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 28),
+          Text('Son alınanlar', style: brandDisplay(19)),
           const Text(
             'Buzdolabına otomatik eklendi',
-            style: TextStyle(color: AppColors.muted, fontSize: 14),
+            style: TextStyle(color: AppColors.muted, fontSize: 13),
           ),
-          const SizedBox(height: 8),
-          for (var i = 0; i < done.length; i++) ...[
-            _ShoppingRow(item: done[i]),
-            if (i < done.length - 1) const Divider(height: 1),
-          ],
+          const SizedBox(height: 10),
+          _ListCard(items: done),
         ],
       ],
+    );
+  }
+}
+
+// Satırları tek beyaz kartta toplar
+class _ListCard extends StatelessWidget {
+  const _ListCard({required this.items});
+
+  final List<ShoppingItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Brand.forest.withValues(alpha: 0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < items.length; i++) ...[
+            _ShoppingRow(item: items[i]),
+            if (i < items.length - 1)
+              const Divider(height: 1, color: AppColors.line),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -167,14 +199,14 @@ class _ShoppingRow extends ConsumerWidget {
     final photo = AppImage('/images/ingredients/${item.ingredientId}.jpg');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             child: SizedBox(
-              width: 58,
-              height: 58,
+              width: 50,
+              height: 50,
               child: done
                   ? Opacity(
                       opacity: 0.5,
@@ -186,7 +218,7 @@ class _ShoppingRow extends ConsumerWidget {
                   : photo,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,9 +226,9 @@ class _ShoppingRow extends ConsumerWidget {
                 Text(
                   item.name,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: done ? AppColors.muted : AppColors.ink,
+                    color: done ? AppColors.muted : Brand.forest,
                     decoration: done ? TextDecoration.lineThrough : null,
                   ),
                 ),
@@ -206,7 +238,7 @@ class _ShoppingRow extends ConsumerWidget {
                       ? 'Buzdolabına eklendi ✓'
                       : formatQuantity(item.quantity, item.unit),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12.5,
                     color: done ? AppColors.basil : AppColors.muted,
                     fontWeight: done ? FontWeight.w600 : FontWeight.w400,
                   ),
@@ -219,7 +251,7 @@ class _ShoppingRow extends ConsumerWidget {
               tooltip: 'Listeden çıkar',
               icon: const Icon(
                 Icons.close_rounded,
-                size: 20,
+                size: 19,
                 color: AppColors.muted,
               ),
               onPressed: () => _delete(ref),
@@ -246,18 +278,18 @@ class _CheckButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        width: 34,
-        height: 34,
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: checked ? AppColors.basil : Colors.white,
+          color: checked ? Brand.forest : Colors.white,
           border: Border.all(
-            color: checked ? AppColors.basil : const Color(0xFFCCCCCC),
+            color: checked ? Brand.forest : const Color(0xFFCFC8BA),
             width: 1.5,
           ),
         ),
         child: checked
-            ? const Icon(Icons.check_rounded, size: 20, color: Colors.white)
+            ? const Icon(Icons.check_rounded, size: 18, color: Brand.gold)
             : null,
       ),
     );
@@ -270,42 +302,53 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: 32),
       child: Column(
         children: [
           Container(
-            width: 120,
-            height: 120,
+            width: 104,
+            height: 104,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.cream,
+            decoration: BoxDecoration(
+              color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Brand.forest.withValues(alpha: 0.08),
+                  blurRadius: 18,
+                ),
+              ],
             ),
-            child: const Text('🧺', style: TextStyle(fontSize: 52)),
+            child: const Text('🧺', style: TextStyle(fontSize: 46)),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Listen tertemiz',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-          ),
+          const SizedBox(height: 18),
+          Text('Listen tertemiz', style: brandDisplay(20)),
           const SizedBox(height: 6),
           const Text(
             'Bir tarifin eksiklerini tek dokunuşla\nburaya ekleyebilirsin.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.muted, height: 1.4),
+            style: TextStyle(
+              color: AppColors.muted,
+              height: 1.4,
+              fontSize: 13.5,
+            ),
           ),
           const SizedBox(height: 20),
-          OutlinedButton(
+          FilledButton.icon(
             onPressed: () => context.go('/recipes'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.ink,
-              side: const BorderSide(color: AppColors.ink),
+            style: FilledButton.styleFrom(
+              backgroundColor: Brand.forest,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
             ),
-            child: const Text(
+            icon: const Icon(
+              Icons.restaurant_menu_rounded,
+              color: Brand.gold,
+              size: 18,
+            ),
+            label: const Text(
               'Tariflere göz at',
               style: TextStyle(fontWeight: FontWeight.w700),
             ),

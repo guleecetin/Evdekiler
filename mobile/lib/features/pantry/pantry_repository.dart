@@ -22,11 +22,21 @@ class PantryRepository {
     }
   }
 
-  Future<List<Ingredient>> searchIngredients(String search) async {
+  // search boşsa katalogu gezer (category ile süzülebilir), doluysa arar.
+  // limit: sunucu en fazla 200 verir.
+  Future<List<Ingredient>> searchIngredients(
+    String search, {
+    String? category,
+    int? limit,
+  }) async {
     try {
       final response = await _dio.get<List<dynamic>>(
         '/api/pantry/ingredients',
-        queryParameters: {'search': search},
+        queryParameters: {
+          'search': search,
+          'category': ?category,
+          'limit': ?limit,
+        },
       );
       return response.data!
           .map((e) => Ingredient.fromJson(e as Map<String, dynamic>))

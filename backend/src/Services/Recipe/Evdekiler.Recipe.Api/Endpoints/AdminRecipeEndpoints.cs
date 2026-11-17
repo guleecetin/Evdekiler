@@ -20,6 +20,8 @@ public record AdminRecipeListItem(
 
 public record PagedResult<T>(List<T> Items, int Page, int PageSize, int TotalCount);
 
+public record RecipeStats(int Total, Dictionary<string, int> ByCategory);
+
 public static class AdminRecipeEndpoints
 {
     private static readonly string[] AllowedUnits =
@@ -30,6 +32,7 @@ public static class AdminRecipeEndpoints
         var group = app.MapGroup("/api/admin/recipes").RequireAuthorization(AuthPolicies.Admin);
 
         group.MapGet("/", GetPaged);
+        group.MapGet("/stats", GetStats);
         group.MapPost("/", Create);
         group.MapPut("/{id:int}", Update);
         group.MapDelete("/{id:int}", Delete);
@@ -60,6 +63,22 @@ public static class AdminRecipeEndpoints
             .ToListAsync(ct);
 
         return Results.Ok(new PagedResult<AdminRecipeListItem>(items, currentPage, size, total));
+    }
+
+    // GET /api/admin/recipes/stats
+    // Eskiden panel 8 ayrı istek atıyordu (Tümü + 7 kategori). Şimdi tek sorgu:
+    // SELECT "Category", COUNT(*) FROM "Recipes" GROUP BY "Category"
+    private static async Task<IResult> GetStats(RecipeDbContext db, CancellationToken ct)
+    {
+        var counts = await db.Recipes
+            .AsNoTracking()
+            .GroupBy(r => r.Category)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        var byCategory = counts.ToDictionary(c => c.Category.ToString(), c => c.Count);
+
+        return Results.Ok(new RecipeStats(byCategory.Values.Sum(), byCategory));
     }
 
     private static async Task<IResult> Create(

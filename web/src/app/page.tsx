@@ -1,35 +1,51 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock, ListChecks, Plus, Search, SearchX, Trash2 } from "lucide-react";
 import AdminShell from "@/components/AdminShell";
 import PageLoader from "@/components/PageLoader";
 import CategoryIcon, { categoryStyle } from "@/components/CategoryIcon";
 import RecipeImage from "@/components/RecipeImage";
-import { CATEGORIES, categoryLabel, deleteRecipe, listRecipes, type RecipeListItem } from "@/lib/recipes";
+import {
+  CATEGORIES,
+  categoryLabel,
+  deleteRecipe,
+  getRecipeStats,
+  listRecipes,
+  type RecipeListItem,
+} from "@/lib/recipes";
 import { useAdmin } from "@/lib/useAdmin";
+import { useListQuery } from "@/lib/useListQuery";
 
 const PAGE_SIZE = 12;
 
+// useSearchParams kullanan bileşen Suspense içinde olmalı (Next.js kuralı)
 export default function HomePage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <RecipeList />
+    </Suspense>
+  );
+}
+
+function RecipeList() {
   const me = useAdmin();
+  const { page, search, category, query, update } = useListQuery();
+
   const [items, setItems] = useState<RecipeListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [page, setPage] = useState(1);
-  const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState(search);
   const [error, setError] = useState<string | null>(null);
 
+  // Yazmayı bırakınca adresteki aramayı güncelle (sadece gerçekten değiştiyse 1. sayfaya dön)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearch(searchInput.trim());
-      setPage(1);
-    }, 300);
+    const value = searchInput.trim();
+    if (value === search) return;
+    const timer = setTimeout(() => update({ q: value, page: null }), 300);
     return () => clearTimeout(timer);
-  }, [searchInput]);
+  }, [searchInput, search, update]);
 
   const load = useCallback(async () => {
     try {
@@ -42,13 +58,12 @@ export default function HomePage() {
     }
   }, [page, search, category]);
 
-  // Her kategoride kaç tarif var? (sayfa boyutu 1: sadece toplam sayıyı istiyoruz)
+  // Kategori kartlarındaki sayılar: tek istek (eskiden 8 ayrı istekti)
   const loadCounts = useCallback(async () => {
-    const keys = ["all", ...CATEGORIES.map((c) => c.value)];
-    const results = await Promise.all(
-      keys.map((k) => listRecipes(1, 1, "", k === "all" ? null : k).then((r) => [k, r.totalCount] as const)),
-    );
-    setCounts(Object.fromEntries(results));
+    const stats = await getRecipeStats();
+    const next: Record<string, number> = { all: stats.total };
+    for (const c of CATEGORIES) next[c.value] = stats.byCategory[c.value] ?? 0;
+    setCounts(next);
   }, []);
 
   useEffect(() => {
@@ -58,6 +73,13 @@ export default function HomePage() {
   useEffect(() => {
     if (me) loadCounts().catch(() => {});
   }, [me, loadCounts]);
+
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // Silme sonrası son sayfa boşaldıysa bir önceki sayfaya geç
+  useEffect(() => {
+    if (total > 0 && page > pageCount) update({ page: pageCount });
+  }, [total, page, pageCount, update]);
 
   async function handleDelete(e: React.MouseEvent, recipe: RecipeListItem) {
     e.preventDefault();
@@ -73,11 +95,13 @@ export default function HomePage() {
 
   if (!me) return <PageLoader />;
 
-  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const tabs: { value: string | null; key: string; label: string }[] = [
     { value: null, key: "all", label: "Tümü" },
     ...CATEGORIES.map((c) => ({ value: c.value as string, key: c.value as string, label: c.label })),
   ];
+
+  // Düzenleme sayfası "← Tarifler" ile buraya, aynı sayfa ve filtreye dönebilsin
+  const from = query ? `?from=${encodeURIComponent(query)}` : "";
 
   return (
     <AdminShell
@@ -102,10 +126,7 @@ export default function HomePage() {
           return (
             <button
               key={t.key}
-              onClick={() => {
-                setCategory(t.value);
-                setPage(1);
-              }}
+              onClick={() => update({ category: t.value, page: null })}
               className={`flex items-center gap-3 rounded-xl bg-white p-3.5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                 active ? `ring-2 ${style.ring} shadow-md` : "ring-1 ring-line"
               }`}
@@ -149,7 +170,7 @@ export default function HomePage() {
           return (
             <Link
               key={recipe.id}
-              href={`/recipes/${recipe.id}`}
+              href={`/recipes/${recipe.id}${from}`}
               className="group overflow-hidden rounded-2xl bg-white ring-1 ring-line transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(29,58,42,0.12)]"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -203,14 +224,14 @@ export default function HomePage() {
           <div className="flex gap-2">
             <button
               disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
+              onClick={() => update({ page: page - 1 })}
               className="rounded-lg border border-line bg-white px-4 py-2 text-sm font-semibold transition hover:border-basil hover:text-basil disabled:opacity-40"
             >
               Önceki
             </button>
             <button
               disabled={page >= pageCount}
-              onClick={() => setPage(page + 1)}
+              onClick={() => update({ page: page + 1 })}
               className="rounded-lg border border-line bg-white px-4 py-2 text-sm font-semibold transition hover:border-basil hover:text-basil disabled:opacity-40"
             >
               Sonraki

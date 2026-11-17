@@ -17,7 +17,7 @@ export default function PageLoader() {
         }
       `}</style>
 
-      <div className="loader-logo drop-shadow-[0_10px_24px_rgba(228,87,46,0.35)]">
+            <div className="loader-logo drop-shadow-[0_10px_24px_rgba(216,189,130,0.45)]">
         <Logo size={64} />
       </div>
 

@@ -16,11 +16,28 @@ import {
   updateRecipe,
   uploadRecipeImage,
   type RecipeForEdit,
+  type RecipeInput,
 } from "@/lib/recipes";
 import { useAdmin } from "@/lib/useAdmin";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+
+// Formdan gelen veriden sadece formun alanlarını al.
+// Form ilk açılıştaki recipe'den kurulduğu için içinde ESKİ imageUrl de olabiliyor;
+// onu asla geri yazmıyoruz.
+function pickInput(data: RecipeInput): RecipeInput {
+  return {
+    title: data.title,
+    description: data.description,
+    emoji: data.emoji,
+    category: data.category,
+    prepMinutes: data.prepMinutes,
+    servings: data.servings,
+    ingredients: data.ingredients,
+    steps: data.steps,
+  };
+}
 
 export default function EditRecipeClient() {
   const me = useAdmin();
@@ -28,6 +45,10 @@ export default function EditRecipeClient() {
   const searchParams = useSearchParams();
   const id = Number(params.id);
   const fileInput = useRef<HTMLInputElement>(null);
+
+  // Listeden gelindiyse listenin adresi burada: "page=3&category=Soup"
+  const from = searchParams.get("from");
+  const backHref = from ? `/?${from}` : "/";
 
   const [recipe, setRecipe] = useState<RecipeForEdit | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +93,9 @@ export default function EditRecipeClient() {
     setBusy("upload");
     try {
       const result = await uploadRecipeImage(id, file);
-      setRecipe({ ...recipe, imageUrl: result.imageUrl });
-      if (notice === "photo-failed") setNotice(null);
+      // prev: o anki en güncel state (closure'daki eski recipe değil)
+      setRecipe((prev) => (prev ? { ...prev, imageUrl: result.imageUrl } : prev));
+      setNotice((n) => (n === "photo-failed" ? null : n));
     } catch (err) {
       setPhotoError(err instanceof ApiError ? err.message : "Fotoğraf yüklenemedi.");
     } finally {
@@ -88,7 +110,7 @@ export default function EditRecipeClient() {
     setBusy("remove");
     try {
       await removeRecipeImage(id);
-      setRecipe({ ...recipe, imageUrl: "" });
+      setRecipe((prev) => (prev ? { ...prev, imageUrl: "" } : prev));
       setConfirmRemove(false);
     } catch (err) {
       setPhotoError(err instanceof ApiError ? err.message : "Fotoğraf kaldırılamadı.");
@@ -97,10 +119,22 @@ export default function EditRecipeClient() {
     }
   }
 
+  async function handleSave(data: RecipeInput) {
+    const input = pickInput(data);
+    await updateRecipe(id, input);
+    // imageUrl formdan değil, mevcut state'ten korunur
+    setRecipe((prev) => (prev ? { ...prev, ...input } : prev));
+    setSaved(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   if (!me || (!recipe && !error)) return <PageLoader />;
 
   const back = (
-    <Link href="/" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition hover:text-forest">
+    <Link
+      href={backHref}
+      className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted transition hover:text-forest"
+    >
       <ArrowLeft className="h-4 w-4" /> Tarifler
     </Link>
   );
@@ -264,16 +298,7 @@ export default function EditRecipeClient() {
         />
       </section>
 
-      <RecipeForm
-        initial={recipe}
-        submitLabel="Değişiklikleri kaydet"
-        onSubmit={async (data) => {
-          await updateRecipe(id, data);
-          setRecipe({ ...recipe, ...data });
-          setSaved(true);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-      />
+      <RecipeForm initial={recipe} submitLabel="Değişiklikleri kaydet" onSubmit={handleSave} />
     </AdminShell>
   );
 }

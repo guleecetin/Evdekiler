@@ -3,11 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/theme.dart';
 import '../../core/api/api_exception.dart';
+import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_image.dart';
+import '../../core/widgets/app_loader.dart';
+import '../../core/widgets/app_logo.dart';
 import '../auth/auth_controller.dart';
 import '../pantry/add_item_sheet.dart';
 import '../pantry/pantry_models.dart';
@@ -15,6 +20,21 @@ import '../pantry/pantry_repository.dart';
 import '../receipts/receipt_reader.dart';
 import '../recipes/recipe_models.dart';
 import '../recipes/recipe_repository.dart';
+
+const _forest = Color(0xFF1D3A2A);
+const _forestDeep = Color(0xFF122A1C);
+const _gold = Color(0xFFD8BD82);
+
+const _herbSvg = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260" fill="none" stroke="#D8BD82" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M30 250C80 200 120 140 150 40"/>
+<path d="M140 72c-30-6-48-24-52-50 28 4 46 22 52 50Z"/>
+<path d="M150 64c26-14 50-14 70 0-22 16-46 16-70 0Z"/>
+<path d="M118 128c-32 0-54-14-66-40 30-2 52 12 66 40Z"/>
+<path d="M128 118c22-22 46-28 72-20-16 24-40 30-72 20Z"/>
+<path d="M90 180c-30 6-56-2-74-24 28-8 54 0 74 24Z"/>
+<path d="M100 168c16-26 38-38 66-36-12 28-34 40-66 36Z"/>
+</svg>''';
 
 const _categoryLabel = {
   'Vegetable': 'Sebze',
@@ -35,7 +55,14 @@ const _categoryLabel = {
   _ => ('$days gün', AppColors.basil),
 };
 
-// Aramada Türkçe karakter duyarsızlık: "sogan" -> "Soğan"
+TextStyle _display(double size, {Color color = _forest}) =>
+    GoogleFonts.bricolageGrotesque(
+      fontSize: size,
+      fontWeight: FontWeight.w800,
+      color: color,
+      letterSpacing: -0.5,
+    );
+
 String _fold(String s) => s
     .replaceAll('İ', 'i')
     .replaceAll('I', 'i')
@@ -47,7 +74,6 @@ String _fold(String s) => s
     .replaceAll('ş', 's')
     .replaceAll('ü', 'u');
 
-// Aynı malzemenin farklı partileri (farklı tarihlerde alınmış) tek kartta
 class _FridgeGroup {
   _FridgeGroup(this.items);
 
@@ -59,13 +85,11 @@ class _FridgeGroup {
   String get emoji => first.emoji;
   String get category => first.category;
 
-  // En yakın son kullanma tarihi
   int? get daysLeft {
     final days = items.map((i) => i.daysLeft).whereType<int>();
     return days.isEmpty ? null : days.reduce(min);
   }
 
-  // Birimlere göre toplam: "33 adet" ya da "1 adet + 1,25 kg"
   String get quantityText {
     final sums = <MeasureUnit, double>{};
     for (final i in items) {
@@ -82,7 +106,6 @@ List<_FridgeGroup> _groupItems(List<PantryItem> list) {
   }
 
   final groups = map.values.map(_FridgeGroup.new).toList();
-  // Önce son kullanma tarihi yaklaşanlar, sonra tarihsizler; kendi içinde alfabetik
   groups.sort((a, b) {
     final da = a.daysLeft, db = b.daysLeft;
     if (da != null && db != null && da != db) return da.compareTo(db);
@@ -104,13 +127,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _category;
   String _query = '';
 
-  void _openAddSheet() => showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    backgroundColor: Colors.white,
-    builder: (_) => const AddItemSheet(),
-  );
+  // Alt çubuğun ÜSTÜNDE açılır (useRootNavigator AddItemSheet.show içinde)
+  void _openAddSheet() => AddItemSheet.show(context);
 
   @override
   Widget build(BuildContext context) {
@@ -125,25 +143,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         .watch(recipeSuggestionsProvider)
         .maybeWhen(data: (l) => l, orElse: () => const <RecipeSuggestion>[]);
 
+    final list = items.maybeWhen(
+      data: (l) => l,
+      orElse: () => const <PantryItem>[],
+    );
+    final groupCount = _groupItems(list).length;
+    final urgentCount = list.where((i) => i.isUrgent).length;
+    final readyCount = suggestions.where((s) => s.isReady).length;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        body: SafeArea(
-          bottom: false,
+        backgroundColor: Colors.transparent,
+        body: AppBackground(
           child: RefreshIndicator(
+            color: _forest,
             onRefresh: () => ref.refresh(pantryItemsProvider.future),
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: _Header(
                     name: name,
+                    groupCount: groupCount,
+                    urgentCount: urgentCount,
+                    readyCount: readyCount,
                     onLogout: () =>
                         ref.read(authControllerProvider.notifier).logout(),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: _AddPill(
-                    onTap: _openAddSheet,
+                    onAdd: _openAddSheet,
                     onScan: () => startReceiptScan(context, ref),
                   ),
                 ),
@@ -151,7 +177,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   loading: () => const [
                     SliverFillRemaining(
                       hasScrollBody: false,
-                      child: Center(child: CircularProgressIndicator()),
+                      child: AppLoader(
+                        compact: true,
+                        message: 'Buzdolabın açılıyor…',
+                      ),
                     ),
                   ],
                   error: (e, _) => [
@@ -197,13 +226,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         SliverToBoxAdapter(
           child: _SectionHeader(
             title: 'Bu akşam ne pişirsen?',
+            subtitle: 'Buzdolabındakilere göre',
             action: 'Tümü',
             onAction: () => context.go('/recipes'),
           ),
         ),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 230,
+            height: 236,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -223,7 +253,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 88,
+            height: 92,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -244,7 +274,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: _FridgeSearch(onChanged: (v) => setState(() => _query = v)),
       ),
       SliverToBoxAdapter(
-        child: _CategoryTabs(
+        child: _CategoryChips(
           categories: categories,
           selected: _category,
           onSelected: (c) => setState(() => _category = c),
@@ -264,7 +294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         )
       else
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (_, i) => _GroupCard(group: filtered[i]),
@@ -273,8 +303,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 14,
-              mainAxisSpacing: 20,
-              childAspectRatio: 0.74,
+              mainAxisSpacing: 14,
+              childAspectRatio: 0.72,
             ),
           ),
         ),
@@ -282,64 +312,262 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-// ─── Üst kısım ──────────────────────────────────────────────
+// ─── Üst kısım: yeşil başlık alanı + taşan iki buton ─────────
 
 class _Header extends StatelessWidget {
-  const _Header({required this.name, required this.onLogout});
+  const _Header({
+    required this.name,
+    required this.groupCount,
+    required this.urgentCount,
+    required this.readyCount,
+    required this.onLogout,
+    required this.onAdd,
+    required this.onScan,
+  });
+
+  final String name;
+  final int groupCount;
+  final int urgentCount;
+  final int readyCount;
+  final VoidCallback onLogout;
+  final VoidCallback onAdd;
+  final VoidCallback onScan;
+
+  @override
+  Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 28),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(32),
+            ),
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2A5A40), _forest, _forestDeep],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -50,
+                    top: top - 20,
+                    width: 200,
+                    child: Transform.flip(
+                      flipX: true,
+                      child: Opacity(
+                        opacity: 0.13,
+                        child: SvgPicture.string(_herbSvg),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, top + 14, 16, 52),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const AppLogo(size: 34),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                name.isEmpty ? 'Merhaba' : 'Merhaba $name',
+                                style: TextStyle(
+                                  color: _gold.withValues(alpha: 0.95),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            _ProfileMenu(name: name, onLogout: onLogout),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Buzdolabın',
+                          style: _display(34, color: Colors.white),
+                        ),
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _StatChip(
+                              icon: Icons.kitchen_outlined,
+                              text: '$groupCount çeşit ürün',
+                            ),
+                            if (urgentCount > 0)
+                              _StatChip(
+                                icon: Icons.schedule_rounded,
+                                text: '$urgentCount tanesi acil',
+                                dot: AppColors.tomato,
+                              ),
+                            if (readyCount > 0)
+                              _StatChip(
+                                icon: Icons.restaurant_rounded,
+                                text: '$readyCount tarif hazır',
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: 0,
+          child: _QuickActions(onAdd: onAdd, onScan: onScan),
+        ),
+      ],
+    );
+  }
+}
+
+// Avatar + açılan profil menüsü
+class _ProfileMenu extends StatelessWidget {
+  const _ProfileMenu({required this.name, required this.onLogout});
 
   final String name;
   final VoidCallback onLogout;
 
+  Widget _avatar(double radius) => CircleAvatar(
+    radius: radius,
+    backgroundColor: _gold,
+    child: Text(
+      name.isEmpty ? '?' : name[0].toUpperCase(),
+      style: const TextStyle(color: _forest, fontWeight: FontWeight.w800),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name.isEmpty ? 'Merhaba 👋' : 'Merhaba $name 👋',
-                  style: const TextStyle(color: AppColors.muted, fontSize: 15),
-                ),
-                const SizedBox(height: 2),
-                const Text(
-                  'Buzdolabın',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.8,
+    return PopupMenuButton<String>(
+      onSelected: (_) => onLogout(),
+      offset: const Offset(0, 50),
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      elevation: 10,
+      shadowColor: _forest.withValues(alpha: 0.25),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      constraints: const BoxConstraints(minWidth: 210),
+      itemBuilder: (_) => [
+        PopupMenuItem<String>(
+          enabled: false, // sadece bilgi, tıklanmaz
+          child: Row(
+            children: [
+              _avatar(18),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name.isEmpty ? 'Hesabın' : name,
+                    style: const TextStyle(
+                      color: _forest,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14.5,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const Text(
+                    'Evdekiler hesabın',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
           ),
-          PopupMenuButton<String>(
-            onSelected: (_) => onLogout(),
-            itemBuilder: (_) => const [
-              PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout_rounded, size: 20),
-                    SizedBox(width: 12),
-                    Text('Çıkış yap'),
-                  ],
+        ),
+        const PopupMenuDivider(height: 8),
+        PopupMenuItem<String>(
+          value: 'logout',
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.tomato.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  size: 17,
+                  color: AppColors.tomato,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Çıkış yap',
+                style: TextStyle(
+                  color: AppColors.tomato,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
                 ),
               ),
             ],
-            child: CircleAvatar(
-              radius: 22,
-              backgroundColor: AppColors.ink,
-              child: Text(
-                name.isEmpty ? '?' : name[0].toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: _gold.withValues(alpha: 0.6), width: 1.5),
+        ),
+        child: _avatar(18),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.icon, required this.text, this.dot});
+
+  final IconData icon;
+  final String text;
+  final Color? dot;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: _gold.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dot != null)
+            Container(
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            )
+          else
+            Icon(icon, size: 15, color: _gold),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -348,100 +576,112 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _AddPill extends StatelessWidget {
-  const _AddPill({required this.onTap, required this.onScan});
+// İki net eylem: tek simge, tek kelime
+class _QuickActions extends StatelessWidget {
+  const _QuickActions({required this.onAdd, required this.onScan});
 
-  final VoidCallback onTap;
+  final VoidCallback onAdd;
   final VoidCallback onScan;
 
   @override
   Widget build(BuildContext context) {
     final shadow = [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.08),
-        blurRadius: 16,
-        offset: const Offset(0, 4),
+        color: _forest.withValues(alpha: 0.20),
+        blurRadius: 22,
+        offset: const Offset(0, 10),
       ),
     ];
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: onTap,
-              child: Container(
-                height: 60,
-                padding: const EdgeInsets.only(left: 20, right: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(40),
-                  border: Border.all(color: AppColors.line),
-                  boxShadow: shadow,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.add_circle_outline_rounded,
-                      color: AppColors.ink,
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Malzeme ekle',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text(
-                            'Domates, süt, yumurta…',
-                            style: TextStyle(
-                              color: AppColors.muted,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: AppColors.basil,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.add_rounded, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: _ActionButton(
+            label: 'Malzeme ekle',
+            icon: Icons.add_rounded,
+            background: Colors.white,
+            foreground: _forest,
+            iconColor: AppColors.basil,
+            shadow: shadow,
+            onTap: onAdd,
           ),
-          const SizedBox(width: 10),
-          GestureDetector(
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 2,
+          child: _ActionButton(
+            label: 'Fiş okut',
+            icon: Icons.receipt_long_rounded,
+            background: _forest,
+            foreground: Colors.white,
+            iconColor: _gold,
+            border: _gold.withValues(alpha: 0.5),
+            shadow: shadow,
             onTap: onScan,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.line),
-                boxShadow: shadow,
-              ),
-              child: const Icon(
-                Icons.receipt_long_rounded,
-                color: AppColors.basil,
-              ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.iconColor,
+    required this.shadow,
+    required this.onTap,
+    this.border,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final Color iconColor;
+  final Color? border;
+  final List<BoxShadow> shadow;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: shadow,
+      ),
+      child: Material(
+        color: background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: border == null ? BorderSide.none : BorderSide(color: border!),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: SizedBox(
+            height: 56,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: iconColor, size: 22),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: foreground,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -454,30 +694,26 @@ class _FridgeSearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide(color: c, width: w),
+    );
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       child: TextField(
         onChanged: onChanged,
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: 'Buzdolabında ara…',
-          prefixIcon: const Icon(Icons.search_rounded),
+          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.muted),
           isDense: true,
           filled: true,
-          fillColor: const Color(0xFFF5F5F5),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: AppColors.ink),
-          ),
+          fillColor: Colors.white.withValues(alpha: 0.85),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          border: border(const Color(0xFFE6E1D8)),
+          enabledBorder: border(const Color(0xFFE6E1D8)),
+          focusedBorder: border(AppColors.basil, 1.5),
         ),
       ),
     );
@@ -500,7 +736,7 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 30, 12, 14),
+      padding: const EdgeInsets.fromLTRB(20, 28, 12, 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -508,20 +744,13 @@ class _SectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 21,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.4,
-                  ),
-                ),
+                Text(title, style: _display(22)),
                 if (subtitle != null)
                   Text(
                     subtitle!,
                     style: const TextStyle(
                       color: AppColors.muted,
-                      fontSize: 14,
+                      fontSize: 13.5,
                     ),
                   ),
               ],
@@ -530,13 +759,16 @@ class _SectionHeader extends StatelessWidget {
           if (action != null)
             TextButton(
               onPressed: onAction,
-              child: Text(
-                action!,
-                style: const TextStyle(
-                  color: AppColors.ink,
-                  fontWeight: FontWeight.w700,
-                  decoration: TextDecoration.underline,
-                ),
+              style: TextButton.styleFrom(foregroundColor: AppColors.basil),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    action!,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, size: 20),
+                ],
               ),
             ),
         ],
@@ -565,7 +797,7 @@ class _RecipeMiniCard extends StatelessWidget {
             Hero(
               tag: tag,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 child: SizedBox(
                   height: 160,
                   width: 200,
@@ -573,12 +805,44 @@ class _RecipeMiniCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       AppImage(recipe.imageUrl, fallbackEmoji: recipe.emoji),
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Color(0x66000000)],
+                            stops: [0.55, 1],
+                          ),
+                        ),
+                      ),
                       if (recipe.isReady)
                         const Positioned(
                           top: 10,
                           left: 10,
                           child: _Badge('Hemen yapılabilir'),
                         ),
+                      Positioned(
+                        bottom: 10,
+                        left: 12,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.schedule_rounded,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${recipe.prepMinutes} dk',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -589,14 +853,22 @@ class _RecipeMiniCard extends StatelessWidget {
               recipe.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: _forest,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
               recipe.isReady
-                  ? '${recipe.prepMinutes} dk · Malzemeler evde'
-                  : '${recipe.prepMinutes} dk · ${recipe.missing.length} eksik',
-              style: const TextStyle(color: AppColors.muted, fontSize: 13),
+                  ? 'Malzemeler evde'
+                  : '${recipe.missing.length} malzeme eksik',
+              style: TextStyle(
+                color: recipe.isReady ? AppColors.basil : AppColors.muted,
+                fontSize: 13,
+                fontWeight: recipe.isReady ? FontWeight.w600 : FontWeight.w400,
+              ),
             ),
           ],
         ),
@@ -615,15 +887,23 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _forest,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 6),
-        ],
       ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check_rounded, size: 13, color: _gold),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -640,63 +920,79 @@ class _UrgentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = expiryInfo(item.daysLeft!);
     return Container(
-      width: 240,
-      padding: const EdgeInsets.all(10),
+      width: 244,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.line),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              width: 66,
-              height: 66,
-              child: AppImage(item.imageUrl, fallbackEmoji: item.emoji),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.ingredientName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                Text(
-                  formatQuantity(item.quantity, item.unit),
-                  style: const TextStyle(color: AppColors.muted, fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: _forest.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Row(
+          children: [
+            Container(width: 5, color: color),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  width: 62,
+                  height: 62,
+                  child: AppImage(item.imageUrl, fallbackEmoji: item.emoji),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.ingredientName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: _forest,
+                    ),
+                  ),
+                  Text(
+                    formatQuantity(item.quantity, item.unit),
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: color,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-// ─── Kategori sekmeleri ─────────────────────────────────────
+// ─── Kategori çipleri ───────────────────────────────────────
 
-class _CategoryTabs extends StatelessWidget {
-  const _CategoryTabs({
+class _CategoryChips extends StatelessWidget {
+  const _CategoryChips({
     required this.categories,
     required this.selected,
     required this.onSelected,
@@ -713,46 +1009,40 @@ class _CategoryTabs extends StatelessWidget {
       for (final c in categories) (c, _categoryLabel[c] ?? c),
     ];
 
-    return Container(
-      height: 42,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.line)),
-      ),
-      child: ListView(
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          for (final (value, label) in tabs)
-            GestureDetector(
-              onTap: () => onSelected(value),
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: selected == value
-                            ? AppColors.ink
-                            : AppColors.muted,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      height: 2,
-                      width: selected == value ? 28 : 0,
-                      color: AppColors.ink,
-                    ),
-                  ],
+        itemCount: tabs.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (_, i) {
+          final (value, label) = tabs[i];
+          final active = selected == value;
+          return GestureDetector(
+            onTap: () => onSelected(value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: active ? _forest : Colors.white.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: active ? _forest : const Color(0xFFE6E1D8),
+                ),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: active ? Colors.white : AppColors.ink,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13.5,
                 ),
               ),
             ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -770,74 +1060,102 @@ class _GroupCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => showModalBottomSheet(
         context: context,
+        useRootNavigator: true, // alt çubuğun üstünde açılsın
         showDragHandle: true,
         backgroundColor: Colors.white,
         builder: (_) => _BatchSheet(group: group),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AppImage(group.imageUrl, fallbackEmoji: group.emoji),
-                ),
-                if (group.daysLeft != null)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: _ExpiryPill(days: group.daysLeft!),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: _forest.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: AppImage(group.imageUrl, fallbackEmoji: group.emoji),
                   ),
-                if (group.items.length > 1)
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.ink.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${group.items.length} parti',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
+                  if (group.daysLeft != null)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: _ExpiryPill(days: group.daysLeft!),
+                    ),
+                  if (group.items.length > 1)
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _forest.withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '${group.items.length} parti',
+                          style: const TextStyle(
+                            color: _gold,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            group.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-          ),
-          Text(
-            group.quantityText,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.muted, fontSize: 13),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(6, 10, 6, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    group.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: _forest,
+                    ),
+                  ),
+                  Text(
+                    group.quantityText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-// Karta dokununca: bu malzemenin buzdolabındaki partileri
 class _BatchSheet extends ConsumerWidget {
   const _BatchSheet({required this.group});
 
@@ -878,10 +1196,10 @@ class _BatchSheet extends ConsumerWidget {
             Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                   child: SizedBox(
-                    width: 52,
-                    height: 52,
+                    width: 56,
+                    height: 56,
                     child: AppImage(group.imageUrl, fallbackEmoji: group.emoji),
                   ),
                 ),
@@ -890,13 +1208,7 @@ class _BatchSheet extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        group.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
+                      Text(group.name, style: _display(22)),
                       Text(
                         'Toplam ${group.quantityText}',
                         style: const TextStyle(color: AppColors.muted),
@@ -909,7 +1221,7 @@ class _BatchSheet extends ConsumerWidget {
             const SizedBox(height: 18),
             const Text(
               'Partiler',
-              style: TextStyle(fontWeight: FontWeight.w700),
+              style: TextStyle(fontWeight: FontWeight.w800, color: _forest),
             ),
             const SizedBox(height: 4),
             for (final item in batches)
@@ -997,23 +1309,27 @@ class _EmptyFridge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 60, 32, 0),
+      padding: const EdgeInsets.fromLTRB(32, 56, 32, 0),
       child: Column(
         children: [
-          const Text('🧊', style: TextStyle(fontSize: 64)),
-          const SizedBox(height: 16),
-          const Text(
-            'Buzdolabın bomboş',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-          ),
+          const AppLogo(size: 72),
+          const SizedBox(height: 18),
+          Text('Buzdolabın bomboş', style: _display(24)),
           const SizedBox(height: 8),
           const Text(
             'Evdeki malzemelerini ekle\nya da market fişini okut.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.muted),
+            style: TextStyle(color: AppColors.muted, height: 1.4),
           ),
           const SizedBox(height: 24),
-          FilledButton(onPressed: onAdd, child: const Text('İlk ürünü ekle')),
+          FilledButton(
+            onPressed: onAdd,
+            style: FilledButton.styleFrom(
+              backgroundColor: _forest,
+              minimumSize: const Size(200, 52),
+            ),
+            child: const Text('İlk ürünü ekle'),
+          ),
         ],
       ),
     );

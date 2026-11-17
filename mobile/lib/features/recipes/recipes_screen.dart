@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_image.dart';
+import '../../core/widgets/app_loader.dart';
+import '../../core/widgets/page_header.dart';
 import 'recipe_models.dart';
 import 'recipe_repository.dart';
 
@@ -20,83 +24,92 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   @override
   Widget build(BuildContext context) {
     final suggestions = ref.watch(recipeSuggestionsProvider);
+    final all = suggestions.maybeWhen(
+      data: (l) => l,
+      orElse: () => const <RecipeSuggestion>[],
+    );
+    final readyCount = all.where((r) => r.isReady).length;
 
-    return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: () => ref.refresh(recipeSuggestionsProvider.future),
-          child: CustomScrollView(
-            slivers: [
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Tarifler',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.8,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AppBackground(
+          child: RefreshIndicator(
+            color: Brand.forest,
+            onRefresh: () => ref.refresh(recipeSuggestionsProvider.future),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: PageHeader(
+                    title: 'Tarifler',
+                    subtitle: 'Buzdolabındakilere göre sıraladık',
+                    icon: Icons.restaurant_menu_rounded,
+                    chips: [
+                      if (all.isNotEmpty)
+                        HeaderChip(
+                          icon: Icons.menu_book_rounded,
+                          text: '${all.length} tarif',
                         ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Buzdolabındakilere göre senin için sıraladık',
-                        style: TextStyle(color: AppColors.muted, fontSize: 15),
-                      ),
+                      if (readyCount > 0)
+                        HeaderChip(
+                          icon: Icons.check_circle_rounded,
+                          text: '$readyCount hemen yapılabilir',
+                        ),
                     ],
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: _CategoryChips(
-                  selected: _category,
-                  onSelected: (c) => setState(() => _category = c),
+                SliverToBoxAdapter(
+                  child: _CategoryChips(
+                    selected: _category,
+                    onSelected: (c) => setState(() => _category = c),
+                  ),
                 ),
-              ),
-              ...suggestions.when<List<Widget>>(
-                loading: () => const [
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ],
-                error: (e, _) => [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text('Öneriler yüklenemedi: $e'),
+                ...suggestions.when<List<Widget>>(
+                  loading: () => const [
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: AppLoader(
+                        compact: true,
+                        message: 'Tarifler hazırlanıyor…',
+                      ),
                     ),
-                  ),
-                ],
-                data: (list) {
-                  final filtered = _category == null
-                      ? list
-                      : list.where((r) => r.category == _category).toList();
+                  ],
+                  error: (e, _) => [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text('Öneriler yüklenemedi: $e'),
+                      ),
+                    ),
+                  ],
+                  data: (list) {
+                    final filtered = _category == null
+                        ? list
+                        : list.where((r) => r.category == _category).toList();
 
-                  if (filtered.isEmpty) {
+                    if (filtered.isEmpty) {
+                      return [
+                        SliverToBoxAdapter(
+                          child: _EmptyCategory(category: _category),
+                        ),
+                      ];
+                    }
+
                     return [
-                      SliverToBoxAdapter(
-                        child: _EmptyCategory(category: _category),
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                        sliver: SliverList.builder(
+                          itemCount: filtered.length,
+                          itemBuilder: (_, i) =>
+                              _RecipeCard(recipe: filtered[i]),
+                        ),
                       ),
                     ];
-                  }
-
-                  return [
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                      sliver: SliverList.builder(
-                        itemCount: filtered.length,
-                        itemBuilder: (_, i) => _RecipeCard(recipe: filtered[i]),
-                      ),
-                    ),
-                  ];
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -117,32 +130,32 @@ class _CategoryChips extends StatelessWidget {
     final items = <RecipeCategory?>[null, ...RecipeCategory.values];
 
     return SizedBox(
-      height: 64,
+      height: 62,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
         itemCount: items.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final c = items[i];
           final active = c == selected;
-          final fg = c?.foreground ?? AppColors.basilDark;
-          final bg = c?.background ?? const Color(0xFFE3ECE4);
+          final fg = c?.foreground ?? Brand.forest;
 
           return GestureDetector(
             onTap: () => onSelected(c),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 13),
               decoration: BoxDecoration(
-                color: active ? fg : bg,
+                color: active ? fg : Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: active ? fg : Brand.border),
               ),
               child: Row(
                 children: [
                   Icon(
                     c?.icon ?? Icons.grid_view_rounded,
-                    size: 18,
+                    size: 16,
                     color: active ? Colors.white : fg,
                   ),
                   const SizedBox(width: 6),
@@ -150,8 +163,8 @@ class _CategoryChips extends StatelessWidget {
                     c?.label ?? 'Tümü',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: active ? Colors.white : fg,
+                      fontSize: 12.5,
+                      color: active ? Colors.white : AppColors.ink,
                     ),
                   ),
                 ],
@@ -178,35 +191,65 @@ class _RecipeCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => context.push('/recipe/${recipe.id}?hero=$tag'),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 30),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Brand.forest.withValues(alpha: 0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
               tag: tag,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(22),
+                ),
                 child: AspectRatio(
-                  aspectRatio: 4 / 3,
+                  aspectRatio: 16 / 10,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
                       AppImage(recipe.imageUrl, fallbackEmoji: recipe.emoji),
-                      Positioned(
-                        top: 14,
-                        left: 14,
-                        child: _Pill(
-                          text: recipe.isReady
-                              ? 'Hemen yapılabilir'
-                              : '${recipe.haveCount}/${recipe.requiredCount} malzeme evde',
-                          background: Colors.white,
-                          foreground: AppColors.ink,
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Color(0x55000000)],
+                            stops: [0.6, 1],
+                          ),
                         ),
                       ),
                       Positioned(
-                        bottom: 14,
-                        left: 14,
+                        top: 12,
+                        left: 12,
+                        child: recipe.isReady
+                            ? const _Pill(
+                                text: 'Hemen yapılabilir',
+                                icon: Icons.check_rounded,
+                                background: Brand.forest,
+                                foreground: Colors.white,
+                                iconColor: Brand.gold,
+                              )
+                            : _Pill(
+                                text:
+                                    '${recipe.haveCount}/${recipe.requiredCount} malzeme evde',
+                                background: Colors.white,
+                                foreground: AppColors.ink,
+                              ),
+                      ),
+                      Positioned(
+                        bottom: 12,
+                        left: 12,
                         child: _Pill(
                           text: c.label,
                           icon: c.icon,
@@ -214,43 +257,83 @@ class _RecipeCard extends StatelessWidget {
                           foreground: c.foreground,
                         ),
                       ),
+                      Positioned(
+                        bottom: 12,
+                        right: 12,
+                        child: _Pill(
+                          text: '${recipe.prepMinutes} dk',
+                          icon: Icons.schedule_rounded,
+                          background: Colors.black.withValues(alpha: 0.45),
+                          foreground: Colors.white,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     recipe.title,
                     style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w800,
+                      color: Brand.forest,
                     ),
                   ),
-                ),
-                const Icon(Icons.schedule_rounded, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  '${recipe.prepMinutes} dk',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Text(
-              recipe.isReady
-                  ? 'Tüm malzemeler evde 🎉'
-                  : 'Eksik: ${recipe.missing.join(', ')}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.muted, fontSize: 14),
-            ),
-            Text(
-              '${recipe.servings} kişilik',
-              style: const TextStyle(color: AppColors.muted, fontSize: 14),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Icon(
+                        recipe.isReady
+                            ? Icons.check_circle_rounded
+                            : Icons.shopping_basket_outlined,
+                        size: 15,
+                        color: recipe.isReady
+                            ? AppColors.basil
+                            : AppColors.muted,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          recipe.isReady
+                              ? 'Tüm malzemeler evde'
+                              : 'Eksik: ${recipe.missing.join(', ')}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: recipe.isReady
+                                ? AppColors.basil
+                                : AppColors.muted,
+                            fontWeight: recipe.isReady
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.people_outline_rounded,
+                        size: 15,
+                        color: AppColors.muted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${recipe.servings} kişilik',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -265,17 +348,19 @@ class _Pill extends StatelessWidget {
     required this.background,
     required this.foreground,
     this.icon,
+    this.iconColor,
   });
 
   final String text;
   final Color background;
   final Color foreground;
   final IconData? icon;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(20),
@@ -287,13 +372,13 @@ class _Pill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: foreground),
+            Icon(icon, size: 13, color: iconColor ?? foreground),
             const SizedBox(width: 4),
           ],
           Text(
             text,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: foreground,
             ),
@@ -313,32 +398,42 @@ class _EmptyCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = category;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 60, 32, 0),
+      padding: const EdgeInsets.fromLTRB(32, 48, 32, 0),
       child: Column(
         children: [
           Container(
-            width: 96,
-            height: 96,
+            width: 92,
+            height: 92,
             decoration: BoxDecoration(
-              color: c?.background ?? AppColors.cream,
+              color: c?.background ?? Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Brand.forest.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                ),
+              ],
             ),
             child: Icon(
               c?.icon ?? Icons.kitchen_outlined,
-              size: 44,
+              size: 40,
               color: c?.foreground ?? AppColors.muted,
             ),
           ),
           const SizedBox(height: 18),
           Text(
             c == null ? 'Henüz öneri yok' : '${c.label} önerisi yok',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            style: brandDisplay(20),
           ),
           const SizedBox(height: 6),
           const Text(
             'Buzdolabındakilerle eşleşen tarif bulamadık.\nBirkaç malzeme daha eklemeyi dene.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.muted, height: 1.4),
+            style: TextStyle(
+              color: AppColors.muted,
+              height: 1.4,
+              fontSize: 13.5,
+            ),
           ),
         ],
       ),

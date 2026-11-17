@@ -8,6 +8,7 @@ import { BookOpen, Carrot, ChevronRight, LogOut, Sparkles, Users } from "lucide-
 import Logo from "@/components/Logo";
 import { logout, type Me } from "@/lib/api";
 import { listSuggestions } from "@/lib/suggestions";
+import { clearAdminCache } from "@/lib/useAdmin";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin", "latin-ext"],
@@ -48,26 +49,88 @@ function isActive(href: string, pathname: string) {
   return pathname.startsWith(href);
 }
 
-const PAGE_ANIMATION = `
+// ─── Öneri rozeti: kısa süreli önbellek ─────────────────────
+// Her sayfa kendi AdminShell'ini kurduğu için sayıyı modül seviyesinde tutuyoruz.
+// 30 sn içinde tekrar sorulursa sunucuya gitmez; aynı anda gelen çağrılar tek isteği bekler.
+const PENDING_TTL_MS = 30_000;
+let pendingCache: { value: number; at: number } | null = null;
+let pendingRequest: Promise<number> | null = null;
+
+function getPendingCount(force: boolean): Promise<number> {
+  if (!force && pendingCache && Date.now() - pendingCache.at < PENDING_TTL_MS) {
+    return Promise.resolve(pendingCache.value);
+  }
+  pendingRequest ??= listSuggestions()
+    .then((list) => {
+      pendingCache = { value: list.length, at: Date.now() };
+      return list.length;
+    })
+    .finally(() => {
+      pendingRequest = null;
+    });
+  return pendingRequest;
+}
+
+// Bütün animasyonlar burada. Sadece transform/opacity: ekran kartıyla çizilir, işlemciyi yormaz.
+// "Animasyonları azalt" açık olan kullanıcılarda hiçbiri çalışmaz.
+const ANIMATIONS = `
 @keyframes evdekiler-page-in {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes evdekiler-steam {
+  0%   { opacity: 0;   transform: translateY(6px)  scaleY(0.9); }
+  35%  { opacity: 1; }
+  100% { opacity: 0;   transform: translateY(-10px) scaleY(1.1); }
+}
+@keyframes evdekiler-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-120px, 80px) scale(1.15); }
+}
+@keyframes evdekiler-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50%      { transform: translate(140px, -60px) scale(0.95); }
+}
+@keyframes evdekiler-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%      { transform: rotate(2.5deg); }
+}
+
+.steam { transform-box: fill-box; transform-origin: bottom center; opacity: 0.7; }
+
 @media (prefers-reduced-motion: no-preference) {
-  .page-enter { animation: evdekiler-page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  /* "backwards": bittikten sonra transform bırakmaz; yoksa içerideki fixed pencereler bozulur */
+  .page-enter { animation: evdekiler-page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+
+  .steam   { animation: evdekiler-steam 3.2s ease-in-out infinite; opacity: 0; }
+  .steam-2 { animation-delay: 0.9s; }
+  .steam-3 { animation-delay: 1.8s; }
+
+  .glow-a { animation: evdekiler-drift-a 26s ease-in-out infinite; }
+  .glow-b { animation: evdekiler-drift-b 32s ease-in-out infinite; }
+
+  .herb-sway { transform-origin: 10% 100%; animation: evdekiler-sway 9s ease-in-out infinite; }
 }
 `;
 
 export default function AdminShell({ me, title, subtitle, actions, back, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const [pending, setPending] = useState<number | null>(null);
+  // Önbellekte varsa ilk render'da göster: rozet sayfa geçişinde kaybolup geri gelmesin
+  const [pending, setPending] = useState<number | null>(pendingCache?.value ?? null);
   const [today, setToday] = useState("");
 
   useEffect(() => {
-    listSuggestions()
-      .then((list) => setPending(list.length))
-      .catch(() => setPending(null));
+    let alive = true;
+    // Öneriler sayfasındayken her zaman taze sayı
+    getPendingCount(pathname.startsWith("/suggestions"))
+      .then((n) => {
+        if (alive) setPending(n);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -79,25 +142,32 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
 
   async function handleLogout() {
     await logout();
+    clearAdminCache();
+    pendingCache = null;
     router.replace("/login");
   }
 
   return (
-    <div
-      className="min-h-screen bg-cream text-ink"
-      style={{ backgroundImage: "radial-gradient(1200px 500px at 100% 0%, rgba(58,125,68,0.06), transparent 60%)" }}
-    >
-      <style>{PAGE_ANIMATION}</style>
+    <div className="min-h-screen bg-cream text-ink">
+      <style>{ANIMATIONS}</style>
+
+      {/* ─── Zeminde süzülen ışıklar ───────────────────── */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="glow-a absolute -right-40 -top-40 h-[560px] w-[560px] rounded-full bg-[#9cc79a]/25 blur-3xl" />
+        <div className="glow-b absolute -bottom-48 left-[22%] h-[520px] w-[520px] rounded-full bg-[#D8BD82]/20 blur-3xl" />
+      </div>
 
       {/* ─── Sol menü ─────────────────────────────────── */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] flex-col overflow-hidden bg-gradient-to-b from-forest to-[#132a1d] text-white lg:flex">
-        <HerbArt className="pointer-events-none absolute -left-6 bottom-20 w-[300px] text-white/[0.07]" />
+        <div className="herb-sway pointer-events-none absolute -left-6 bottom-20 w-[300px]">
+          <HerbArt className="w-full text-[#D8BD82]/[0.12]" />
+        </div>
 
         <Link href="/" className="relative flex items-center gap-3 px-6 pb-8 pt-7">
           <Logo size={40} />
           <div className="leading-none">
             <p className={`${display.className} text-[22px] font-extrabold tracking-tight`}>Evdekiler</p>
-            <p className="mt-1 text-xs text-white/50">Yönetim paneli</p>
+            <p className="mt-1 text-xs text-[#D8BD82]/70">Yönetim paneli</p>
           </div>
         </Link>
 
@@ -115,7 +185,7 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
                       key={item.href}
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tomato ${
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8BD82] ${
                         active
                           ? "bg-cream text-forest shadow-[0_6px_18px_rgba(0,0,0,0.25)]"
                           : "text-white/70 hover:bg-white/[0.07] hover:text-white"
@@ -138,7 +208,7 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
 
         <div className="relative border-t border-white/10 p-4">
           <div className="flex items-center gap-3 rounded-xl px-2 py-1.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-basil text-sm font-bold text-white ring-2 ring-white/15">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#D8BD82] text-sm font-bold text-forest ring-2 ring-white/15">
               {me.displayName.charAt(0).toLocaleUpperCase("tr-TR")}
             </div>
             <div className="min-w-0 flex-1 leading-tight">
@@ -149,7 +219,7 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
               onClick={handleLogout}
               title="Çıkış yap"
               aria-label="Çıkış yap"
-              className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tomato"
+              className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8BD82]"
             >
               <LogOut className="h-[18px] w-[18px]" strokeWidth={1.75} />
             </button>
@@ -158,8 +228,8 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
       </aside>
 
       {/* ─── Sağ taraf ─────────────────────────────────── */}
-      <div className="lg:pl-[264px]">
-        <header className="sticky top-0 z-20 border-b border-line/70 bg-cream/80 backdrop-blur-md">
+      <div className="relative lg:pl-[264px]">
+        <header className="sticky top-0 z-20 border-b border-line/70 bg-cream/75 backdrop-blur-md">
           <div className="flex h-16 items-center justify-between gap-4 px-6 lg:px-10">
             <nav aria-label="Konum" className="flex min-w-0 items-center gap-1.5 text-sm">
               <span className="hidden text-muted sm:inline">Panel</span>
@@ -172,7 +242,7 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
             </nav>
             <div className="flex items-center gap-3">
               {today && (
-                <span className="hidden rounded-full bg-white px-3 py-1 text-sm capitalize text-muted ring-1 ring-line md:inline">
+                <span className="hidden rounded-full bg-white/80 px-3 py-1 text-sm capitalize text-muted ring-1 ring-line md:inline">
                   {today}
                 </span>
               )}
@@ -203,9 +273,8 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
         <main key={pathname} className="page-enter mx-auto max-w-[1360px] px-6 pb-16 pt-8 lg:px-10">
           {back}
 
-          {/* Başlık bandı: başlık → açıklama → eylem; illüstrasyon sağda serbest */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#dfeadf] via-[#edf3ea] to-[#faf7f2] px-7 py-7 ring-1 ring-[#d3e1d4] sm:px-9">
-            <KitchenArt className="pointer-events-none absolute -bottom-5 right-8 hidden h-[150px] text-forest/[0.18] md:block" />
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#dfeadf]/90 via-[#edf3ea]/90 to-[#faf7f2]/90 px-7 py-7 ring-1 ring-[#d3e1d4] backdrop-blur-sm sm:px-9">
+            <KitchenArt className="pointer-events-none absolute -bottom-5 right-8 hidden h-[150px] text-forest/[0.2] md:block" />
             <div className="relative max-w-2xl">
               <h1 className={`${display.className} text-[36px] font-extrabold leading-tight tracking-tight text-forest`}>
                 {title}
@@ -224,10 +293,13 @@ export default function AdminShell({ me, title, subtitle, actions, back, childre
 
 // ─── İllüstrasyonlar ──────────────────────────────────────────
 
+// Başlık bandı: buharı tüten tencere (buhar çizgileri ayrı ayrı canlanır), havuç, yaprak
 function KitchenArt({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 260 150" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M92 38c-6-8 6-12 0-20M112 34c-6-8 6-12 0-20M132 38c-6-8 6-12 0-20" />
+      <path className="steam steam-1" d="M92 40c-6-8 6-12 0-20" stroke="#b39459" />
+      <path className="steam steam-2" d="M112 36c-6-8 6-12 0-20" stroke="#b39459" />
+      <path className="steam steam-3" d="M132 40c-6-8 6-12 0-20" stroke="#b39459" />
       <path d="M70 58h84M104 50h16" />
       <path d="M74 58c0-6 18-10 38-10s38 4 38 10" />
       <path d="M76 66h72v46a14 14 0 0 1-14 14H90a14 14 0 0 1-14-14V66Z" />
@@ -241,6 +313,7 @@ function KitchenArt({ className = "" }: { className?: string }) {
   );
 }
 
+// Menü: rüzgârda hafifçe sallanan ot dalı (şampanya altını, çok silik)
 function HerbArt({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 300 260" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">

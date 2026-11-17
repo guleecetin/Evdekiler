@@ -38,6 +38,8 @@ export type RecipeListItem = {
 
 export type Paged<T> = { items: T[]; page: number; pageSize: number; totalCount: number };
 
+export type RecipeStats = { total: number; byCategory: Partial<Record<RecipeCategory, number>> };
+
 export type IngredientOption = {
   id: number;
   name: string;
@@ -76,6 +78,11 @@ export function listRecipes(page: number, pageSize: number, search: string, cate
   if (search) query.set("search", search);
   if (category) query.set("category", category);
   return api<Paged<RecipeListItem>>(`/api/admin/recipes?${query}`);
+}
+
+// Toplam + kategori başına tarif sayısı: tek istek, tek GROUP BY sorgusu
+export function getRecipeStats() {
+  return api<RecipeStats>("/api/admin/recipes/stats");
 }
 
 export async function getRecipe(id: number): Promise<RecipeForEdit> {
