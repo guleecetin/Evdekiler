@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/theme.dart';
 import '../../core/api/api_exception.dart';
-import '../../core/widgets/app_image.dart';
 import '../recipes/recipe_repository.dart';
 import 'pantry_models.dart';
 import 'pantry_repository.dart';
@@ -33,19 +32,6 @@ const _months = [
   'Aralık',
 ];
 
-// Backend'deki IngredientCategory enum adları → ekranda görünen adlar
-const _categories = <(String?, String)>[
-  (null, 'Tümü'),
-  ('Vegetable', 'Sebze'),
-  ('Fruit', 'Meyve'),
-  ('Dairy', 'Süt & Yumurta'),
-  ('Meat', 'Et & Tavuk'),
-  ('Grain', 'Tahıl'),
-  ('Legume', 'Bakliyat'),
-  ('Spice', 'Baharat'),
-  ('Other', 'Diğer'),
-];
-
 const _herbSvg = '''
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260" fill="none" stroke="#D8BD82" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
 <path d="M30 250C80 200 120 140 150 40"/>
@@ -56,8 +42,6 @@ const _herbSvg = '''
 <path d="M90 180c-30 6-56-2-74-24 28-8 54 0 74 24Z"/>
 <path d="M100 168c16-26 38-38 66-36-12 28-34 40-66 36Z"/>
 </svg>''';
-
-String _imageFor(Ingredient i) => '/images/ingredients/${i.id}.jpg';
 
 String _formatDate(DateTime d) => '${d.day} ${_months[d.month - 1]} ${d.year}';
 
@@ -106,10 +90,10 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
   }
 
   // Birime göre mantıklı artış miktarı
-  double get _step => switch (_unit.label) {
-    'g' || 'gr' || 'ml' => 50,
-    'kg' || 'l' || 'L' || 'lt' => 0.5,
-    _ => 1,
+  double get _step => switch (_unit) {
+    MeasureUnit.gram || MeasureUnit.milliliter => 50,
+    MeasureUnit.kilogram || MeasureUnit.liter => 0.5,
+    MeasureUnit.piece => 1,
   };
 
   double? get _quantity =>
@@ -232,8 +216,8 @@ class _AddItemSheetState extends ConsumerState<AddItemSheet> {
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 250),
                       child: _ingredient == null
-                          ? _IngredientPicker(
-                              key: const ValueKey('picker'),
+                          ? _IngredientSearch(
+                              key: const ValueKey('search'),
                               onSelected: _select,
                             )
                           : _SelectedIngredient(
@@ -452,42 +436,48 @@ class _Label extends StatelessWidget {
   }
 }
 
-// ─── Malzeme seçici: arama + kategori + fotoğraflı ızgara ───
+// ─── Malzeme arama: boşken sadece kutu, yazınca 6 sonuç ─────
 
-class _IngredientPicker extends ConsumerStatefulWidget {
-  const _IngredientPicker({super.key, required this.onSelected});
+class _IngredientSearch extends ConsumerStatefulWidget {
+  const _IngredientSearch({super.key, required this.onSelected});
 
   final ValueChanged<Ingredient> onSelected;
 
   @override
-  ConsumerState<_IngredientPicker> createState() => _IngredientPickerState();
+  ConsumerState<_IngredientSearch> createState() => _IngredientSearchState();
 }
 
-class _IngredientPickerState extends ConsumerState<_IngredientPicker> {
+class _IngredientSearchState extends ConsumerState<_IngredientSearch> {
+  static const _maxResults = 6;
+
   final _controller = TextEditingController();
   Timer? _debounce;
   String _query = '';
-  String? _category;
-  late Future<List<Ingredient>> _future = _load();
-
-  // Boşken tüm katalog (kategoriye göre), yazınca arama
-  Future<List<Ingredient>> _load() => ref
-      .read(pantryRepositoryProvider)
-      .searchIngredients(
-        _query,
-        category: _query.isEmpty ? _category : null,
-        limit: _query.isEmpty ? 200 : 40,
-      );
-
-  void _reload() => setState(() => _future = _load());
+  Future<List<Ingredient>>? _future;
 
   // Her tuşta istek atma: yazmayı 250 ms bırakınca ara
   void _onChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 250), () {
       if (!mounted) return;
-      _query = value.trim();
-      _reload();
+      final q = value.trim();
+      setState(() {
+        _query = q;
+        _future = q.isEmpty
+            ? null
+            : ref
+                  .read(pantryRepositoryProvider)
+                  .searchIngredients(q, limit: _maxResults);
+      });
+    });
+  }
+
+  void _clear() {
+    _debounce?.cancel();
+    _controller.clear();
+    setState(() {
+      _query = '';
+      _future = null;
     });
   }
 
@@ -529,11 +519,7 @@ class _IngredientPickerState extends ConsumerState<_IngredientPicker> {
                       size: 18,
                       color: AppColors.muted,
                     ),
-                    onPressed: () {
-                      _controller.clear();
-                      _query = '';
-                      _reload();
-                    },
+                    onPressed: _clear,
                   ),
             isDense: true,
             filled: true,
@@ -544,131 +530,90 @@ class _IngredientPickerState extends ConsumerState<_IngredientPicker> {
             focusedBorder: border(AppColors.basil, 1.5),
           ),
         ),
-        if (_query.isEmpty) ...[
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 32,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
-              itemBuilder: (_, i) {
-                final (value, label) = _categories[i];
-                return _Pill(
-                  label: label,
-                  active: _category == value,
-                  onTap: () {
-                    _category = value;
-                    _reload();
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-        const SizedBox(height: 10),
-        Container(
-          height: 248,
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: _cream,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _border),
-          ),
-          child: FutureBuilder<List<Ingredient>>(
+        // Sadece yazınca görünür
+        if (_future != null)
+          FutureBuilder<List<Ingredient>>(
             future: _future,
             builder: (context, snap) {
+              final Widget content;
               if (snap.connectionState != ConnectionState.done) {
-                return const Center(
-                  child: SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.4,
-                      color: AppColors.basil,
+                content = const Padding(
+                  padding: EdgeInsets.all(14),
+                  child: Center(
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: AppColors.basil,
+                      ),
                     ),
                   ),
                 );
-              }
-              if (snap.hasError) {
-                return Center(
-                  child: TextButton(
-                    onPressed: _reload,
-                    child: const Text('Yüklenemedi, tekrar dene'),
-                  ),
-                );
-              }
-              final list = snap.data!;
-              if (list.isEmpty) {
-                return const Center(
+              } else if (snap.hasError || (snap.data?.isEmpty ?? true)) {
+                content = Padding(
+                  padding: const EdgeInsets.all(14),
                   child: Text(
-                    'Malzeme bulunamadı',
-                    style: TextStyle(color: AppColors.muted, fontSize: 13),
+                    snap.hasError ? 'Arama yapılamadı' : '"$_query" bulunamadı',
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 13,
+                    ),
                   ),
                 );
+              } else {
+                final list = snap.data!;
+                content = Column(
+                  children: [
+                    for (var i = 0; i < list.length; i++) ...[
+                      InkWell(
+                        onTap: () => widget.onSelected(list[i]),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  list[i].name,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: _forest,
+                                  ),
+                                ),
+                              ),
+                              const Icon(
+                                Icons.add_rounded,
+                                size: 18,
+                                color: AppColors.basil,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (i < list.length - 1)
+                        const Divider(height: 1, color: AppColors.line),
+                    ],
+                  ],
+                );
               }
-              return GridView.builder(
-                itemCount: list.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: 0.78,
+
+              return Container(
+                margin: const EdgeInsets.only(top: 6),
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: _border),
                 ),
-                itemBuilder: (_, i) => _IngredientTile(
-                  ingredient: list[i],
-                  onTap: () => widget.onSelected(list[i]),
-                ),
+                child: Material(color: Colors.transparent, child: content),
               );
             },
           ),
-        ),
       ],
-    );
-  }
-}
-
-class _IngredientTile extends StatelessWidget {
-  const _IngredientTile({required this.ingredient, required this.onTap});
-
-  final Ingredient ingredient;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(9),
-                  child: AppImage(_imageFor(ingredient), fallbackEmoji: '🥕'),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                ingredient.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: _forest,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -686,7 +631,7 @@ class _SelectedIngredient extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
       decoration: BoxDecoration(
         color: _cream,
         borderRadius: BorderRadius.circular(16),
@@ -694,13 +639,14 @@ class _SelectedIngredient extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: AppImage(_imageFor(ingredient), fallbackEmoji: '🥕'),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: const BoxDecoration(
+              color: _forest,
+              shape: BoxShape.circle,
             ),
+            child: const Icon(Icons.check_rounded, color: _gold, size: 19),
           ),
           const SizedBox(width: 12),
           Expanded(

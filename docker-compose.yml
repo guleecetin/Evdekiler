@@ -61,12 +61,6 @@ services:
       interval: 10s
       retries: 20
 
-  redis:
-    image: redis:7-alpine
-    container_name: evdekiler-redis
-    ports:
-      - "6379:6379"
-
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     container_name: evdekiler-azurite
